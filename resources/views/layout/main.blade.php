@@ -80,31 +80,6 @@ License: You must have a valid license purchased only from themeforest(the above
                 </a>
                 <div class="side-nav__devider my-6"></div>
                 <ul>
-
-        
-                    <!-- <li>
-                        <a href="{{route('admin')}}" class="side-menu {{$side == 'admin'? 'side-menu--active':''}}">
-                            <div class="menu__icon"> <i data-lucide="home"></i> </div>
-                            <div class="menu__title"> Dashboard </div>
-                        </a>
-                    </li>
-
-                    <li>
-                        <a href="{{ route('role.index') }}" class="side-menu {{ $side == 'role' ? 'side-menu--active' : '' }}">
-
-                            <div class="menu__icon">
-                                <i data-lucide="shield"></i>
-                            </div>
-
-                            <div class="menu__title">
-                                Management Role
-                            </div>
-
-                        </a>
-                    </li> -->
-
-
-
                      <li>
                         <a href="{{route('admin')}}" class="side-menu {{$side == 'admin'? 'side-menu--active':''}}">
                             <div class="side-menu__icon"> <i data-lucide="home"></i> </div>
@@ -126,6 +101,107 @@ License: You must have a valid license purchased only from themeforest(the above
 
                         </a>
                     </li>
+
+                    <li>
+            <!-- Indikator 'side-menu--active' dipasang di menu utama jika salah satu sub-menunya sedang aktif -->
+            <a href="javascript:;" class="side-menu">
+                <div class="side-menu__icon"> <i data-lucide="box"></i> </div>
+                <div class="side-menu__title">
+                    Master Data
+                    <div class="side-menu__sub-icon {{ in_array($side, ['gelombang', 'master-lainnya']) ? 'transform rotate-180' : '' }}"> 
+                        <i data-lucide="chevron-down"></i> 
+                    </div>
+                </div>
+            </a>
+            <!-- Sub-Menu Wrapper -->
+            <ul class="{{ in_array($side, ['gelombang', 'calon-siswa','set-kelas','rekap_kelas','daftar-siswa']) ? 'side-menu__sub-open' : '' }}">
+                <li>
+                    <!-- Sub-Menu Gelombang -->
+                    <a href="{{ route('gelombang.index') }}" class="side-menu {{ $side == 'gelombang' ? 'side-menu--active' : '' }}">
+                        <div class="side-menu__icon"> <i data-lucide="activity"></i> </div>
+                        <div class="side-menu__title"> Gelombang </div>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route('calon-siswa.index') }}"
+                    class="side-menu {{ $side == 'calon-siswa' ? 'side-menu--active' : '' }}">
+
+                        <div class="side-menu__icon">
+                            <i data-lucide="users"></i>
+                        </div>
+
+                        <div class="side-menu__title">
+                            Calon Siswa
+                        </div>
+
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route('set-kelas.index') }}"
+                    class="side-menu {{ $side == 'set-kelas' ? 'side-menu--active' : '' }}">
+
+                        <div class="side-menu__icon">
+                            <i data-lucide="file-text"></i>
+                        </div>
+
+                        <div class="side-menu__title">
+                            Set Kelas
+                        </div>
+
+                    </a>
+                </li>
+
+
+                 <li>
+                    <a href="{{ url('rekapKelas') }}"
+                    class="side-menu {{ $side == 'rekap_kelas' ? 'side-menu--active' : '' }}">
+
+                        <div class="side-menu__icon">
+                            <i data-lucide="archive"></i>
+                        </div>
+
+                        <div class="side-menu__title">
+                            Rekap Kelas
+                        </div>
+
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ url('daftarSiswa') }}"
+                    class="side-menu {{ $side == 'daftar-siswa' ? 'side-menu--active' : '' }}">
+
+                        <div class="side-menu__icon">
+                            <i data-lucide="archive"></i>
+                        </div>
+
+                        <div class="side-menu__title">
+                            Daftar Siswa
+                        </div>
+
+                    </a>
+                </li>
+
+
+                <li>
+                    <a href="{{ route('broadcast.index') }}"
+                    class="side-menu {{ $side == 'broadcast' ? 'side-menu--active' : '' }}">
+
+                        <div class="side-menu__icon">
+                            <i data-lucide="file-text"></i>
+                        </div>
+
+                        <div class="side-menu__title">
+                            Broadcast
+                        </div>
+
+                    </a>
+                </li>
+                <!-- Anda bisa menambah sub-menu lain di bawah ini jika diperlukan di masa depan -->
+            </ul>
+        </li>
                    
                    
 

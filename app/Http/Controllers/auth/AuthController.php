@@ -24,9 +24,7 @@ class AuthController extends Controller
 
             // cek role admin
            if ($user->hasRole('admin')) {
-
                 return redirect('/admin');
-
             }
 
             Auth::logout();

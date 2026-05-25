@@ -22,6 +22,20 @@ class RoleController extends Controller
         ]);
     }
 
+    public function dataRole()
+    {
+        // Ambil semua data dari tabel roles
+        $roles = Role::select('id', 'name')->get()->map(function ($role) {
+            return [
+                'id'   => $role->id,
+                // ucfirst untuk mengubah huruf pertama jadi kapital di tampilan tabel (misal: "admin" jadi "Admin")
+                'name' => ucfirst($role->name), 
+            ];
+        });
+
+        return response()->json($roles);
+    }
+
     public function data()
     {
         $users = User::all()->map(function ($user) {
@@ -38,7 +52,7 @@ class RoleController extends Controller
 
                 'role'  => $role,
 
-                'action' => '<button onclick=\'editRole('.$user->id.', '.json_encode($user->name).', '.json_encode($role).')\' class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg">Edit</button>',
+                
             ];
         });
 
@@ -62,22 +76,105 @@ class RoleController extends Controller
         ]);
     }
 
-    public function update(Request $request, $id)
+   
+    public function storeUser(Request $request)
     {
+        // Validasi data input user baru
         $request->validate([
-            'role' => 'required'
+            'name'  => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:6',
+            'role'  => 'required|exists:roles,name'
         ]);
 
-        $user = User::findOrFail($id);
+        // Membuat user baru
+        $user = User::create([
+            'name'     => $request->name,
+            'email'    => $request->email,
+            'password' => $request->password, // Otomatis ter-hash berkat casts di model
+        ]);
 
-        // hapus role lama
-        $user->syncRoles([]);
-
-        // assign role baru
+        // Memberikan role Spatie ke user baru tersebut
         $user->assignRole($request->role);
 
+        return response()->json(['message' => 'User baru berhasil ditambahkan!']);
+    }
+
+    public function editUser($id)
+    {
+        $user = User::findOrFail($id);
+
+        // Mengambil nama role pertama yang dimiliki user
+        $user->role = $user->getRoleNames()->first();
+
+        // Sekarang objek $user sudah ketambahan properti 'role'
+        return response()->json($user);
+    }
+
+    public function updateUser(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        // 1. Validasi Input (Tambahkan validasi untuk role)
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $id,
+            'password' => 'nullable|min:6',
+            'role' => 'required|string', // Pastikan role wajib diisi
+        ]);
+
+        // 2. Update data dasar User
+        $user->name = $request->name;
+        $user->email = $request->email;
+
+        // Kalau password diisi, baru di-hash dan update
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->save();
+
+        // 3. Proses Update Role (Pilih salah satu sesuai sistem yang Anda gunakan)
+
+        // Opsi A: Jika Anda menggunakan package Spatie Laravel-Permission (Sangat umum)
+        $user->syncRoles($request->role);
+
+        // Opsi B: Jika role disimpan langsung di kolom tabel users (misal kolom 'role')
+        // $user->role = $request->role;
+        // $user->save();
+
+        // Opsi C: Jika Anda menggunakan relasi manual/tabel pivot biasa (misal belongsToMany)
+        // $user->roles()->sync([$request->role]); 
+
+
+        // 4. Kembalikan Response JSON (Wajib untuk AJAX)
         return response()->json([
-            'message' => 'Role berhasil diupdate',
+            'success' => true,
+            'message' => 'User dan Role berhasil diperbarui'
         ]);
     }
+
+    public function deleteRole($id)
+{
+    try {
+        // Cari role berdasarkan ID
+        $role = Role::findOrFail($id);
+        
+        // Eksekusi hapus
+        $role->delete();
+
+        // Kembalikan respon sukses ke AJAX
+        return response()->json([
+            'success' => true,
+            'message' => 'Role berhasil dihapus!'
+        ]);
+        
+    } catch (\Exception $e) {
+        // Jika gagal (misal role masih dipakai oleh user lain jika ada restriksi database)
+        return response()->json([
+            'success' => false,
+            'message' => 'Gagal menghapus role. Kemungkinan role masih digunakan.'
+        ], 500);
+    }
+}
 }
