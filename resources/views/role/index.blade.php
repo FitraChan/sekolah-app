@@ -144,6 +144,12 @@ Dashboard
             hozAlign: "center",
             width: 60, // Sedikit diperkecil agar hemat ruang di kolom kanan
         },
+
+        {
+            title: "Id",
+            field: "id", // Mengambil data id role
+            width: 60, // Sedikit diperkecil agar hemat ruang di kolom kanan
+        },
         {
             title: "Nama Role",
             field: "name" // Mengambil data nama role (misal: admin, guru, bendahara)

@@ -34,25 +34,27 @@ Broadcast
                 </label>
 
                 <select id="status"
-        class="form-select"
-        onchange="changeBroadcast(this)">
+                    class="form-select"
+                    onchange="changeBroadcast(this)">
 
-    <option value="">
-        -- Pilih Broadcast --
-    </option>
+                    <option value="">
+                        -- Pilih Broadcast --
+                    </option>
 
-    <?php foreach ($broadcast as $row): ?>
+                    <?php foreach ($broadcast as $row): ?>
 
-        <option value="<?= $row->id ?>"
-                data-pesan="<?= htmlspecialchars($row->pesan) ?>">
+                        <option value="<?= $row->id ?>"
+                            data-pesan="<?= htmlspecialchars($row->pesan) ?>">
 
-            <?= $row->judul ?>
+                            <?= $row->judul ?>
 
-        </option>
+                        </option>
 
-    <?php endforeach; ?>
+                    <?php endforeach; ?>
 
-</select>
+                </select>
+
+               
 
             </div>
 
@@ -64,12 +66,21 @@ Broadcast
                 </label>
 
                 <textarea id="textarea-pesan"
-          class="form-control mt-3"
-          rows="6"></textarea>
+                    class="form-control mt-3"
+                    rows="6"></textarea>
 
             </div>
 
+            
+
         </div>
+
+         <button class="btn btn-primary mt-4"
+        onclick="broadcastSemua()">
+
+    Broadcast Semua Calon Siswa
+
+</button>
 
     </div>
 
@@ -95,35 +106,26 @@ Broadcast
             </div>
 
             <div class="modal-body">
-
                 <input type="hidden" id="id">
-
                 <!-- JUDUL -->
                 <div class="mb-3">
-
                     <label class="form-label">
                         Judul
                     </label>
-
                     <input type="text"
                         id="judul"
                         class="form-control">
-
                 </div>
 
                 <!-- PESAN -->
                 <div>
-
                     <label class="form-label">
                         Pesan
                     </label>
-
                     <textarea id="pesan"
                         rows="10"
                         class="form-control"></textarea>
-
                 </div>
-
             </div>
 
             <div class="modal-footer">
@@ -144,6 +146,45 @@ Broadcast
 </div>
 
 <script>
+
+    function broadcastSemua()
+    {
+        let id_broadcast = document.getElementById('status').value;
+
+        if(id_broadcast == '')
+        {
+            alert('Pilih broadcast terlebih dahulu');
+            return;
+        }
+
+        fetch('/broadcast/broadcast/kirimSemua', {
+
+            method: 'POST',
+
+            headers: {
+
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+
+            body: JSON.stringify({
+
+                id_broadcast: id_broadcast
+
+            })
+
+        })
+
+        .then(res => res.json())
+
+        .then(res => {
+
+            alert(res.message);
+
+        });
+    }                    
+
+
     let editorPesan;
 
     ClassicEditor
@@ -211,9 +252,7 @@ Broadcast
     }
 </script>
 <script>
-
-     function changeBroadcast(select)
-    {
+    function changeBroadcast(select) {
         let option = select.options[select.selectedIndex];
 
         let pesan = option.getAttribute('data-pesan');

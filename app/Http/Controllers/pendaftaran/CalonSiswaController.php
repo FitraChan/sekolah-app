@@ -11,6 +11,7 @@ use App\Models\Agama;
 use App\Models\Pekerjaan;
 use App\Models\StatusDaftar;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use PHPUnit\Logging\OpenTestReporting\Status;
 
 class CalonSiswaController extends Controller
@@ -28,19 +29,17 @@ class CalonSiswaController extends Controller
             'gelombang',
             'jurusan'
         ), ['side'  => 'calon-siswa']);
-
-        
     }
 
-     
+
 
     public function create()
     {
         $side = 'calon-siswa';
 
-            $rows = new CalonSiswa();
+        $rows = new CalonSiswa();
 
-       // $rows = CalonSiswa::findOrFail($id);
+        // $rows = CalonSiswa::findOrFail($id);
 
         /*
         |--------------------------------------------------------------------------
@@ -98,30 +97,20 @@ class CalonSiswaController extends Controller
         | MASTER DATA
         |--------------------------------------------------------------------------
         */
-
         $gel = Gelombang::orderBy('idx', 'asc')->get();
-
         $thn = TahunAjaran::orderBy('id', 'desc')->get();
-
         $lists = Jurusan::orderBy('nama_jurusan', 'asc')->get();
-
         $jobs = Pekerjaan::orderBy('nama_pekerjaan', 'asc')->get();
         $agama = Agama::orderBy('nama_agama', 'asc')->get();
-
         $sts_daftar = StatusDaftar::orderBy('keterangan', 'asc')->get();
-
-        // $petugas = User::orderBy('name', 'asc')->get();
-
         /*
         |--------------------------------------------------------------------------
         | STATUS
         |--------------------------------------------------------------------------
         */
-
         $stsdaftar =
             $rows->statusDaftar->keterangan
             ?? 'Belum Ada';
-
         return view(
             'pendaftaran.calon_siswa.edit_calon_siswa',
             compact(
@@ -133,31 +122,58 @@ class CalonSiswaController extends Controller
                 'jobs',
                 'agama',
                 'sts_daftar',
-                // 'petugas',
                 'stsdaftar'
             )
         );
     }
 
-    public function daftarSiswa()    {  
-        
-     $data = CalonSiswa::with([
-        'tahunAjaran',
-        'jurusan',
-        'kelas'
-    ])
+    public function editCalonSiswa()
+    {
+        $side = 'calon-siswa';
+        $rows = CalonSiswa::where('id_user', Auth::id())
+            ->firstOrFail();
+        $gel = Gelombang::orderBy('idx', 'asc')->get();
+        $thn = TahunAjaran::orderBy('id', 'desc')->get();
+        $lists = Jurusan::orderBy('nama_jurusan', 'asc')->get();
+        $jobs = Pekerjaan::orderBy('nama_pekerjaan', 'asc')->get();
+        $agama = Agama::orderBy('nama_agama', 'asc')->get();
+        $sts_daftar = StatusDaftar::orderBy('keterangan', 'asc')->get();
+        $stsdaftar = $rows->statusDaftar->keterangan ?? 'Belum Ada';
+        return view(
+            'pendaftaran.calon_siswa.edit_calon_siswa',
+            compact(
+                'side',
+                'rows',
+                'gel',
+                'thn',
+                'lists',
+                'jobs',
+                'agama',
+                'sts_daftar',
+                'stsdaftar'
+            )
+        );
+    }
 
-    ->whereHas('tahunAjaran', function ($query) {
+    public function daftarSiswa()
+    {
 
-        $query->where('isaktiv', 1);
+        $data = CalonSiswa::with([
+            'tahunAjaran',
+            'jurusan',
+            'kelas'
+        ])
 
-    })
+            ->whereHas('tahunAjaran', function ($query) {
 
-    ->get();
+                $query->where('isaktiv', 1);
+            })
 
-         return view('pendaftaran.calon_siswa.daftar_siswa', compact(            
+            ->get();
+
+        return view('pendaftaran.calon_siswa.daftar_siswa', compact(
             'data'
-        ),[
+        ), [
             'side' => 'daftar-siswa'
         ]);
     }
@@ -209,121 +225,345 @@ class CalonSiswaController extends Controller
     }
 
     public function updateRegistrasiSiswa(Request $request, $id = null)
-{
-    try {
+    {
 
-        $request->validate([
+   
+        try {
+            $request->validate([
 
-            /*
+            
+                /*
+
+                
             |--------------------------------------------------------------------------
             | INFORMASI PENDAFTARAN
             |--------------------------------------------------------------------------
             */
+                'id_gelombang'      => 'nullable',
+                'id_thn_ajaran'     => 'nullable',
+                'id_jurusan'        => 'nullable',
+                'no_daftar'         => 'nullable|string|max:100',
+                'tgl_daftar'        => 'nullable|date',
+                'tmp_daftar'        => 'nullable|string|max:255',
+                'status_daftar'     => 'nullable',
 
-            'id_gelombang'      => 'nullable',
-            'id_thn_ajaran'     => 'nullable',
-            'id_jurusan'        => 'nullable',
-            'no_daftar'         => 'nullable|string|max:100',
-            'tgl_daftar'        => 'nullable|date',
-            'tmp_daftar'        => 'nullable|string|max:255',
-            'status_daftar'     => 'nullable',
-
-            /*
+                /*
             |--------------------------------------------------------------------------
             | BIODATA SISWA
             |--------------------------------------------------------------------------
             */
+                'nama_lengkap'      => 'nullable|string|max:255',
+                'jk'                => 'nullable|string|max:1',
+                'id_agama'          => 'nullable',
+                'tmp_lahir'         => 'nullable|string|max:255',
+                'tgl_lahir'         => 'nullable|date',
+                'alamat'            => 'nullable|string',
+                'dusun'             => 'nullable|string|max:255',
+                'desa'              => 'nullable|string|max:255',
+                'kecamatan'         => 'nullable|string|max:255',
+                'kota'              => 'nullable|string|max:255',
+                'provinsi'          => 'nullable|string|max:255',
+                'no_hp'             => 'nullable|string|max:20',
+                'no_telp'           => 'nullable|string|max:20',
+                'email'             => 'nullable|email|max:255',
+            ]);
 
-            'nama_lengkap'      => 'nullable|string|max:255',
-            'jk'                => 'nullable|string|max:1',
-            'id_agama'          => 'nullable',
-            'tmp_lahir'         => 'nullable|string|max:255',
-            'tgl_lahir'         => 'nullable|date',
-            'alamat'            => 'nullable|string',
-            'dusun'             => 'nullable|string|max:255',
-            'desa'              => 'nullable|string|max:255',
-            'kecamatan'         => 'nullable|string|max:255',
-            'kota'              => 'nullable|string|max:255',
-            'provinsi'          => 'nullable|string|max:255',
-            'no_hp'             => 'nullable|string|max:20',
-            'no_telp'           => 'nullable|string|max:20',
-
-        ]);
-
-        /*
+            /*
         |--------------------------------------------------------------------------
         | CEK EDIT / TAMBAH
         |--------------------------------------------------------------------------
         */
 
-        if (!empty($id)) {
-            // UPDATE
-            $siswa = CalonSiswa::findOrFail($id);
+            if (!empty($id)) {
+                // UPDATE
+                $siswa = CalonSiswa::findOrFail($id);
+            } else {
 
-        } else {
+                // TAMBAH
+                $siswa = new CalonSiswa();
+            }
 
-            // TAMBAH
-            $siswa = new CalonSiswa();
-        }
-
-        /*
+            /*
         |--------------------------------------------------------------------------
         | SIMPAN DATA
         |--------------------------------------------------------------------------
         */
 
-        $siswa->id_gelombang      = $request->id_gelombang;
-        $siswa->id_thn_ajaran     = $request->id_thn_ajaran;
-        $siswa->id_jurusan        = $request->id_jurusan;
-        $siswa->no_daftar         = $request->no_daftar;
-        $siswa->tgl_daftar        = $request->tgl_daftar;
-        $siswa->tmp_daftar        = $request->tmp_daftar;
-        $siswa->status_daftar     = $request->status_daftar;
+            $siswa->id_gelombang      = $request->id_gelombang;
+            $siswa->id_thn_ajaran     = $request->id_thn_ajaran;
+            $siswa->id_jurusan        = $request->id_jurusan;
+            $siswa->no_daftar         = $request->no_daftar;
+            $siswa->tgl_daftar        = $request->tgl_daftar;
+            $siswa->tmp_daftar        = $request->tmp_daftar;
+            $siswa->status_daftar     = $request->status_daftar;
 
-        $siswa->nama_lengkap      = $request->nama_lengkap;
-        $siswa->jk                = $request->jk;
-        $siswa->id_agama          = $request->id_agama;
-        $siswa->tmp_lahir         = $request->tmp_lahir;
-        $siswa->tgl_lahir         = $request->tgl_lahir;
-        $siswa->alamat            = $request->alamat;
-        $siswa->dusun             = $request->dusun;
-        $siswa->desa              = $request->desa;
-        $siswa->kecamatan         = $request->kecamatan;
-        $siswa->kota              = $request->kota;
-        $siswa->provinsi          = $request->provinsi;
-        $siswa->no_hp             = $request->no_hp;
-        $siswa->no_telp           = $request->no_telp;
+            $siswa->nama_lengkap      = $request->nama_lengkap;
+            $siswa->jk                = $request->jk;
+            $siswa->id_agama          = $request->id_agama;
+            $siswa->tmp_lahir         = $request->tmp_lahir;
+            $siswa->tgl_lahir         = $request->tgl_lahir;
+            $siswa->alamat            = $request->alamat;
+            $siswa->dusun             = $request->dusun;
+            $siswa->desa              = $request->desa;
+            $siswa->kecamatan         = $request->kecamatan;
+            $siswa->kota              = $request->kota;
+            $siswa->provinsi          = $request->provinsi;
+            $siswa->no_hp             = $request->no_hp;
+            $siswa->no_telp           = $request->no_telp;
+            $siswa->email             = $request->email;
+            $siswa->save();
 
-        $siswa->save();
-
-        /*
+            /*
         |--------------------------------------------------------------------------
         | RESPONSE
         |--------------------------------------------------------------------------
         */
 
-        if ($id != null) {
+            if ($id != null) {
 
-            $message = 'Data registrasi & biodata siswa berhasil diperbarui';
+                $message = 'Data registrasi & biodata siswa berhasil diperbarui';
+            } else {
 
-        } else {
+                $message = 'Data registrasi & biodata siswa berhasil ditambahkan';
+            }
 
-            $message = 'Data registrasi & biodata siswa berhasil ditambahkan';
+           if (auth()->user()->hasRole('calon')) {
+                return redirect()
+                    ->route('calon-siswa.profil')
+                    ->with('success', $message);
+            }
+
+            return redirect()
+                ->route('calon-siswa.index')
+                ->with('success', $message);
+
+        } catch (\Exception $e) {
+
+            print_r($e->getMessage());
+            // return redirect()
+            //     ->back()
+            //     ->withInput()
+            //     ->with('error', 'Terjadi kesalahan saat menyimpan data');
         }
-
-        return redirect()
-            ->route('calon-siswa.index')
-            ->with('success', $message);
-
-    } catch (\Exception $e) {
-
-print_r($e->getMessage());
-        // return redirect()
-        //     ->back()
-        //     ->withInput()
-        //     ->with('error', 'Terjadi kesalahan saat menyimpan data');
     }
-}
+
+
+    public function updateUpload(Request $request, $id)
+    {
+        try {
+
+            $request->validate([
+
+                'foto_siswa'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+
+                'kk'               => 'nullable|mimes:jpg,jpeg,png,pdf|max:2048',
+
+                'akta_kelahiran'   => 'nullable|mimes:jpg,jpeg,png,pdf|max:2048',
+
+                'ijazah'           => 'nullable|mimes:pdf|max:4096',
+
+                //sudo  'raport'           => 'nullable|mimes:pdf|max:4096',
+
+                // 'ktp_ayah'         => 'nullable|mimes:jpg,jpeg,png,pdf|max:2048',
+
+                // 'ktp_ibu'          => 'nullable|mimes:jpg,jpeg,png,pdf|max:2048',
+
+            ]);
+
+            $rows = CalonSiswa::where('id', $id)->first();
+
+            if (!$rows) {
+
+                return redirect()
+                    ->back()
+                    ->with('error', 'Data tidak ditemukan');
+            }
+
+            $data = [];
+
+            /*
+        |--------------------------------------------------------------------------
+        | FOTO SISWA
+        |--------------------------------------------------------------------------
+        */
+
+            if ($request->hasFile('foto_siswa')) {
+
+                $file = $request->file('foto_siswa');
+
+                $namaFile = time() . '_foto.' .
+                    $file->getClientOriginalExtension();
+
+                $file->storeAs(
+                    'uploads/foto_siswa',
+                    $namaFile,
+                    'public'
+                );
+
+                $data['foto_siswa'] =
+                    'uploads/foto_siswa/' . $namaFile;
+            }
+
+            /*
+        |--------------------------------------------------------------------------
+        | KK
+        |--------------------------------------------------------------------------
+        */
+
+            if ($request->hasFile('kk')) {
+
+                $file = $request->file('kk');
+
+                $namaFile = time() . '_kk.' .
+                    $file->getClientOriginalExtension();
+
+                $file->storeAs(
+                    'uploads/kk',
+                    $namaFile,
+                    'public'
+                );
+
+                $data['kk'] =
+                    'uploads/kk/' . $namaFile;
+            }
+
+            /*
+        |--------------------------------------------------------------------------
+        | AKTA
+        |--------------------------------------------------------------------------
+        */
+
+            if ($request->hasFile('akta_kelahiran')) {
+
+                $file = $request->file('akta_kelahiran');
+
+                $namaFile = time() . '_akta.' .
+                    $file->getClientOriginalExtension();
+
+                $file->storeAs(
+                    'uploads/akta',
+                    $namaFile,
+                    'public'
+                );
+
+                $data['akta_kelahiran'] =
+                    'uploads/akta/' . $namaFile;
+            }
+
+            /*
+        |--------------------------------------------------------------------------
+        | IJAZAH
+        |--------------------------------------------------------------------------
+        */
+
+            if ($request->hasFile('ijazah')) {
+
+                $file = $request->file('ijazah');
+
+                $namaFile = time() . '_ijazah.' .
+                    $file->getClientOriginalExtension();
+
+                $file->storeAs(
+                    'uploads/ijazah',
+                    $namaFile,
+                    'public'
+                );
+
+                $data['ijazah'] =
+                    'uploads/ijazah/' . $namaFile;
+            }
+
+            /*
+        |--------------------------------------------------------------------------
+        | RAPORT
+        |--------------------------------------------------------------------------
+        */
+
+            if ($request->hasFile('raport')) {
+
+                $file = $request->file('raport');
+
+                $namaFile = time() . '_raport.' .
+                    $file->getClientOriginalExtension();
+
+                $file->storeAs(
+                    'uploads/raport',
+                    $namaFile,
+                    'public'
+                );
+
+                $data['raport'] =
+                    'uploads/raport/' . $namaFile;
+            }
+
+            /*
+        |--------------------------------------------------------------------------
+        | KTP AYAH
+        |--------------------------------------------------------------------------
+        */
+
+            if ($request->hasFile('ktp_ayah')) {
+
+                $file = $request->file('ktp_ayah');
+
+                $namaFile = time() . '_ktp_ayah.' .
+                    $file->getClientOriginalExtension();
+
+                $file->storeAs(
+                    'uploads/ktp_ayah',
+                    $namaFile,
+                    'public'
+                );
+
+                $data['ktp_ayah'] =
+                    'uploads/ktp_ayah/' . $namaFile;
+            }
+
+            /*
+        |--------------------------------------------------------------------------
+        | KTP IBU
+        |--------------------------------------------------------------------------
+        */
+
+            if ($request->hasFile('ktp_ibu')) {
+
+                $file = $request->file('ktp_ibu');
+
+                $namaFile = time() . '_ktp_ibu.' .
+                    $file->getClientOriginalExtension();
+
+                $file->storeAs(
+                    'uploads/ktp_ibu',
+                    $namaFile,
+                    'public'
+                );
+
+                $data['ktp_ibu'] =
+                    'uploads/ktp_ibu/' . $namaFile;
+            }
+
+            $data['updated_at'] = now();
+
+            CalonSiswa::where('id', $id)
+                ->update($data);
+
+            return redirect()
+                ->back()
+                ->with(
+                    'success',
+                    'Upload dokumen berhasil'
+                );
+        } catch (\Throwable $e) {
+
+            return redirect()
+                ->back()
+                ->with(
+                    'error',
+                    $e->getMessage()
+                );
+        }
+    }
+
 
     public function updateOrangTua(Request $request, $id)
     {
@@ -382,32 +622,31 @@ print_r($e->getMessage());
     }
 
     public function updateStatus(Request $request, $id)
-{
-    try {
+    {
+        try {
 
-        $request->validate([
-            'status_daftar' => 'required',
-        ]);
+            $request->validate([
+                'status_daftar' => 'required',
+            ]);
 
-        $siswa = CalonSiswa::findOrFail($id);
+            $siswa = CalonSiswa::findOrFail($id);
 
-        $siswa->update([
-            'status_daftar' => $request->status_daftar,
-        ]);
+            $siswa->update([
+                'status_daftar' => $request->status_daftar,
+            ]);
 
-        return redirect()
-            ->back()
-            ->with('success', 'Status siswa berhasil diperbarui');
+            return redirect()
+                ->back()
+                ->with('success', 'Status siswa berhasil diperbarui');
+        } catch (\Exception $e) {
 
-    } catch (\Exception $e) {
 
-
-        return redirect()
-            ->back()
-            ->withInput()
-            ->with('error', 'Terjadi kesalahan saat update status');
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan saat update status');
+        }
     }
-}
 
     public function destroy($id)
     {

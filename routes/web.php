@@ -35,8 +35,14 @@ Route::post('/login', [AuthController::class, 'Login'])->name('login');
 Route::get('/logout', [AuthController::class, 'Logout'])->name('logout');
 
 
-Route::middleware(['auth', 'role:admin'])->group(function () {
+Route::get('registerSiswa', [AuthController::class, 'registerSiswa'])->name('registerSiswa');
 
+Route::post('/cekregister', [AuthController::class, 'cekregister'])->name('cekregister');
+
+
+
+
+Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin', [Home::class, 'index'])
         ->name('admin');
     Route::get('/role', [RoleController::class, 'index'])
@@ -49,14 +55,11 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/role/{id}/editUser', [RoleController::class, 'editUser']);
     Route::post('/role/updateUser/{id}', [RoleController::class, 'updateUser']);
     Route::delete('/role/deleteRole/{id}', [RoleController::class, 'deleteRole'])->name('role.deleteRole');
-
-
     Route::get('/gelombang', [GelombangController::class, 'index'])->name('gelombang.index');
     Route::get('/gelombang/data', [GelombangController::class, 'data'])->name('gelombang.data');
     Route::post('/gelombang/store', [GelombangController::class, 'store'])->name('gelombang.store');
     Route::post('/gelombang/update/{id}', [GelombangController::class, 'update'])->name('gelombang.update');
     Route::delete('/gelombang/delete/{id}', [GelombangController::class, 'destroy'])->name('gelombang.delete');
-
     Route::get('/calon-siswa', [CalonSiswaController::class, 'index'])
         ->name('calon-siswa.index');
     Route::get('/calon-siswa/data', [CalonSiswaController::class, 'data'])
@@ -65,94 +68,105 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     //  Route::post('/calon-siswa/update/{id}', [CalonSiswaController::class, 'update'])->name('calon-siswa.update');
     Route::get('/calon-siswa/edit/{id}', [CalonSiswaController::class, 'edit'])
         ->name('calon-siswa.edit');
-
     Route::get('/calon-siswa/create', [CalonSiswaController::class, 'create'])
         ->name('calon-siswa.create');
-
-
-
     Route::delete('/calon-siswa/delete/{id}', [CalonSiswaController::class, 'destroy'])->name('calon-siswa.delete');
-
-
     Route::post(
         '/calon-siswa/update/updateRegistrasiSiswa/{id?}',
         [CalonSiswaController::class, 'updateRegistrasiSiswa']
-    )
-        ->name('calon-siswa.update.updateRegistrasiSiswa');
-
-
-
+    )->name('calon-siswa.update.updateRegistrasiSiswa');
     Route::post(
         '/calon-siswa/update/orang-tua/{id}',
         [CalonSiswaController::class, 'updateOrangTua']
-    )
-        ->name('calon-siswa.update.orangtua');
-
+    )->name('calon-siswa.update.orangtua');
     Route::post(
         '/calon-siswa/update/registrasi/{id}',
         [CalonSiswaController::class, 'updateRegistrasi']
-    )
-        ->name('calon-siswa.update.registrasi');
-
+    )->name('calon-siswa.update.registrasi');
     Route::post(
         '/calon-siswa/update-status/{id}',
         [CalonSiswaController::class, 'updateStatus']
     )->name('calon-siswa.update-status');
-
     // halaman
     Route::get('/set-kelas', [
         SetKelasController::class,
         'index'
     ])->name('set-kelas.index');
-
     // data tabulator
     Route::get('/data', [
         SetKelasController::class,
         'data'
     ])->name('set-kelas.data');
-
     // update kelas
     Route::post('/set-kelas/updateKelas/{id}', [
         SetKelasController::class,
         'updateKelas'
     ])->name('set-kelas.update');
-
-
     Route::get('/rekapKelas', [
         SetKelasController::class,
         'rekapKelas'
     ])->name('rekapKelas');
-
     Route::get('/daftarSiswa', [
         CalonSiswaController::class,
         'daftarSiswa'
     ])->name('daftarSiswa');
-
     Route::prefix('broadcast')->group(function () {
-
         Route::get('/', [
             BroadcastController::class,
             'index'
         ])->name('broadcast.index');
-
         Route::get('/data', [
             BroadcastController::class,
             'data'
         ])->name('broadcast.data');
-
         Route::post('/store', [
             BroadcastController::class,
             'store'
         ])->name('broadcast.store');
-
         Route::post('/update/{id}', [
             BroadcastController::class,
             'update'
         ])->name('broadcast.update');
-
         Route::delete('/delete/{id}', [
             BroadcastController::class,
             'delete'
         ])->name('broadcast.delete');
+        Route::post('/broadcast/kirimSemua', [BroadcastController::class, 'kirimSemua']);
+        Route::post('/calon-siswa/upload/{id}', [CalonSiswaController::class, 'updateUpload'])->name('calon-siswa.update.upload');
     });
+});
+
+
+Route::middleware(['auth', 'role:calon'])->group(function () {
+
+    Route::get(
+        '/calon-siswa/profil',
+        [CalonSiswaController::class, 'editCalonSiswa']
+    )->name('calon-siswa.profil');
+
+    Route::post(
+        '/calon-siswa/update/updateRegistrasiSiswa/{id?}',
+        [CalonSiswaController::class, 'updateRegistrasiSiswa']
+    )->name('calon-siswa.update.updateRegistrasiSiswa');
+    Route::post(
+        '/calon-siswa/update/orang-tua/{id}',
+        [CalonSiswaController::class, 'updateOrangTua']
+    )->name('calon-siswa.update.orangtua');
+    Route::post(
+        '/calon-siswa/update/registrasi/{id}',
+        [CalonSiswaController::class, 'updateRegistrasi']
+    )->name('calon-siswa.update.registrasi');
+    Route::post(
+        '/calon-siswa/update-status/{id}',
+        [CalonSiswaController::class, 'updateStatus']
+    )->name('calon-siswa.update-status');
+
+    Route::post('/calon-siswa/upload/{id}', [CalonSiswaController::class, 'updateUpload'])->name('calon-siswa.update.upload');
+});
+
+
+Route::middleware(['auth', 'role:keuangan'])->group(function () {
+
+
+
 });

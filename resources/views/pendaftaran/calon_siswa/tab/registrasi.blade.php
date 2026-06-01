@@ -6,7 +6,7 @@
 <div class="box p-5">
 
     <h2 class="text-lg font-medium mb-5">
-        Registrasi
+        Asal Sekolah
     </h2>
 
     <div class="grid grid-cols-12 gap-4">

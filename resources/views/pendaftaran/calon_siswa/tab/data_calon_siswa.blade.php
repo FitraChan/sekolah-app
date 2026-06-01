@@ -76,12 +76,12 @@
 
                                 @foreach($gel as $list)
 
-                               <option value="{{ $list->id }}"
-                                {{ old('id_gelombang', $rows->id_gelombang ?? '') == $list->id ? 'selected' : '' }}>
+                                <option value="{{ $list->id }}"
+                                    {{ old('id_gelombang', $rows->id_gelombang ?? '') == $list->id ? 'selected' : '' }}>
 
-                                {{ $list->nama_gelombang }}
+                                    {{ $list->nama_gelombang }}
 
-                            </option>
+                                </option>
 
                                 @endforeach
 
@@ -105,12 +105,12 @@
 
                                 @foreach($thn as $list)
 
-                              <option value="{{ $list->id }}"
-                                {{ old('id_thn_ajaran', $rows->id_thn_ajaran ?? '') == $list->id ? 'selected' : '' }}>
+                                <option value="{{ $list->id }}"
+                                    {{ old('id_thn_ajaran', $rows->id_thn_ajaran ?? '') == $list->id ? 'selected' : '' }}>
 
-                                {{ $list->thn_ajaran }}
+                                    {{ $list->thn_ajaran }}
 
-                            </option>
+                                </option>
                                 @endforeach
 
                             </select>
@@ -124,10 +124,10 @@
                                 No. Daftar
                             </label>
 
-                             <input type="text"
-                               name="no_daftar"
-                               class="form-control rounded-xl"
-                               value="{{ old('no_daftar', $rows->no_daftar ?? '') }}">
+                            <input type="text"
+                                name="no_daftar"
+                                class="form-control rounded-xl"
+                                value="{{ old('no_daftar', $rows->no_daftar ?? '') }}">
                         </div>
 
                         <!-- TGL -->
@@ -138,9 +138,9 @@
                             </label>
 
                             <input type="date"
-                               name="tgl_daftar"
-                               class="form-control rounded-xl"
-                               value="{{ old('tgl_daftar', $rows->tgl_daftar ?? '') }}">
+                                name="tgl_daftar"
+                                class="form-control rounded-xl"
+                                value="{{ old('tgl_daftar', $rows->tgl_daftar ?? '') }}">
                         </div>
 
                         <!-- STATUS -->
@@ -347,6 +347,34 @@
                                     name="tgl_lahir"
                                     class="form-control h-11 rounded-lg"
                                     value="{{ old('tgl_lahir', $rows->tgl_lahir ?? '') }}">
+
+                            </div>
+
+                            <!-- EMAIL -->
+                            <div class="col-span-12 md:col-span-6">
+
+                                <label class="form-label text-sm font-medium">
+                                    Email
+                                </label>
+
+                                <input type="email"
+                                    name="email"
+                                    class="form-control h-11 rounded-lg"
+                                    value="{{ old('email', $rows->email ?? '') }}">
+
+                            </div>
+
+                            <!-- NO HP -->
+                            <div class="col-span-12 md:col-span-6">
+
+                                <label class="form-label text-sm font-medium">
+                                    No. HP / WhatsApp
+                                </label>
+
+                                <input type="text"
+                                    name="no_hp"
+                                    class="form-control h-11 rounded-lg"
+                                    value="{{ old('no_hp', $rows->no_hp ?? '') }}">
 
                             </div>
 

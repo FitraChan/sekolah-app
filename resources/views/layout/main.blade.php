@@ -8,273 +8,279 @@ Purchase: https://themeforest.net/user/left4code/portfolio
 Renew Support: https://themeforest.net/user/left4code/portfolio
 License: You must have a valid license purchased only from themeforest(the above link) in order to legally use the theme for your project.
 -->
-<html lang="en" class="light" >
-    <!-- BEGIN: Head -->
-    <head>
-        <meta charset="utf-8">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
-        <link href="{{asset('dist/images/logo.png')}}" rel="shortcut icon">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="Tinker admin is super flexible, powerful, clean & modern responsive tailwind admin template with unlimited possibilities.">
-        <meta name="keywords" content="admin template, Tinker Admin Template, dashboard template, flat admin template, responsive admin template, web app">
-        <meta name="author" content="LEFT4CODE">
-        <title>@yield('tittle')</title>
-        <!-- BEGIN: CSS Assets-->
-        <link rel="stylesheet" href="{{asset('dist/css/app.css')}}" />
+<html lang="en" class="light">
+<!-- BEGIN: Head -->
 
-        <link href="https://unpkg.com/tabulator-tables@6.2.5/dist/css/tabulator.min.css" rel="stylesheet">
+<head>
+    <meta charset="utf-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link href="{{asset('dist/images/logo.png')}}" rel="shortcut icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Tinker admin is super flexible, powerful, clean & modern responsive tailwind admin template with unlimited possibilities.">
+    <meta name="keywords" content="admin template, Tinker Admin Template, dashboard template, flat admin template, responsive admin template, web app">
+    <meta name="author" content="LEFT4CODE">
+    <title>@yield('tittle')</title>
+    <!-- BEGIN: CSS Assets-->
+    <link rel="stylesheet" href="{{asset('dist/css/app.css')}}" />
 
-<script type="text/javascript" src="https://unpkg.com/tabulator-tables@6.2.5/dist/js/tabulator.min.js"></script>
-        <!-- END: CSS Assets-->
+    <link href="https://unpkg.com/tabulator-tables@6.2.5/dist/css/tabulator.min.css" rel="stylesheet">
 
-        {{-- tabulator --}}
-        
+    <script type="text/javascript" src="https://unpkg.com/tabulator-tables@6.2.5/dist/js/tabulator.min.js"></script>
+    <!-- END: CSS Assets-->
 
-        
+    {{-- tabulator --}}
 
-        {{-- sweatalert --}}
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-        
 
-    </head>
-    <!-- END: Head -->
-    <body class="py-5 md:py-0 bg-black/[0.15] dark:bg-transparent">
-        @if (empty($side))
-            @php
-                $side = '';
-            @endphp
-        @endif
-        @if (empty($drop_down))
-            @php
-                $drop_down = '';
-            @endphp
-        @endif
-        <!-- BEGIN: Mobile Menu -->
-        <div class="mobile-menu md:hidden">
-            <div class="mobile-menu-bar">
-                <a href="" class="flex mr-auto">
-                    <img alt="Midone - HTML Admin Template" class="w-6" src="{{asset('/dist/images/logo.png')}}">
-                </a>
-                <a href="javascript:;" class="mobile-menu-toggler"> <i data-lucide="bar-chart-2" class="w-8 h-8 text-white transform -rotate-90"></i> </a>
-            </div>
-            <div class="scrollable">
-                <a href="javascript:;" class="mobile-menu-toggler"> <i data-lucide="x-circle" class="w-8 h-8 text-white transform -rotate-90"></i> </a>
-                <ul class="scrollable__content py-2">
-                    
-                    
-                  
-                  
-                   
-                    <li class="menu__devider my-6"></li>
-                </ul>
-            </div>
-        </div>
-        <!-- END: Mobile Menu -->
-        <div class="flex mt-[4.7rem] md:mt-0 overflow-hidden">
-            <!-- BEGIN: Side Menu -->
-            <nav class="side-nav">
-                <a href="" class="intro-x flex items-center pl-5 pt-4 mt-3">
-                    <img alt="Midone - HTML Admin Template" class="w-6" src="{{asset('dist/images/logo.png')}}">
-                    <span class="hidden xl:block text-white text-lg ml-3"> SIAMI </span> 
-                </a>
-                <div class="side-nav__devider my-6"></div>
-                <ul>
-                     <li>
-                        <a href="{{route('admin')}}" class="side-menu {{$side == 'admin'? 'side-menu--active':''}}">
-                            <div class="side-menu__icon"> <i data-lucide="home"></i> </div>
-                            <div class="side-menu__title"> Dashboard</div>
-                        </a>
-                    </li>
 
-                    
-                    <li>
-                        <a href="{{ route('role.index') }}" class="side-menu {{ $side == 'role' ? 'side-menu--active' : '' }}">
+    {{-- sweatalert --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-                            <div class="side-menu__icon">
-                                <i data-lucide="shield"></i>
-                            </div>
 
-                            <div class="side-menu__title">
-                                Management Role
-                            </div>
 
-                        </a>
-                    </li>
+</head>
+<!-- END: Head -->
 
-                    <li>
-            <!-- Indikator 'side-menu--active' dipasang di menu utama jika salah satu sub-menunya sedang aktif -->
-            <a href="javascript:;" class="side-menu">
-                <div class="side-menu__icon"> <i data-lucide="box"></i> </div>
-                <div class="side-menu__title">
-                    Master Data
-                    <div class="side-menu__sub-icon {{ in_array($side, ['gelombang', 'master-lainnya']) ? 'transform rotate-180' : '' }}"> 
-                        <i data-lucide="chevron-down"></i> 
-                    </div>
-                </div>
+<body class="py-5 md:py-0 bg-black/[0.15] dark:bg-transparent">
+    @if (empty($side))
+    @php
+    $side = '';
+    @endphp
+    @endif
+    @if (empty($drop_down))
+    @php
+    $drop_down = '';
+    @endphp
+    @endif
+    <!-- BEGIN: Mobile Menu -->
+    <div class="mobile-menu md:hidden">
+        <div class="mobile-menu-bar">
+            <a href="" class="flex mr-auto">
+                <img alt="Midone - HTML Admin Template" class="w-6" src="{{asset('/dist/images/logo.png')}}">
             </a>
-            <!-- Sub-Menu Wrapper -->
-            <ul class="{{ in_array($side, ['gelombang', 'calon-siswa','set-kelas','rekap_kelas','daftar-siswa']) ? 'side-menu__sub-open' : '' }}">
-                <li>
-                    <!-- Sub-Menu Gelombang -->
-                    <a href="{{ route('gelombang.index') }}" class="side-menu {{ $side == 'gelombang' ? 'side-menu--active' : '' }}">
-                        <div class="side-menu__icon"> <i data-lucide="activity"></i> </div>
-                        <div class="side-menu__title"> Gelombang </div>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="{{ route('calon-siswa.index') }}"
-                    class="side-menu {{ $side == 'calon-siswa' ? 'side-menu--active' : '' }}">
-
-                        <div class="side-menu__icon">
-                            <i data-lucide="users"></i>
-                        </div>
-
-                        <div class="side-menu__title">
-                            Calon Siswa
-                        </div>
-
-                    </a>
-                </li>
-
-                <li>
-                    <a href="{{ route('set-kelas.index') }}"
-                    class="side-menu {{ $side == 'set-kelas' ? 'side-menu--active' : '' }}">
-
-                        <div class="side-menu__icon">
-                            <i data-lucide="file-text"></i>
-                        </div>
-
-                        <div class="side-menu__title">
-                            Set Kelas
-                        </div>
-
-                    </a>
-                </li>
-
-
-                 <li>
-                    <a href="{{ url('rekapKelas') }}"
-                    class="side-menu {{ $side == 'rekap_kelas' ? 'side-menu--active' : '' }}">
-
-                        <div class="side-menu__icon">
-                            <i data-lucide="archive"></i>
-                        </div>
-
-                        <div class="side-menu__title">
-                            Rekap Kelas
-                        </div>
-
-                    </a>
-                </li>
-
-                <li>
-                    <a href="{{ url('daftarSiswa') }}"
-                    class="side-menu {{ $side == 'daftar-siswa' ? 'side-menu--active' : '' }}">
-
-                        <div class="side-menu__icon">
-                            <i data-lucide="archive"></i>
-                        </div>
-
-                        <div class="side-menu__title">
-                            Daftar Siswa
-                        </div>
-
-                    </a>
-                </li>
-
-
-                <li>
-                    <a href="{{ route('broadcast.index') }}"
-                    class="side-menu {{ $side == 'broadcast' ? 'side-menu--active' : '' }}">
-
-                        <div class="side-menu__icon">
-                            <i data-lucide="file-text"></i>
-                        </div>
-
-                        <div class="side-menu__title">
-                            Broadcast
-                        </div>
-
-                    </a>
-                </li>
-                <!-- Anda bisa menambah sub-menu lain di bawah ini jika diperlukan di masa depan -->
+            <a href="javascript:;" class="mobile-menu-toggler"> <i data-lucide="bar-chart-2" class="w-8 h-8 text-white transform -rotate-90"></i> </a>
+        </div>
+        <div class="scrollable">
+            <a href="javascript:;" class="mobile-menu-toggler"> <i data-lucide="x-circle" class="w-8 h-8 text-white transform -rotate-90"></i> </a>
+            <ul class="scrollable__content py-2">
+                <li class="menu__devider my-6"></li>
             </ul>
-        </li>
-                   
-                   
+        </div>
+    </div>
+    <!-- END: Mobile Menu -->
+    <div class="flex mt-[4.7rem] md:mt-0 overflow-hidden">
+        <!-- BEGIN: Side Menu -->
+        <nav class="side-nav">
+            <a href="" class="intro-x flex items-center pl-5 pt-4 mt-3">
+                <img alt="Midone - HTML Admin Template" class="w-6" src="{{asset('dist/images/logo.png')}}">
+                <span class="hidden xl:block text-white text-lg ml-3"> SIAMI </span>
+            </a>
+            <div class="side-nav__devider my-6"></div>
+            <ul>
+            @if(Auth::user()->hasRole('admin'))
+                <li>
+                    <a href="{{route('admin')}}" class="side-menu {{$side == 'admin'? 'side-menu--active':''}}">
+                        <div class="side-menu__icon"> <i data-lucide="home"></i> </div>
+                        <div class="side-menu__title"> Dashboard</div>
+                    </a>
+                </li>
 
-                   
-                   
-                   
-                </ul>
-            </nav>
-            <!-- END: Side Menu -->
-            <!-- BEGIN: Content -->
-            <div class="content">
-                <!-- BEGIN: Top Bar -->
-                <div class="top-bar -mx-4 px-4 md:mx-0 md:px-0">
-                    <!-- BEGIN: Breadcrumb -->
-                    <nav aria-label="breadcrumb" class="-intro-x mr-auto hidden sm:flex">
-                        @yield('top-nav')
-                        
-                    </nav>
-                    <!-- END: Breadcrumb -->
-                    <!-- BEGIN: Account Menu -->
-                    <div class="intro-x dropdown w-8 h-8">
-                        <div class="dropdown-toggle w-8 h-8 rounded-full overflow-hidden shadow-lg image-fit zoom-in" role="button" aria-expanded="false" data-tw-toggle="dropdown">
-                            <img alt="Midone - HTML Admin Template">
-                        </div>
-                        <div class="dropdown-menu w-56">
-                            <ul class="dropdown-content bg-primary text-white">
-                                <li class="p-2">
-                                    <div class="font-medium"></div>
-                                    <div class="text-xs text-white/70 mt-0.5 dark:text-slate-500">Guru</div>
-                                </li>
-                                <li>
-                                    <hr class="dropdown-divider border-white/[0.08]">
-                                </li>
-                                <li>
-                                    <a href="" class="dropdown-item hover:bg-white/5"> <i data-lucide="user" class="w-4 h-4 mr-2"></i> Profile </a>
-                                </li>
-                                <li>
-                                    <hr class="dropdown-divider border-white/[0.08]">
-                                </li>
-                                <li>
-                                    <a href="{{ route('logout') }}" class="dropdown-item hover:bg-white/5"> <i data-lucide="toggle-right" class="w-4 h-4 mr-2"></i> Logout </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <!-- END: Account Menu -->
-                </div>
-                <!-- END: Top Bar -->
-                <div class="grid grid-cols-12 gap-6">
-                    <div class="col-span-12 2xl:col-span-12">
-                        <div class="grid grid-cols-12 gap-6">
-                            <!-- BEGIN: General Report -->
-                            <div class="col-span-12 mt-8">
-                                @include('layout.response')
-                                @yield('body')
+                <li>
+                    <a href="{{ route('role.index') }}" class="side-menu {{ $side == 'role' ? 'side-menu--active' : '' }}">
 
+                        <div class="side-menu__icon">
+                            <i data-lucide="shield"></i>
+                        </div>
+
+                        <div class="side-menu__title">
+                            Management Role
+                        </div>
+
+                    </a>
+                </li>
+                                
+                <li>
+                    <!-- Indikator 'side-menu--active' dipasang di menu utama jika salah satu sub-menunya sedang aktif -->
+                    <a href="javascript:;" class="side-menu">
+                        <div class="side-menu__icon"> <i data-lucide="box"></i> </div>
+                        <div class="side-menu__title">
+                            Master Data
+                            <div class="side-menu__sub-icon {{ in_array($side, ['gelombang', 'master-lainnya']) ? 'transform rotate-180' : '' }}">
+                                <i data-lucide="chevron-down"></i>
                             </div>
-                            <!-- END: General Report -->
-                            
                         </div>
+                    </a>
+                    <!-- Sub-Menu Wrapper -->
+                    <ul class="{{ in_array($side, ['gelombang', 'calon-siswa','set-kelas','rekap_kelas','daftar-siswa']) ? 'side-menu__sub-open' : '' }}">
+                        <li>
+                            <!-- Sub-Menu Gelombang -->
+                            <a href="{{ route('gelombang.index') }}" class="side-menu {{ $side == 'gelombang' ? 'side-menu--active' : '' }}">
+                                <div class="side-menu__icon"> <i data-lucide="activity"></i> </div>
+                                <div class="side-menu__title"> Gelombang </div>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{{ route('calon-siswa.index') }}"
+                                class="side-menu {{ $side == 'calon-siswa' ? 'side-menu--active' : '' }}">
+
+                                <div class="side-menu__icon">
+                                    <i data-lucide="users"></i>
+                                </div>
+
+                                <div class="side-menu__title">
+                                    Calon Siswa
+                                </div>
+
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{{ route('set-kelas.index') }}"
+                                class="side-menu {{ $side == 'set-kelas' ? 'side-menu--active' : '' }}">
+
+                                <div class="side-menu__icon">
+                                    <i data-lucide="file-text"></i>
+                                </div>
+
+                                <div class="side-menu__title">
+                                    Set Kelas
+                                </div>
+
+                            </a>
+                        </li>
+
+
+                        <li>
+                            <a href="{{ url('rekapKelas') }}"
+                                class="side-menu {{ $side == 'rekap_kelas' ? 'side-menu--active' : '' }}">
+
+                                <div class="side-menu__icon">
+                                    <i data-lucide="archive"></i>
+                                </div>
+
+                                <div class="side-menu__title">
+                                    Rekap Kelas
+                                </div>
+
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{{ url('daftarSiswa') }}"
+                                class="side-menu {{ $side == 'daftar-siswa' ? 'side-menu--active' : '' }}">
+
+                                <div class="side-menu__icon">
+                                    <i data-lucide="archive"></i>
+                                </div>
+
+                                <div class="side-menu__title">
+                                    Daftar Siswa
+                                </div>
+
+                            </a>
+                        </li>
+
+
+                        <li>
+                            <a href="{{ route('broadcast.index') }}"
+                                class="side-menu {{ $side == 'broadcast' ? 'side-menu--active' : '' }}">
+
+                                <div class="side-menu__icon">
+                                    <i data-lucide="file-text"></i>
+                                </div>
+
+                                <div class="side-menu__title">
+                                    Broadcast
+                                </div>
+
+                            </a>
+                        </li>
+                        <!-- Anda bisa menambah sub-menu lain di bawah ini jika diperlukan di masa depan -->
+                    </ul>
+                </li>
+
+            @endif
+
+           @if(Auth::user()->hasRole('calon'))
+                <li>
+                    <a href="{{  route('calon-siswa.profil') }}" class="side-menu {{$side == 'calon-siswa'? 'side-menu--active':''}}">
+                        <div class="side-menu__icon"> <i data-lucide="home"></i> </div>
+                        <div class="side-menu__title"> Calon Siswa</div>
+                    </a>
+                </li>
+
+            @endif
+
+
+            </ul>
+        </nav>
+        <!-- END: Side Menu -->
+        <!-- BEGIN: Content -->
+        <div class="content">
+            <!-- BEGIN: Top Bar -->
+            <div class="top-bar -mx-4 px-4 md:mx-0 md:px-0">
+                <!-- BEGIN: Breadcrumb -->
+                <nav aria-label="breadcrumb" class="-intro-x mr-auto hidden sm:flex">
+                    @yield('top-nav')
+
+                </nav>
+                <!-- END: Breadcrumb -->
+                <!-- BEGIN: Account Menu -->
+                <div class="intro-x dropdown w-8 h-8">
+                    <div class="dropdown-toggle w-8 h-8 rounded-full overflow-hidden shadow-lg image-fit zoom-in" role="button" aria-expanded="false" data-tw-toggle="dropdown">
+                        <img alt="Midone - HTML Admin Template" src="{{asset('dist/images/logo.png')}}">
+                    </div>
+                    <div class="dropdown-menu w-56">
+                        <ul class="dropdown-content bg-primary text-white">
+                            <li class="p-2">
+                                <div class="font-medium"></div>
+                                <div class="text-xs text-white/70 mt-0.5 dark:text-slate-500">Guru</div>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider border-white/[0.08]">
+                            </li>
+                            <li>
+                                <a href="" class="dropdown-item hover:bg-white/5"> <i data-lucide="user" class="w-4 h-4 mr-2"></i> Profile </a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider border-white/[0.08]">
+                            </li>
+                            <li>
+                                <a href="{{ route('logout') }}" class="dropdown-item hover:bg-white/5"> <i data-lucide="toggle-right" class="w-4 h-4 mr-2"></i> Logout </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- END: Account Menu -->
+            </div>
+            <!-- END: Top Bar -->
+            <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-12 2xl:col-span-12">
+                    <div class="grid grid-cols-12 gap-6">
+                        <!-- BEGIN: General Report -->
+                        <div class="col-span-12 mt-8">
+                            @include('layout.response')
+                            @yield('body')
+
+                        </div>
+                        <!-- END: General Report -->
+
                     </div>
                 </div>
             </div>
-            <!-- END: Content -->
         </div>
-        
-        <!-- BEGIN: JS Assets-->
-        <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js"></script>
-        <script src="https://maps.googleapis.com/maps/api/js?key=["your-google-map-api"]&libraries=places"></script>
-        <script src="{{asset('dist/js/app.js')}}"></script>
-        <!-- END: JS Assets-->
-        {{-- ckeditor --}}
-        <script src="//cdn.ckeditor.com/4.22.1/full/ckeditor.js"></script>
-        {{-- ckeditor --}}
-    </body>
+        <!-- END: Content -->
+    </div>
+
+    <!-- BEGIN: JS Assets-->
+    <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=[" your-google-map-api"]&libraries=places"></script>
+    <script src="{{asset('dist/js/app.js')}}"></script>
+    <!-- END: JS Assets-->
+    {{-- ckeditor --}}
+    <script src="//cdn.ckeditor.com/4.22.1/full/ckeditor.js"></script>
+    {{-- ckeditor --}}
+</body>
+
 </html>

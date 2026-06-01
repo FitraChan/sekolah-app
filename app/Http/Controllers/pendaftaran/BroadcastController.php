@@ -5,6 +5,7 @@ namespace App\Http\Controllers\pendaftaran;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Broadcast;
+use Illuminate\Support\Facades\DB;
 
 class BroadcastController extends Controller
 {
@@ -33,15 +34,10 @@ class BroadcastController extends Controller
             ->map(function ($item) {
 
                 return [
-
                     'id' => $item->id,
-
                     'judul' => $item->judul,
-
                     'pesan' => $item->pesan,
-
                     'iduser' => $item->iduser,
-
                     'tgl_update' => optional($item->tgl_update)
                         ->format('d-m-Y H:i'),
                 ];
@@ -142,4 +138,43 @@ class BroadcastController extends Controller
 
         ]);
     }
+
+    public function kirimSemua(Request $request)
+{
+    $broadcast = DB::table('tb_broadcast')
+        ->where('id', $request->id_broadcast)
+        ->first();
+
+        
+
+    if(!$broadcast)
+    {
+        return response()->json([
+            'message' => 'Broadcast tidak ditemukan'
+        ]);
+    }
+
+    $siswa = DB::table('tb_tmp_siswa')
+        ->whereIn('email',['fitrachan26@gmail.com','putuj0708@gmail.com'])
+       // ->whereNotNull('email')
+        ->get();
+
+    foreach($siswa as $row)
+    {
+        DB::table('tb_antrian_email')->insert([
+
+            'email'         => $row->email,
+            'judul'         => $broadcast->judul,
+            'pesan'         => $broadcast->pesan,
+            'status'        => 0,
+            'created_at'    => now(),
+            'updated_at'    => now()
+
+        ]);
+    }
+
+    return response()->json([
+        'message' => 'Broadcast berhasil masuk antrian'
+    ]);
+}
 }
