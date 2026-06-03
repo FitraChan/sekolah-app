@@ -122,7 +122,7 @@ let table = new Tabulator("#table-calon-siswa", {
 
                     <div class="flex gap-2">
 
-                        <a href="/calon-siswa/edit/${data.id}"
+                        <a href="{{ url('calon-siswa/edit') }}/${data.id}"
                             target="_blank"
                             class="btn btn-primary btn-sm">
 
@@ -180,9 +180,9 @@ function saveData(type)
         ? document.getElementById('edit_id').value
         : '';
 
-    let url = type == 'edit'
-        ? '/calon-siswa/update/' + id
-        : '/calon-siswa/store';
+   let url = type == 'edit'
+    ? "{{ url('calon-siswa/update') }}/" + id
+    : "{{ url('calon-siswa/store') }}";
 
     fetch(url, {
 
@@ -230,7 +230,7 @@ function deleteData(id)
 {
     if(confirm('Yakin hapus data?'))
     {
-        fetch('/calon-siswa/delete/' + id, {
+        fetch("{{ url('calon-siswa/delete') }}/" + id, {
 
             method: 'DELETE',
 

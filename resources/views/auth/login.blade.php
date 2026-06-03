@@ -12,14 +12,14 @@ License: You must have a valid license purchased only from themeforest(the above
     <!-- BEGIN: Head -->
     <head>
         <meta charset="utf-8">
-        <link href="{{asset('dist/images/logo.png')}}" rel="shortcut icon">
+        <link href="{{asset('public/dist/images/logo.png')}}" rel="shortcut icon">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="Tinker admin is super flexible, powerful, clean & modern responsive tailwind admin template with unlimited possibilities.">
         <meta name="keywords" content="admin template, Tinker Admin Template, dashboard template, flat admin template, responsive admin template, web app">
         <meta name="author" content="LEFT4CODE">
         <title>Login - SISTEM INFORMASI SEKOLAH</title>
         <!-- BEGIN: CSS Assets-->
-        <link rel="stylesheet" href="{{asset('dist/css/app.css')}}" />
+        <link rel="stylesheet" href="{{asset('public/dist/css/app.css')}}" />
         <!-- END: CSS Assets-->
        
     </head>
@@ -86,7 +86,7 @@ License: You must have a valid license purchased only from themeforest(the above
         <!-- END: Dark Mode Switcher-->
 
         <!-- BEGIN: JS Assets-->
-        <script src="{{asset('dist/js/app.js')}}"></script>
+        <script src="{{asset('public/dist/js/app.js')}}"></script>
         <!-- END: JS Assets-->
     </body>
 </html>

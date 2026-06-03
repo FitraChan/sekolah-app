@@ -37,6 +37,12 @@ class AuthController extends Controller
             return redirect()->route('calon-siswa.profil');
         }
 
+       
+
+         if ($user->hasRole('Akademik')) {
+            return redirect()->route('admin');
+        }
+
         Auth::logout();
 
         return back()->with('error', 'Role tidak diizinkan');

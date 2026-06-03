@@ -182,7 +182,7 @@ function deleteRole(id) {
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
         // Jalankan AJAX dengan method DELETE (atau POST jika route Anda menggunakan POST)
-        fetch(`/role/deleteRole/${id}`, {
+        fetch(`{{ url('role/deleteRole') }}/${id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -241,7 +241,8 @@ function deleteRole(id) {
         let id = document.getElementById('user_id').value;
         let role = document.getElementById('role').value;
 
-        fetch('/role/update/' + id, {
+        fetch("{{ url('role/update') }}/" + id, {
+            
 
                 method: 'POST',
 
@@ -273,7 +274,8 @@ function deleteRole(id) {
     function addRole() {
         let name = document.getElementById('role_name').value;
 
-        fetch('/role/store', {
+        fetch("{{ url('role/store') }}", {
+
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -310,7 +312,7 @@ function deleteRole(id) {
             return;
         }
 
-        fetch('/role/storeUser', {
+        fetch("{{ url('role/storeUser') }}", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -360,7 +362,7 @@ function deleteRole(id) {
     // 1. Fungsi untuk mengambil data user lama & menampilkan ke modal
     function editUser(id) {
         // Jalankan AJAX untuk mengambil data user berdasarkan ID
-        fetch(`/role/${id}/editUser`, {
+        fetch(`{{ url('role/editUser') }}/${id}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -430,7 +432,7 @@ function deleteRole(id) {
         }
 
         // Jalankan AJAX untuk update data
-        fetch(`/role/updateUser/${id}`, {
+        fetch(`{{ url('role/updateUser') }}/${id}`, {
                 method: 'POST', // Menggunakan method POST untuk update data
                 headers: {
                     'Content-Type': 'application/json',

@@ -12,6 +12,11 @@ use App\Http\Controllers\pendaftaran\GelombangController;
 use App\Http\Controllers\pendaftaran\CalonSiswaController;
 use App\Http\Controllers\pendaftaran\SetKelasController;
 use App\Http\Controllers\pendaftaran\BroadcastController;
+use App\Http\Controllers\keuangan\KatItemBayarController;
+use App\Http\Controllers\keuangan\KatPeriodeBayarController;
+use App\Http\Controllers\keuangan\ItemBayarController;
+use App\Http\Controllers\keuangan\TemplateBayarController;
+
 
 
 
@@ -43,8 +48,7 @@ Route::post('/cekregister', [AuthController::class, 'cekregister'])->name('cekre
 
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin', [Home::class, 'index'])
-        ->name('admin');
+
     Route::get('/role', [RoleController::class, 'index'])
         ->name('role.index');
     Route::get('/role/data', [RoleController::class, 'data'])
@@ -52,9 +56,139 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/role/store', [RoleController::class, 'storeRole'])->name('role.store');
     Route::get('/role/data-role', [RoleController::class, 'dataRole'])->name('role.dataRole');
     Route::post('/role/storeUser', [RoleController::class, 'storeUser'])->name('role.store');
-    Route::get('/role/{id}/editUser', [RoleController::class, 'editUser']);
-    Route::post('/role/updateUser/{id}', [RoleController::class, 'updateUser']);
+    Route::get('/role/editUser/{id}', [RoleController::class, 'editUser'])->name('role.editUser');
+    Route::post('/role/updateUser/{id}', [RoleController::class, 'updateUser'])->name('role.updateUser');
     Route::delete('/role/deleteRole/{id}', [RoleController::class, 'deleteRole'])->name('role.deleteRole');
+
+    Route::get('kat-item-bayar', [KatItemBayarController::class, 'index'])
+        ->name('kat-item-bayar.index');
+    Route::get('kat-item-bayar/data', [KatItemBayarController::class, 'data'])
+        ->name('kat-item-bayar.data');
+    Route::post('kat-item-bayar/store', [KatItemBayarController::class, 'store'])
+        ->name('kat-item-bayar.store');
+    Route::get('kat-item-bayar/edit/{id}', [KatItemBayarController::class, 'edit'])
+        ->name('kat-item-bayar.edit');
+    Route::post('kat-item-bayar/update/{id}', [KatItemBayarController::class, 'update'])
+        ->name('kat-item-bayar.update');
+    Route::delete('kat-item-bayar/delete/{id}', [KatItemBayarController::class, 'destroy'])
+        ->name('kat-item-bayar.delete');
+    Route::get(
+        '/kat-periode-bayar',
+        [KatPeriodeBayarController::class, 'index']
+    )->name('kat-periode-bayar.index');
+
+    Route::get(
+        '/kat-periode-bayar/data',
+        [KatPeriodeBayarController::class, 'data']
+    )->name('kat-periode-bayar.data');
+
+    Route::post(
+        '/kat-periode-bayar/store',
+        [KatPeriodeBayarController::class, 'store']
+    )->name('kat-periode-bayar.store');
+
+    Route::post(
+        '/kat-periode-bayar/update/{id}',
+        [KatPeriodeBayarController::class, 'update']
+    )->name('kat-periode-bayar.update');
+
+    Route::delete(
+        '/kat-periode-bayar/delete/{id}',
+        [KatPeriodeBayarController::class, 'destroy']
+    )->name('kat-periode-bayar.delete');
+
+    Route::get(
+        '/item-bayar',
+        [ItemBayarController::class, 'index']
+    )->name('item-bayar.index');
+
+    Route::get(
+        '/item-bayar/data',
+        [ItemBayarController::class, 'data']
+    )->name('item-bayar.data');
+
+    Route::post(
+        '/item-bayar/store',
+        [ItemBayarController::class, 'store']
+    )->name('item-bayar.store');
+
+    Route::post(
+        '/item-bayar/update/{id}',
+        [ItemBayarController::class, 'update']
+    )->name('item-bayar.update');
+
+    Route::delete(
+        '/item-bayar/delete/{id}',
+        [ItemBayarController::class, 'destroy']
+    )->name('item-bayar.delete');
+
+    Route::get(
+        '/template-bayar',
+        [TemplateBayarController::class, 'index']
+    )->name('template-bayar.index');
+
+    Route::get(
+        '/template-bayar/data',
+        [TemplateBayarController::class, 'data']
+    )->name('template-bayar.data');
+
+    Route::post(
+        '/template-bayar/store',
+        [TemplateBayarController::class, 'store']
+    )->name('template-bayar.store');
+
+    Route::post(
+        '/template-bayar/update/{id}',
+        [TemplateBayarController::class, 'update']
+    )->name('template-bayar.update');
+
+    Route::delete(
+        '/template-bayar/delete/{id}',
+        [TemplateBayarController::class, 'delete']
+    )->name('template-bayar.delete');
+
+    Route::get(
+    '/template-bayar/detail/{id}',
+    [TemplateBayarController::class, 'detail']
+    )->name('template-bayar.detail');
+
+    Route::post(
+        '/template-bayar/set-default/{id}',
+        [TemplateBayarController::class, 'setDefault']
+    )->name('template-bayar.set-default');
+
+     Route::post(
+        '/template-bayar-detail/storeDetail',
+        [TemplateBayarController::class, 'storeDetail']
+    )->name('template-bayar-detail.storeDetail');
+
+
+     Route::post(
+        '/template-bayar-detail/updateDetail/{id}',
+        [TemplateBayarController::class, 'updateDetail']
+    )->name('template-bayar-detail.updateDetail');
+
+    Route::delete(
+    '/template-bayar-detail/deleteDetail/{id}',
+    [TemplateBayarController::class, 'deleteDetail']
+    )->name('template-bayar-detail.deleteDetail');
+});
+
+
+Route::middleware(['auth', 'role:admin|calon'])->group(function () {
+
+    Route::post(
+        '/calon-siswa/update/updateRegistrasiSiswa/{id?}',
+        [CalonSiswaController::class, 'updateRegistrasiSiswa']
+    )->name('calon-siswa.update.updateRegistrasiSiswa');
+});
+
+
+Route::middleware(['auth', 'role:admin|Akademik'])->group(function () {
+
+    Route::get('/admin', [Home::class, 'index'])
+        ->name('admin');
+
     Route::get('/gelombang', [GelombangController::class, 'index'])->name('gelombang.index');
     Route::get('/gelombang/data', [GelombangController::class, 'data'])->name('gelombang.data');
     Route::post('/gelombang/store', [GelombangController::class, 'store'])->name('gelombang.store');
@@ -71,10 +205,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/calon-siswa/create', [CalonSiswaController::class, 'create'])
         ->name('calon-siswa.create');
     Route::delete('/calon-siswa/delete/{id}', [CalonSiswaController::class, 'destroy'])->name('calon-siswa.delete');
-    Route::post(
-        '/calon-siswa/update/updateRegistrasiSiswa/{id?}',
-        [CalonSiswaController::class, 'updateRegistrasiSiswa']
-    )->name('calon-siswa.update.updateRegistrasiSiswa');
+
     Route::post(
         '/calon-siswa/update/orang-tua/{id}',
         [CalonSiswaController::class, 'updateOrangTua']
@@ -93,7 +224,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         'index'
     ])->name('set-kelas.index');
     // data tabulator
-    Route::get('/data', [
+    Route::get('set-kelas/data', [
         SetKelasController::class,
         'data'
     ])->name('set-kelas.data');
@@ -110,30 +241,29 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         CalonSiswaController::class,
         'daftarSiswa'
     ])->name('daftarSiswa');
-    Route::prefix('broadcast')->group(function () {
-        Route::get('/', [
-            BroadcastController::class,
-            'index'
-        ])->name('broadcast.index');
-        Route::get('/data', [
-            BroadcastController::class,
-            'data'
-        ])->name('broadcast.data');
-        Route::post('/store', [
-            BroadcastController::class,
-            'store'
-        ])->name('broadcast.store');
-        Route::post('/update/{id}', [
-            BroadcastController::class,
-            'update'
-        ])->name('broadcast.update');
-        Route::delete('/delete/{id}', [
-            BroadcastController::class,
-            'delete'
-        ])->name('broadcast.delete');
-        Route::post('/broadcast/kirimSemua', [BroadcastController::class, 'kirimSemua']);
-        Route::post('/calon-siswa/upload/{id}', [CalonSiswaController::class, 'updateUpload'])->name('calon-siswa.update.upload');
-    });
+    // Route::prefix('broadcast')->group(function () {
+    Route::get('broadcast', [
+        BroadcastController::class,
+        'index'
+    ])->name('broadcast.index');
+    Route::get('broadcast/data', [
+        BroadcastController::class,
+        'data'
+    ])->name('broadcast.data');
+    Route::post('broadcast/store', [
+        BroadcastController::class,
+        'store'
+    ])->name('broadcast.store');
+    Route::post('broadcast/update/{id}', [
+        BroadcastController::class,
+        'update'
+    ])->name('broadcast.update');
+    Route::delete('broadcast/delete/{id}', [
+        BroadcastController::class,
+        'delete'
+    ])->name('broadcast.delete');
+    Route::post('broadcast/kirimSemua', [BroadcastController::class, 'kirimSemua']);
+    Route::post('calon-siswa/upload/{id}', [CalonSiswaController::class, 'updateUpload'])->name('calon-siswa.update.upload');
 });
 
 
@@ -144,10 +274,7 @@ Route::middleware(['auth', 'role:calon'])->group(function () {
         [CalonSiswaController::class, 'editCalonSiswa']
     )->name('calon-siswa.profil');
 
-    Route::post(
-        '/calon-siswa/update/updateRegistrasiSiswa/{id?}',
-        [CalonSiswaController::class, 'updateRegistrasiSiswa']
-    )->name('calon-siswa.update.updateRegistrasiSiswa');
+
     Route::post(
         '/calon-siswa/update/orang-tua/{id}',
         [CalonSiswaController::class, 'updateOrangTua']
@@ -165,8 +292,4 @@ Route::middleware(['auth', 'role:calon'])->group(function () {
 });
 
 
-Route::middleware(['auth', 'role:keuangan'])->group(function () {
-
-
-
-});
+Route::middleware(['auth', 'role:keuangan'])->group(function () {});

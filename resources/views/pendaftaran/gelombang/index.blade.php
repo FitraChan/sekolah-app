@@ -238,8 +238,8 @@ Gelombang
     let prefix = isEdit ? 'edit_' : 'add_';
 
     let url = isEdit
-        ? '/gelombang/update/' + id
-        : '/gelombang/store';
+            ? "{{ url('gelombang/update') }}/" + id
+            : "{{ url('gelombang/store') }}";
 
     fetch(url, {
 
@@ -288,7 +288,7 @@ Gelombang
 
     function deleteGelombang(id) {
         if (confirm('Hapus data?')) {
-            fetch('/gelombang/delete/' + id, {
+            fetch("{{ url('gelombang/delete') }}/" + id, {
 
                     method: 'DELETE',
 

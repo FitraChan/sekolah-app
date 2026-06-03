@@ -157,7 +157,7 @@ Broadcast
             return;
         }
 
-        fetch('/broadcast/broadcast/kirimSemua', {
+        fetch("{{ url('broadcast/broadcast/kirimSemua') }}", {
 
             method: 'POST',
 
@@ -215,9 +215,9 @@ Broadcast
     function saveData() {
         let id = document.getElementById('id').value;
 
-        let url = id ?
-            '/broadcast/update/' + id :
-            '/broadcast/store';
+        let url = id
+                    ? "{{ url('broadcast/update') }}/" + id
+                    : "{{ url('broadcast/store') }}";
 
         fetch(url, {
                 method: 'POST',
@@ -337,8 +337,7 @@ Broadcast
 
     function deleteData(id) {
         if (confirm('Hapus data?')) {
-            fetch('/broadcast/delete/' + id, {
-
+                fetch("{{ url('broadcast/delete') }}/" + id, {
                     method: 'DELETE',
 
                     headers: {

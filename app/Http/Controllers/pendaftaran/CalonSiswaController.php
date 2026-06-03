@@ -12,7 +12,6 @@ use App\Models\Pekerjaan;
 use App\Models\StatusDaftar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use PHPUnit\Logging\OpenTestReporting\Status;
 
 class CalonSiswaController extends Controller
 {

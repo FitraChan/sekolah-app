@@ -229,7 +229,8 @@ Set Kelas
     {
         let id = document.getElementById('edit_id').value;
 
-        fetch('/set-kelas/updateKelas/' + id, {
+
+        fetch("{{ url('set-kelas/updateKelas') }}/" + id, {
 
             method: 'POST',
 

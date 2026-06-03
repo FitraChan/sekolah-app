@@ -13,14 +13,14 @@ License: You must have a valid license purchased only from themeforest(the above
 
 <head>
     <meta charset="utf-8">
-    <link href="{{asset('dist/images/logo.png')}}" rel="shortcut icon">
+    <link href="{{asset('public/dist/images/logo.png')}}" rel="shortcut icon">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Tinker admin is super flexible, powerful, clean & modern responsive tailwind admin template with unlimited possibilities.">
     <meta name="keywords" content="admin template, Tinker Admin Template, dashboard template, flat admin template, responsive admin template, web app">
     <meta name="author" content="LEFT4CODE">
     <title>Registrasi - SISTEM INFORMASI SEKOLAH</title>
     <!-- BEGIN: CSS Assets-->
-    <link rel="stylesheet" href="{{asset('dist/css/app.css')}}" />
+    <link rel="stylesheet" href="{{asset('public/dist/css/app.css')}}" />
     <!-- END: CSS Assets-->
 
 </head>
@@ -32,11 +32,11 @@ License: You must have a valid license purchased only from themeforest(the above
             <!-- BEGIN: Login Info -->
             <div class="hidden xl:flex flex-col min-h-screen">
                 <a href="" class="-intro-x flex items-center pt-5">
-                    <img alt="SISTEM INFORMASI GURU" class="w-6" src="dist/images/logo.png">
+                    <img alt="SISTEM INFORMASI GURU" class="w-6" src="public/dist/images/logo.png">
                     <span class="text-white text-lg ml-3"> SIAMI </span>
                 </a>
                 <div class="my-auto">
-                    <img alt="SISTEM INFORMASI GURU" class="-intro-x w-1/2 -mt-16" src="dist/images/login.png">
+                    <img alt="SISTEM INFORMASI GURU" class="-intro-x w-1/2 -mt-16" src="public/dist/images/login.png">
                     <div class="-intro-x text-white font-medium text-4xl leading-tight mt-10">
                         A few more clicks to
                         <br>

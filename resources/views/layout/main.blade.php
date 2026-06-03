@@ -14,15 +14,15 @@ License: You must have a valid license purchased only from themeforest(the above
 <head>
     <meta charset="utf-8">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link href="{{asset('dist/images/logo.png')}}" rel="shortcut icon">
+    <link href="{{asset('public/dist/images/logo.png')}}" rel="shortcut icon">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Tinker admin is super flexible, powerful, clean & modern responsive tailwind admin template with unlimited possibilities.">
     <meta name="keywords" content="admin template, Tinker Admin Template, dashboard template, flat admin template, responsive admin template, web app">
     <meta name="author" content="LEFT4CODE">
     <title>@yield('tittle')</title>
     <!-- BEGIN: CSS Assets-->
-    <link rel="stylesheet" href="{{asset('dist/css/app.css')}}" />
-
+    <link rel="stylesheet" href="{{asset('public/dist/css/app.css')}}" />
+   
     <link href="https://unpkg.com/tabulator-tables@6.2.5/dist/css/tabulator.min.css" rel="stylesheet">
 
     <script type="text/javascript" src="https://unpkg.com/tabulator-tables@6.2.5/dist/js/tabulator.min.js"></script>
@@ -56,7 +56,7 @@ License: You must have a valid license purchased only from themeforest(the above
     <div class="mobile-menu md:hidden">
         <div class="mobile-menu-bar">
             <a href="" class="flex mr-auto">
-                <img alt="Midone - HTML Admin Template" class="w-6" src="{{asset('/dist/images/logo.png')}}">
+                <img alt="Midone - HTML Admin Template" class="w-6" src="{{asset('public/dist/images/logo.png')}}">
             </a>
             <a href="javascript:;" class="mobile-menu-toggler"> <i data-lucide="bar-chart-2" class="w-8 h-8 text-white transform -rotate-90"></i> </a>
         </div>
@@ -72,19 +72,19 @@ License: You must have a valid license purchased only from themeforest(the above
         <!-- BEGIN: Side Menu -->
         <nav class="side-nav">
             <a href="" class="intro-x flex items-center pl-5 pt-4 mt-3">
-                <img alt="Midone - HTML Admin Template" class="w-6" src="{{asset('dist/images/logo.png')}}">
+                <img alt="Midone - HTML Admin Template" class="w-6" src="{{asset('public/dist/images/logo.png')}}">
                 <span class="hidden xl:block text-white text-lg ml-3"> SIAMI </span>
             </a>
             <div class="side-nav__devider my-6"></div>
             <ul>
-            @if(Auth::user()->hasRole('admin'))
+
                 <li>
                     <a href="{{route('admin')}}" class="side-menu {{$side == 'admin'? 'side-menu--active':''}}">
                         <div class="side-menu__icon"> <i data-lucide="home"></i> </div>
                         <div class="side-menu__title"> Dashboard</div>
                     </a>
                 </li>
-
+                @if(Auth::user()->hasRole('admin'))
                 <li>
                     <a href="{{ route('role.index') }}" class="side-menu {{ $side == 'role' ? 'side-menu--active' : '' }}">
 
@@ -98,13 +98,18 @@ License: You must have a valid license purchased only from themeforest(the above
 
                     </a>
                 </li>
-                                
+
+                @endif
+
+
+
+                @if(Auth::user()->hasAnyRole(['admin', 'Akademik']))
                 <li>
                     <!-- Indikator 'side-menu--active' dipasang di menu utama jika salah satu sub-menunya sedang aktif -->
                     <a href="javascript:;" class="side-menu">
                         <div class="side-menu__icon"> <i data-lucide="box"></i> </div>
                         <div class="side-menu__title">
-                            Master Data
+                            Pendaftaran
                             <div class="side-menu__sub-icon {{ in_array($side, ['gelombang', 'master-lainnya']) ? 'transform rotate-180' : '' }}">
                                 <i data-lucide="chevron-down"></i>
                             </div>
@@ -200,9 +205,83 @@ License: You must have a valid license purchased only from themeforest(the above
                     </ul>
                 </li>
 
-            @endif
+                @endif
 
-           @if(Auth::user()->hasRole('calon'))
+                @if(Auth::user()->hasRole('admin'))
+
+                <li>
+                    <!-- Indikator 'side-menu--active' dipasang di menu utama jika salah satu sub-menunya sedang aktif -->
+                    <a href="javascript:;" class="side-menu">
+                        <div class="side-menu__icon"> <i data-lucide="box"></i> </div>
+                        <div class="side-menu__title">
+                            Keuangan
+                            <div class="side-menu__sub-icon {{ in_array($side, ['kat-item-bayar', 'kat-periode-bayar', 'item-bayar', 'template-bayar']) ? 'transform rotate-180' : '' }}">
+                                <i data-lucide="chevron-down"></i>
+                            </div>
+                        </div>
+                    </a>
+                    <!-- Sub-Menu Wrapper -->
+                    <ul class="{{ in_array($side, ['kat-item-bayar','kat-periode-bayar','item-bayar','template-bayar']) ? 'side-menu__sub-open' : '' }}">
+                        <li>
+                            <!-- Sub-Menu Gelombang -->
+                            <a href="{{ route('kat-item-bayar.index') }}" class="side-menu {{ $side == 'kat-item-bayar' ? 'side-menu--active' : '' }}">
+                                <div class="side-menu__icon"> <i data-lucide="activity"></i> </div>
+                                <div class="side-menu__title"> Kategori Item </div>
+                            </a>
+                        </li>
+
+
+                        <li>
+                            <a href="{{ route('kat-periode-bayar.index') }}"
+                                class="side-menu {{ $side == 'kat-periode-bayar' ? 'side-menu--active' : '' }}">
+
+                                <div class="side-menu__icon">
+                                    <i data-lucide="calendar"></i>
+                                </div>
+
+                                <div class="side-menu__title">
+                                    Kategori Periode
+                                </div>
+
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{{ route('item-bayar.index') }}"
+                                class="side-menu {{ $side == 'item-bayar' ? 'side-menu--active' : '' }}">
+
+                                <div class="side-menu__icon">
+                                    <i data-lucide="credit-card"></i>
+                                </div>
+
+                                <div class="side-menu__title">
+                                    Item Bayar
+                                </div>
+
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{{ route('template-bayar.index') }}"
+                                class="side-menu {{ $side == 'template-bayar' ? 'side-menu--active' : '' }}">
+
+                                <div class="side-menu__icon">
+                                    <i data-lucide="file-text"></i>
+                                </div>
+
+                                <div class="side-menu__title">
+                                    Template Bayar
+                                </div>
+
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+
+                @endif
+
+                @if(Auth::user()->hasRole('calon'))
                 <li>
                     <a href="{{  route('calon-siswa.profil') }}" class="side-menu {{$side == 'calon-siswa'? 'side-menu--active':''}}">
                         <div class="side-menu__icon"> <i data-lucide="home"></i> </div>
@@ -210,7 +289,7 @@ License: You must have a valid license purchased only from themeforest(the above
                     </a>
                 </li>
 
-            @endif
+                @endif
 
 
             </ul>
@@ -229,7 +308,7 @@ License: You must have a valid license purchased only from themeforest(the above
                 <!-- BEGIN: Account Menu -->
                 <div class="intro-x dropdown w-8 h-8">
                     <div class="dropdown-toggle w-8 h-8 rounded-full overflow-hidden shadow-lg image-fit zoom-in" role="button" aria-expanded="false" data-tw-toggle="dropdown">
-                        <img alt="Midone - HTML Admin Template" src="{{asset('dist/images/logo.png')}}">
+                        <img alt="Midone - HTML Admin Template" src="{{asset('public/dist/images/logo.png')}}">
                     </div>
                     <div class="dropdown-menu w-56">
                         <ul class="dropdown-content bg-primary text-white">
@@ -276,7 +355,7 @@ License: You must have a valid license purchased only from themeforest(the above
     <!-- BEGIN: JS Assets-->
     <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=[" your-google-map-api"]&libraries=places"></script>
-    <script src="{{asset('dist/js/app.js')}}"></script>
+    <script src="{{asset('public/dist/js/app.js')}}"></script>
     <!-- END: JS Assets-->
     {{-- ckeditor --}}
     <script src="//cdn.ckeditor.com/4.22.1/full/ckeditor.js"></script>
