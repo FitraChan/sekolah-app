@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\KatItemBayar;
 use Illuminate\Support\Facades\Auth;
+use App\Models\LogModel;
 
 
 
@@ -37,6 +38,15 @@ class KatItemBayarController extends Controller
         KatItemBayar::create([
             'nama_kategori' => $request->nama_kategori
         ]);
+        LogModel::create([
+            'tanggal' => now(),
+            'tabel' => 'tb_kat_itembayar',
+            'aksi' => 'create',
+            'user' => auth()->user()->id,
+            'ip' => $request->ip(),
+            'keterangan' => json_encode($request->all()),
+            'serial' => url('simpan')
+        ]);
 
         return response()->json([
             'success' => true
@@ -62,6 +72,16 @@ class KatItemBayarController extends Controller
             'nama_kategori' => $request->nama_kategori
         ]);
 
+        LogModel::create([
+            'tanggal' => now(),
+            'tabel' => 'tb_kat_itembayar',
+            'aksi' => 'update',
+            'user' => auth()->user()->id,
+            'ip' => $request->ip(),
+            'keterangan' => json_encode($row),
+            'serial' => url('ubah/' . $id)
+        ]);
+
         return response()->json([
             'success' => true
         ]);
@@ -69,7 +89,18 @@ class KatItemBayarController extends Controller
 
     public function destroy($id)
     {
-        KatItemBayar::findOrFail($id)->delete();
+        $katItemBayar = KatItemBayar::findOrFail($id);
+        $katItemBayar->delete();
+        
+        LogModel::create([
+            'tanggal' => now(),
+            'tabel' => 'tb_kat_itembayar',
+            'aksi' => 'delete',
+            'user' => auth()->user()->id,
+            'ip' => request()->ip(),
+            'keterangan' => json_encode($katItemBayar),
+            'serial' => url('hapus/' . $id)
+        ]);
 
         return response()->json([
             'success' => true

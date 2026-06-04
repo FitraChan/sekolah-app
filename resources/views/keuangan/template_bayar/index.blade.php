@@ -114,17 +114,12 @@ Template Bayar
 
         height: "500px",
         width: "1000px",
+         pagination: true,
+    paginationMode: "local",
+    paginationSize: 10,
+    paginationSizeSelector: [10, 25, 50, 100],
 
-        // rowClick: function(e, row) {
-
-        //     let data = row.getData();
-
-        //     console.log(data.id);
-
-
-        //     showDetail(data.id);
-
-        // },
+     
         columns: [
 
             {
@@ -159,8 +154,8 @@ Template Bayar
             },
 
             {
-                title: "Keterangan",
-                field: "keterangan"
+                title: "Jurusan",
+                field: "jurusan.nama_jurusan"
             },
 
             {

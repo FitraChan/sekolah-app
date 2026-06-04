@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\CalonSiswa;
 
+use App\Models\LogModel;
+use Illuminate\Support\Facades\Log;
+
 class SetKelasController extends Controller
 {
     /**
@@ -147,6 +150,19 @@ class SetKelasController extends Controller
                 'updated_at' => now()
 
             ]);
+
+            LogModel::create([
+                'tanggal' => now(),
+                'tabel' => 'tb_tmp_siswa',
+                'aksi' => 'update',
+                'user' => auth()->user()->id,
+                'ip' => $request->ip(),
+                'keterangan' => json_encode([
+                    'id' => $id,
+                    'id_kelas' => $request->id_kelas
+                ]),
+                'serial' => url('ubah-kelas/' . $id)
+             ]);
 
         return response()->json([
 

@@ -16,6 +16,7 @@ use App\Http\Controllers\keuangan\KatItemBayarController;
 use App\Http\Controllers\keuangan\KatPeriodeBayarController;
 use App\Http\Controllers\keuangan\ItemBayarController;
 use App\Http\Controllers\keuangan\TemplateBayarController;
+use App\Http\Controllers\keuangan\BayarController;
 
 
 
@@ -148,8 +149,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     )->name('template-bayar.delete');
 
     Route::get(
-    '/template-bayar/detail/{id}',
-    [TemplateBayarController::class, 'detail']
+        '/template-bayar/detail/{id}',
+        [TemplateBayarController::class, 'detail']
     )->name('template-bayar.detail');
 
     Route::post(
@@ -157,21 +158,42 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         [TemplateBayarController::class, 'setDefault']
     )->name('template-bayar.set-default');
 
-     Route::post(
+    Route::post(
         '/template-bayar-detail/storeDetail',
         [TemplateBayarController::class, 'storeDetail']
     )->name('template-bayar-detail.storeDetail');
 
 
-     Route::post(
+    Route::post(
         '/template-bayar-detail/updateDetail/{id}',
         [TemplateBayarController::class, 'updateDetail']
     )->name('template-bayar-detail.updateDetail');
 
     Route::delete(
-    '/template-bayar-detail/deleteDetail/{id}',
-    [TemplateBayarController::class, 'deleteDetail']
+        '/template-bayar-detail/deleteDetail/{id}',
+        [TemplateBayarController::class, 'deleteDetail']
     )->name('template-bayar-detail.deleteDetail');
+
+
+    Route::get('/bayar', [BayarController::class, 'index'])
+        ->name('bayar.index');
+
+    // Data siswa untuk DataTables/Ajax
+    Route::get('/bayar/data', [BayarController::class, 'data'])
+        ->name('bayar.data');
+
+    // Detail pembayaran berdasarkan NIPD
+    Route::get('/bayar/detail/{nipd}', [BayarController::class, 'detail'])
+        ->name('bayar.detail');
+
+    Route::get('/bayar/detailBayar/{nipd}', [BayarController::class, 'detailBayar'])
+        ->name('bayar.detailBayar');
+
+    Route::post('/bayar/setDefBulan', [BayarController::class, 'setDefBulan'])
+        ->name('bayar.setDefBulan');
+
+        Route::post('/bayar/set-lunas/{id}', [BayarController::class, 'setLunas'])
+    ->name('bayar.set-lunas');
 });
 
 

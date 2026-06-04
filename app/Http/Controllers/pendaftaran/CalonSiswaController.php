@@ -12,6 +12,8 @@ use App\Models\Pekerjaan;
 use App\Models\StatusDaftar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\LogModel;
+
 
 class CalonSiswaController extends Controller
 {
@@ -216,7 +218,17 @@ class CalonSiswaController extends Controller
 
     public function store(Request $request)
     {
-        CalonSiswa::create($request->all());
+        $siswa = CalonSiswa::create($request->all());
+
+        LogModel::create([
+            'tanggal' => now(),
+            'tabel' => 'tb_calon_siswa',
+            'aksi' => 'create',
+            'user' => auth()->user()->id,
+            'ip' => $request->ip(),
+            'keterangan' => json_encode($request->all()),
+            'serial' => url('simpan')
+        ]);
 
         return response()->json([
             'success' => true
@@ -317,6 +329,16 @@ class CalonSiswaController extends Controller
         | RESPONSE
         |--------------------------------------------------------------------------
         */
+
+        LogModel::create([
+            'tanggal' => now(),
+            'tabel' => 'tb_calon_siswa',
+            'aksi' => !empty($id) ? 'update' : 'create',    
+            'user' => auth()->user()->id,
+            'ip' => $request->ip(),
+            'keterangan' => json_encode($siswa),    
+            'serial' => !empty($id) ? url('ubah/' . $id) : url('simpan')
+         ]);    
 
             if ($id != null) {
 
@@ -546,6 +568,17 @@ class CalonSiswaController extends Controller
             CalonSiswa::where('id', $id)
                 ->update($data);
 
+
+                LogModel::create([
+                    'tanggal' => now(),
+                    'tabel' => 'tb_calon_siswa',
+                    'aksi' => 'update',
+                    'user' => auth()->user()->id,
+                    'ip' => $request->ip(),
+                    'keterangan' => json_encode($data),
+                    'serial' => url('ubah-upload/' . $id)
+                 ]);
+
             return redirect()
                 ->back()
                 ->with(
@@ -586,6 +619,16 @@ class CalonSiswaController extends Controller
                 //'tahu_smk_dari_mana'    => $request->tahu_smk_dari_mana,
             ]);
 
+            LogModel::create([
+                'tanggal' => now(),
+                'tabel' => 'tb_calon_siswa',
+                'aksi' => 'update',
+                'user' => auth()->user()->id,
+                'ip' => $request->ip(),
+                'keterangan' => json_encode($siswa),
+                'serial' => url('ubah-orangtua/' . $id)
+             ]);
+
             return back()->with('success', 'Data orang tua berhasil diupdate');
         } catch (\Exception $e) {
 
@@ -613,6 +656,16 @@ class CalonSiswaController extends Controller
                 'prov_sekolah'          => $request->provinsi_sekolah_asal,
             ]);
 
+            LogModel::create([
+                'tanggal' => now(),
+                'tabel' => 'tb_calon_siswa',
+                'aksi' => 'update',
+                'user' => auth()->user()->id,
+                'ip' => $request->ip(),
+                'keterangan' => json_encode($siswa),
+                'serial' => url('ubah-registrasi/' . $id)
+             ]);
+
             return back()->with('success', 'Data sekolah berhasil diupdate');
         } catch (\Exception $e) {
 
@@ -634,6 +687,16 @@ class CalonSiswaController extends Controller
                 'status_daftar' => $request->status_daftar,
             ]);
 
+            LogModel::create([
+                'tanggal' => now(),
+                'tabel' => 'tb_calon_siswa',
+                'aksi' => 'update',
+                'user' => auth()->user()->id,
+                'ip' => $request->ip(),
+                'keterangan' => json_encode($siswa),
+                'serial' => url('ubah-status/' . $id)
+             ]);
+
             return redirect()
                 ->back()
                 ->with('success', 'Status siswa berhasil diperbarui');
@@ -649,7 +712,18 @@ class CalonSiswaController extends Controller
 
     public function destroy($id)
     {
-        CalonSiswa::findOrFail($id)->delete();
+      $calonSiswa = CalonSiswa::findOrFail($id);
+      $calonSiswa->delete();
+
+        LogModel::create([
+            'tanggal' => now(),
+            'tabel' => 'tb_calon_siswa',
+            'aksi' => 'delete',
+            'user' => auth()->user()->id,
+            'ip' => request()->ip(),
+            'keterangan' => json_encode($calonSiswa),
+            'serial' => url('hapus/' . $id)
+         ]);
 
         return response()->json([
             'success' => true

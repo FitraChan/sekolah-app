@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Pendaftaran;
 use App\Http\Controllers\Controller;
 use App\Models\Gelombang;
 use Illuminate\Http\Request;
+use App\Models\LogModel;
+
+
 
 class GelombangController extends Controller
 {
@@ -22,18 +25,11 @@ class GelombangController extends Controller
                 return [
 
                     'id' => $item->id,
-
                     'nama_gelombang' => $item->nama_gelombang,
-
-                                        'id_tahun' => $item->id_tahun,
-
-
+                    'id_tahun' => $item->id_tahun,
                     'awal' => $item->awal,
-
                     'akhir' => $item->akhir,
-
-                   'is_current' => $item->is_current,
-
+                    'is_current' => $item->is_current,
                     'idx' => $item->idx,
                                     
                    
@@ -52,6 +48,15 @@ class GelombangController extends Controller
             'akhir' => $request->akhir,
             'is_current' => $request->is_current,
             'idx' => $request->idx,
+        ]);
+        LogModel::create([
+            'tanggal' => now(),
+            'tabel' => 'tb_gelombang',
+            'aksi' => 'create',
+            'user' => auth()->user()->id,
+            'ip' => $request->ip(),
+            'keterangan' => json_encode($request->all()),
+            'serial' => url('simpan')
         ]);
 
         return response()->json([
@@ -72,6 +77,16 @@ class GelombangController extends Controller
             'idx' => $request->idx,
         ]);
 
+        LogModel::create([
+            'tanggal' => now(),
+            'tabel' => 'tb_gelombang',
+            'aksi' => 'update',
+            'user' => auth()->user()->id,
+            'ip' => $request->ip(),
+            'keterangan' => json_encode($gelombang),
+            'serial' => url('ubah/' . $id)
+        ]);
+
         return response()->json([
             'success' => true
         ]);
@@ -79,7 +94,18 @@ class GelombangController extends Controller
 
     public function destroy($id)
     {
-        Gelombang::findOrFail($id)->delete();
+        $gelombang = Gelombang::findOrFail($id);
+        $gelombang->delete();
+
+        LogModel::create([
+            'tanggal' => now(),
+            'tabel' => 'tb_gelombang',
+            'aksi' => 'delete',
+            'user' => auth()->user()->id,
+            'ip' => request()->ip(),
+            'keterangan' => json_encode($gelombang),
+            'serial' => url('hapus/' . $id)
+        ]);
 
         return response()->json([
             'success' => true

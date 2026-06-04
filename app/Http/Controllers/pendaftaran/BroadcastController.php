@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Broadcast;
 use Illuminate\Support\Facades\DB;
+use App\Models\LogModel;
 
 class BroadcastController extends Controller
 {
@@ -62,7 +63,7 @@ class BroadcastController extends Controller
 
         ]);
 
-        Broadcast::create([
+      $broadcast = Broadcast::create([
 
             'judul' => $request->judul,
 
@@ -70,6 +71,16 @@ class BroadcastController extends Controller
 
             'iduser' => auth()->id(),
 
+        ]);
+
+        LogModel::create([
+            'tanggal' => now(),
+            'tabel' => 'tb_broadcast',
+            'aksi' => 'create',
+            'user' => auth()->user()->id,
+            'ip' => $request->ip(),
+            'keterangan' => json_encode($broadcast),
+            'serial' => url('simpan')
         ]);
 
         return response()->json([
@@ -109,6 +120,16 @@ class BroadcastController extends Controller
 
         ]);
 
+        LogModel::create([
+            'tanggal' => now(),
+            'tabel' => 'tb_broadcast',
+            'aksi' => 'update',
+            'user' => auth()->user()->id,
+            'ip' => $request->ip(),
+            'keterangan' => json_encode($broadcast),
+            'serial' => url('ubah/' . $id)
+        ]);
+
         return response()->json([
 
             'success' => true,
@@ -129,6 +150,16 @@ class BroadcastController extends Controller
         $broadcast = Broadcast::findOrFail($id);
 
         $broadcast->delete();
+
+        LogModel::create([
+            'tanggal' => now(),
+            'tabel' => 'tb_broadcast',
+            'aksi' => 'delete',
+            'user' => auth()->user()->id,
+            'ip' => request()->ip(),
+            'keterangan' => json_encode($broadcast),
+            'serial' => url('hapus/' . $id)
+        ]);
 
         return response()->json([
 

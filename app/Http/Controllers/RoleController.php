@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
-use Yajra\DataTables\Facades\DataTables;
+use App\Models\LogModel;
+
+
+
 
 class RoleController extends Controller
 {
@@ -71,6 +74,16 @@ class RoleController extends Controller
             'name' => $request->name
         ]);
 
+        LogModel::create([
+            'tanggal' => now(),
+            'tabel' => 'roles',
+            'aksi' => 'create',
+            'user' => auth()->user()->id,
+            'ip' => $request->ip(),
+            'keterangan' => json_encode($request->all()),
+            'serial' => url('simpan-role')
+        ]);
+
         return response()->json([
             'message' => 'Role berhasil dibuat'
         ]);
@@ -96,6 +109,16 @@ class RoleController extends Controller
 
         // Memberikan role Spatie ke user baru tersebut
         $user->assignRole($request->role);
+
+        LogModel::create([
+            'tanggal' => now(),
+            'tabel' => 'users',
+            'aksi' => 'create',
+            'user' => auth()->user()->id,
+            'ip' => $request->ip(),
+            'keterangan' => json_encode($request->all()),
+            'serial' => url('simpan-user')
+        ]);
 
         return response()->json(['message' => 'User baru berhasil ditambahkan!']);
     }
@@ -147,6 +170,16 @@ class RoleController extends Controller
         // $user->roles()->sync([$request->role]); 
 
 
+        LogModel::create([
+            'tanggal' => now(),
+            'tabel' => 'users',
+            'aksi' => 'update',
+            'user' => auth()->user()->id,
+            'ip' => $request->ip(),
+            'keterangan' => json_encode($request->all()),
+            'serial' => url('ubah-user/' . $id)
+        ]);
+
         // 4. Kembalikan Response JSON (Wajib untuk AJAX)
         return response()->json([
             'success' => true,
@@ -162,6 +195,16 @@ class RoleController extends Controller
         
         // Eksekusi hapus
         $role->delete();
+
+        LogModel::create([
+            'tanggal' => now(),
+            'tabel' => 'roles',
+            'aksi' => 'delete',
+            'user' => auth()->user()->id,
+            'ip' => request()->ip(),
+            'keterangan' => json_encode($role),
+            'serial' => url('hapus-role/' . $id)
+        ]);
 
         // Kembalikan respon sukses ke AJAX
         return response()->json([

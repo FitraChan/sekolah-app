@@ -7,6 +7,9 @@ use App\Models\KatPeriodeBayar;
 use App\Models\KatItemBayar;
 use App\Models\ItemBayar;
 use Illuminate\Http\Request;
+use App\Models\LogModel;
+
+
 
 class ItemBayarController extends Controller
 {
@@ -52,7 +55,7 @@ class ItemBayarController extends Controller
 
     public function store(Request $request)
     {
-        ItemBayar::create([
+        $insertItemBayar = ItemBayar::create([
 
             'nama_item'       => $request->nama_item,
 
@@ -63,6 +66,16 @@ class ItemBayarController extends Controller
             'keterangan'      => $request->keterangan,
 
             'def_value'       => $request->def_value,
+        ]);
+
+        LogModel::create([
+            'tanggal' => now(),
+            'tabel' => 'tb_itembayar',
+            'aksi' => 'create',
+            'user' => auth()->user()->id,
+            'ip' => $request->ip(),
+            'keterangan' => json_encode($insertItemBayar),
+            'serial' => url('simpan')
         ]);
 
         return response()->json([
@@ -87,6 +100,16 @@ class ItemBayarController extends Controller
             'def_value'       => $request->def_value,
         ]);
 
+        LogModel::create([
+            'tanggal' => now(),
+            'tabel' => 'tb_itembayar',
+            'aksi' => 'update',
+            'user' => auth()->user()->id,
+            'ip' => $request->ip(),
+            'keterangan' => json_encode($row),
+            'serial' => url('ubah/' . $id)
+        ]);
+
         return response()->json([
             'success' => true
         ]);
@@ -94,7 +117,18 @@ class ItemBayarController extends Controller
 
     public function destroy($id)
     {
-        ItemBayar::findOrFail($id)->delete();
+        $itemBayar = ItemBayar::findOrFail($id);
+        $itemBayar->delete();
+
+        LogModel::create([
+            'tanggal' => now(),
+            'tabel' => 'tb_itembayar',
+            'aksi' => 'delete',
+            'user' => auth()->user()->id,
+            'ip' => request()->ip(),
+            'keterangan' => json_encode($itemBayar),
+            'serial' => url('hapus/' . $id)
+        ]);
 
         return response()->json([
             'success' => true

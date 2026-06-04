@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Jurusan;
 use App\Models\DetTempBayar;
 use App\Models\Gelombang;
+use App\Models\Siswa;
+use App\Models\LogModel;
+
+
 
 
 
@@ -94,7 +98,20 @@ class TemplateBayarController extends Controller
             if (!empty($data)) {
                 DetTempBayar::insert($data);
             }
+
+
+            LogModel::create([
+            'tanggal' => now(),
+            'tabel' => 'tb_det_temp_bayar',
+            'aksi' => 'set default',
+            'user' => auth()->user()->id,
+            'ip' => request()->ip(),
+            'keterangan' => json_encode($data),
+            'serial' => url('set-default/' . $id)
+        ]);
         });
+
+        
 
         return response()->json([
             'success' => true,
@@ -104,14 +121,31 @@ class TemplateBayarController extends Controller
     }
     public function store(Request $request)
     {
-        TemplateBayar::create([
-            'id_tahun'      => $request->id_tahun,
-            'id_jurusan'    => $request->id_jurusan,
-            'keterangan'    => $request->keterangan,
-            'jns_kelas'     => $request->jns_kelas,
-            'id_gelombang'  => $request->id_gelombang,
-            'sts'           => $request->sts ?? 1,
+        $template = TemplateBayar::create([
+        'id_tahun'      => $request->id_tahun,
+        'id_jurusan'    => $request->id_jurusan,
+        'keterangan'    => $request->keterangan,
+        'jns_kelas'     => $request->jns_kelas,
+        'id_gelombang'  => $request->id_gelombang,
+        'sts'           => $request->sts ?? 1,
+    ]);
+
+    Siswa::where('id_thn_ajaran', $template->id_tahun)
+        ->whereNull('id_template_bayar')
+        ->update([
+            'id_template_bayar' => $template->id
         ]);
+
+        LogModel::create([
+            'tanggal' => now(),
+            'tabel' => 'tb_template_bayar',
+            'aksi' => 'create',
+            'user' => auth()->user()->id,
+            'ip' => $request->ip(),
+            'keterangan' => json_encode($template),
+            'serial' => url('simpan')
+        ]);
+
 
         return response()->json([
             'success' => true
@@ -137,6 +171,16 @@ class TemplateBayarController extends Controller
             'sts'           => $request->sts,
         ]);
 
+        LogModel::create([
+            'tanggal' => now(),
+            'tabel' => 'tb_template_bayar',
+            'aksi' => 'update',
+            'user' => auth()->user()->id,
+            'ip' => $request->ip(),
+            'keterangan' => json_encode($row),
+            'serial' => url('ubah/' . $id)
+        ]);
+
         return response()->json([
             'success' => true
         ]);
@@ -144,7 +188,18 @@ class TemplateBayarController extends Controller
 
     public function delete($id)
     {
-        TemplateBayar::findOrFail($id)->delete();
+       $template = TemplateBayar::findOrFail($id);
+       $template->delete();
+
+        LogModel::create([
+            'tanggal' => now(),
+            'tabel' => 'tb_template_bayar',
+            'aksi' => 'delete',
+            'user' => auth()->user()->id,
+            'ip' => request()->ip(),
+            'keterangan' => json_encode($template),
+            'serial' => url('hapus/' . $id)
+        ]);
 
         return response()->json([
             'success' => true
@@ -153,7 +208,18 @@ class TemplateBayarController extends Controller
 
     public function deleteDetail($id)
     {
-        DetTempBayar::findOrFail($id)->delete();
+        $detail = DetTempBayar::findOrFail($id);
+        $detail->delete();
+
+        LogModel::create([
+            'tanggal' => now(),
+            'tabel' => 'tb_det_temp_bayar',
+            'aksi' => 'delete',
+            'user' => auth()->user()->id,
+            'ip' => request()->ip(),
+            'keterangan' => json_encode($detail),
+            'serial' => url('hapus-detail/' . $id)
+        ]);
 
         return response()->json([
             'success' => true,
@@ -164,11 +230,21 @@ class TemplateBayarController extends Controller
 
     public function storeDetail(Request $request)
     {
-        DetTempBayar::create([
+        $detail = DetTempBayar::create([
             'id_template' => $request->id_template,
             'id_item'     => $request->id_item,
             'jml_bayar'   => $request->jml_bayar,
             'ket_bayar'   => $request->ket_bayar,
+        ]);
+
+        LogModel::create([
+            'tanggal' => now(),
+            'tabel' => 'tb_det_temp_bayar',
+            'aksi' => 'create',
+            'user' => auth()->user()->id,
+            'ip' => $request->ip(),
+            'keterangan' => json_encode($detail),
+            'serial' => url('simpan-detail')
         ]);
 
         return response()->json([
@@ -185,6 +261,16 @@ class TemplateBayarController extends Controller
             'id_item'   => $request->id_item,
             'jml_bayar' => $request->jml_bayar,
             'ket_bayar' => $request->ket_bayar,
+        ]);
+
+        LogModel::create([
+            'tanggal' => now(),
+            'tabel' => 'tb_det_temp_bayar',
+            'aksi' => 'update',
+            'user' => auth()->user()->id,
+            'ip' => $request->ip(),
+            'keterangan' => json_encode($row),
+            'serial' => url('ubah-detail/' . $id)
         ]);
 
         return response()->json([

@@ -28,9 +28,9 @@ Pembayaran Siswa
                     <button
                         class="btn btn-primary"
                         data-tw-toggle="modal"
-                        data-tw-target="#modal-form">
+                        data-tw-target="#modal-bulanan-all-siswa">
 
-                        Tambah Data
+                        Set Bulanan All Siswa
 
                     </button>
 
@@ -39,6 +39,67 @@ Pembayaran Siswa
                 <div class="p-5" id="basic-table">
                     <div class="preview">
                         <div class="overflow-x-auto">
+
+                            <div class="grid grid-cols-12 gap-3 mb-4">
+
+                                <div class="col-span-12 md:col-span-3">
+                                    <select id="filter_tahun" class="form-select">
+                                        <option value="">Semua Tahun Ajaran</option>
+
+                                        @foreach($tahun as $row)
+                                        <option value="{{ $row->thn_ajaran }}">
+                                            {{ $row->thn_ajaran }}
+                                        </option>
+                                        @endforeach
+
+                                    </select>
+                                </div>
+
+                                <div class="col-span-12 md:col-span-3">
+                                    <select id="filter_jurusan" class="form-select">
+                                        <option value="">Semua Jurusan</option>
+
+                                        @foreach($jurusan as $row)
+                                        <option value="{{ $row->nama_jurusan }}">
+                                            {{ $row->nama_jurusan }}
+                                        </option>
+                                        @endforeach
+
+                                    </select>
+                                </div>
+
+                                <div class="col-span-12 md:col-span-3">
+                                    <select id="filter_kelas" class="form-select">
+                                        <option value="">Semua Kelas</option>
+
+                                        @foreach($kelas as $row)
+                                        <option value="{{ $row->nama_kelas }}">
+                                            {{ $row->nama_kelas }}
+                                        </option>
+                                        @endforeach
+
+                                    </select>
+                                </div>
+
+
+
+                                <div class="col-span-12 md:col-span-3">
+                                    <input
+                                        type="text"
+                                        id="filter_keyword"
+                                        class="form-control"
+                                        placeholder="Nama / NIPD">
+                                </div>
+
+                                <div class="col-span-12 md:col-span-1">
+                                    <button
+                                        class="btn btn-secondary w-full"
+                                        onclick="resetFilter()">
+                                        Reset
+                                    </button>
+                                </div>
+
+                            </div>
                             <div id="tableBayar"></div>
 
                         </div>
@@ -54,7 +115,28 @@ Pembayaran Siswa
 
                     <h2 class="font-medium text-base mr-auto"> History Pembayaran Siswa</h2>
                     <div class="flex gap-2">
+
                         <button
+                            type="button"
+                            class="btn btn-warning"
+                            data-tw-toggle="modal"
+                            data-tw-target="#modal-detail-form">
+
+                            <i data-lucide="wallet" class="w-4 h-4 mr-1"></i>
+                            Cicilan
+
+                        </button>
+
+                       <button
+                            type="button"
+                            class="btn btn-success"
+                            onclick="openModalBayar()">
+
+                            <i data-lucide="credit-card" class="w-4 h-4 mr-1"></i>
+                            Bayar
+
+                        </button>
+                        <!-- <button
                             type="button"
                             class="btn btn-dark"
                             onclick="setDefaultDetail()">
@@ -73,7 +155,7 @@ Pembayaran Siswa
                             <i data-lucide="plus" class="w-4 h-4 mr-1"></i>
                             Tambah Detail
 
-                        </button>
+                        </button> -->
                     </div>
                 </div>
 
@@ -82,6 +164,8 @@ Pembayaran Siswa
                 <div class="p-5" id="basic-table">
                     <div class="preview">
                         <div class="overflow-x-auto">
+
+                        <input type="hidden" id="id_bayar" value="">
                             <div id="tableHistoryBayar"></div>
 
                         </div>
@@ -97,142 +181,265 @@ Pembayaran Siswa
 
 </div>
 
-@include('keuangan.bayar.modal')
-@include('keuangan.bayar.modal_detail')
+@include('keuangan.bayar.modal_bulanan_all_siswa')
+@include('keuangan.bayar.modal_bayar')
+
+<style>
+.tabulator-row.tabulator-selected {
+    background-color: #dbeafe !important;
+}
+
+.tabulator-row.tabulator-selected:hover {
+    background-color: #bfdbfe !important;
+}
+</style>
 
 
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
     let tableSiswa = new Tabulator("#tableBayar", {
 
-    ajaxURL: "{{ route('siswa.data') }}",
+        ajaxURL: "{{ route('bayar.data') }}",
 
-    layout: "fitDataStretch",
 
-    height: "500px",
+        pagination: true,
+        paginationMode: "remote",
+        paginationSize: 10,
 
-   
-    columns: [
+        layout: "fitDataStretch",
+        height: "500px",
 
-        {
-            title: "No",
-            formatter: "rownum",
-            width: 60,
-            hozAlign: "center"
-        },
 
-        {
-            title: "NIPD",
-            field: "nipd"
-        },
-        {
-            title: "Nama Siswa",
-            field: "nama_lengkap",
-            width: 250
-        },
-        {
-            title: "Kelas",
-            field: "kelas.nama_kelas"
-        },       
-        {
-            title: "Tahun",
-            field: "tahun_ajaran.thn_ajaran"
-        },       
-    ]
-});
+        columns: [
+
+            {
+                title: "No",
+                formatter: "rownum",
+                width: 60,
+                hozAlign: "center"
+            },
+
+            {
+                title: "NIPD",
+                field: "nipd"
+            },
+            {
+                title: "Nama Siswa",
+                field: "nama_lengkap",
+                width: 250
+            },
+            {
+                title: "Kelas",
+                field: "kelas.nama_kelas"
+            },
+            {
+                title: "Tahun",
+                field: "tahun_ajaran.thn_ajaran"
+            },
+        ]
+    });
 
 
     let currentTemplateId = 0;
     tableSiswa.on("rowClick", function(e, row) {
-        showDetail(row.getData().id);
+        showDetail(row.getData().nipd);
     });
 
-   
-   let tableDetail = new Tabulator("#tableDetailBayar", {
 
-    layout: "fitDataStretch",
+    let detailLoaded = {};
 
-    height: "400px",
+    let tableDetail = new Tabulator("#tableHistoryBayar", {
 
-    columns: [
-
-        {
-            title: "No",
-            formatter: "rownum",
-            width: 60,
-            hozAlign: "center"
-        },
+        layout: "fitDataStretch",
+        height: "500px",
+        selectableRows: 1,
 
        
-        {
-            title: "Tahun",
-            field: "tahun_ajaran"
-        },
 
-        {
-            title: "Bulan",
-            field: "bulan"
-        },
+        title: "<button class='btn btn-primary btn-sm'>Tambah</button>",
 
-        {
-            title: "Tanggal Bayar",
-            field: "tgl_bayar",
-            width: 180
-        },
 
-        {
-            title: "Total Bayar",
-            field: "tot_bayar",
-            hozAlign: "right",
-
+        rowHeader: {
             formatter: function(cell) {
+                return "<span style='font-size:18px'>+</span>";
+            },
+            width: 50,
+            hozAlign: "center",
+            cellClick: function(e, cell) {
 
-                return new Intl.NumberFormat(
-                    'id-ID',
-                    {
-                        style: 'currency',
-                        currency: 'IDR',
-                        minimumFractionDigits: 0
-                    }
-                ).format(cell.getValue() || 0);
+                let row = cell.getRow();
+                let data = row.getData();
 
+                let holder = row.getElement().querySelector(".detail-holder");
+
+                if (holder) {
+                    holder.remove();
+                    cell.getElement().innerHTML =
+
+                        "<span style='font-size:18px'>+</span>";
+                    return;
+                }
+
+                let detailDiv = document.createElement("div");
+                detailDiv.classList.add("detail-holder");
+                detailDiv.style.padding = "10px";
+
+                let tableDiv = document.createElement("div");
+
+                detailDiv.appendChild(tableDiv);
+
+                row.getElement().appendChild(detailDiv);
+
+                cell.getElement().innerHTML =
+                    "<span style='font-size:18px'>-</span>";
+
+                new Tabulator(tableDiv, {
+
+                    ajaxURL: "{{ url('/bayar/detailBayar') }}/" + data.id,
+                    layout: "fitColumns",
+
+                    placeholder: "Tidak ada detail pembayaran",
+
+                    columns: [{
+                            title: "Item Bayar",
+                            field: "nama_item",
+
+                        },
+                        {
+                            title: "Kewajiban",
+                            field: "kwajiban_bayar",
+
+                            formatter: function(cell) {
+                                return new Intl.NumberFormat(
+                                    'id-ID', {
+                                        style: 'currency',
+                                        currency: 'IDR',
+                                        minimumFractionDigits: 0
+                                    }
+                                ).format(cell.getValue() || 0);
+                            }
+                        },
+                        {
+                            title: "Potongan",
+                            field: "potongan",
+
+                            formatter: function(cell) {
+                                return new Intl.NumberFormat(
+                                    'id-ID', {
+                                        style: 'currency',
+                                        currency: 'IDR',
+                                        minimumFractionDigits: 0
+                                    }
+                                ).format(cell.getValue() || 0);
+                            }
+                        },
+                        {
+                            title: "Jumlah Bayar",
+                            field: "jml_bayar",
+                            formatter: function(cell) {
+                                return new Intl.NumberFormat(
+                                    'id-ID', {
+                                        style: 'currency',
+                                        currency: 'IDR',
+                                        minimumFractionDigits: 0
+                                    }
+                                ).format(cell.getValue() || 0);
+                            }
+                        }
+                    ]
+                });
             }
         },
 
-        {
-            title: "Total Kewajiban",
-            field: "tot_kwajiban",
-            hozAlign: "right",
+        columns: [{
+                title: "No",
+                formatter: "rownum",
+                width: 60,
+                hozAlign: "center"
+            },
+            {
+                title: "Tahun",
+                field: "tahun_ajaran"
+            },
+            {
+                title: "Bulan",
+                field: "bulan"
+            },
+            {
+                title: "Tanggal Bayar",
+                field: "tgl_bayar",
+                formatter: function(cell) {
 
-            formatter: function(cell) {
+                    let value = cell.getValue();
 
-                return new Intl.NumberFormat(
-                    'id-ID',
-                    {
-                        style: 'currency',
-                        currency: 'IDR',
-                        minimumFractionDigits: 0
-                    }
-                ).format(cell.getValue() || 0);
+                    if (!value) return "";
 
+                    let date = new Date(value);
+
+                    return String(date.getDate()).padStart(2, '0') +
+                        "-" +
+                        String(date.getMonth() + 1).padStart(2, '0') +
+                        "-" +
+                        date.getFullYear();
+                }
+            },
+            {
+                title: "Total Bayar",
+                field: "tot_bayar",
+                hozAlign: "right",
+                formatter: function(cell) {
+                    return new Intl.NumberFormat(
+                        'id-ID', {
+                            style: 'currency',
+                            currency: 'IDR',
+                            minimumFractionDigits: 0
+                        }
+                    ).format(cell.getValue() || 0);
+                }
+            },
+            {
+                title: "Total Kewajiban",
+                field: "tot_kwajiban",
+                hozAlign: "right",
+                formatter: function(cell) {
+                    return new Intl.NumberFormat(
+                        'id-ID', {
+                            style: 'currency',
+                            currency: 'IDR',
+                            minimumFractionDigits: 0
+                        }
+                    ).format(cell.getValue() || 0);
+                }
+            },
+            {
+                title: "Keterangan",
+                field: "keterangan",
+                width: 250
             }
-        },
-
-        {
-            title: "Keterangan",
-            field: "keterangan",
-            width: 250
-        }
-    ]
-});
+        ]
+    });
 
 
+     tableDetail.on("rowClick", function(e, row) {
+      //  showDetail(row.getData().nipd);
 
-    function showDetail(idTemplate) {
-        currentTemplateId = idTemplate;
+        let data = row.getData();
+
+        console.log(data.id);
+
+    document.getElementById('id_bayar').value = data.id;
+    })
+
+
+
+    function showDetail(id) {
+        currentTemplateId = id;
+
+        document.getElementById('id_bayar').value = "";
+        console.log(id);
         tableDetail.setData(
-            "{{ url('template-bayar/detail') }}/" + idTemplate
+            "{{ url('bayar/detail') }}/" + id
         );
 
     }
@@ -433,6 +640,200 @@ Pembayaran Siswa
 
 
             });
+    }
+
+    async function saveDefBulan() {
+
+        try {
+
+            const response = await fetch(
+                "{{ route('bayar.setDefBulan') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify({
+                        id_thn_ajaran: document.getElementById('id_thn_ajaran').value,
+                        id_jurusan: document.getElementById('id_jurusan').value,
+                        id_tahun: document.getElementById('id_tahun').value,
+                        id_bulan: document.getElementById('id_bulan').value
+                    })
+                }
+            );
+
+            const result = await response.json();
+
+            console.log(result);
+
+            if (result.success) {
+
+                Swal.fire({
+                    icon: "success",
+                    title: result.title,
+                    text: result.msg
+                });
+
+                // tutup modal
+                const modal = tailwind.Modal.getInstance(
+                    document.querySelector("#modal-bulanan-all-siswa")
+                );
+
+                if (modal) {
+                    modal.hide();
+                }
+
+                // reload tabulator jika perlu
+                if (typeof table !== 'undefined') {
+                    table.replaceData();
+                }
+
+            } else {
+
+                Swal.fire({
+                    icon: "error",
+                    title: result.title,
+                    text: result.msg
+                });
+
+            }
+
+        } catch (error) {
+
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: error.message
+            });
+
+            console.error(error);
+        }
+    }
+
+    function applyFilter() {
+
+        let tahun = $('#filter_tahun').val();
+        let jurusan = $('#filter_jurusan').val();
+        let kelas = $('#filter_kelas').val().toLowerCase();
+        let keyword = $('#filter_keyword').val().toLowerCase();
+
+        tableSiswa.setFilter(function(data) {
+
+            console.log(data);
+
+
+            let matchTahun = !tahun ||
+                (data.tahun_ajaran &&
+                    data.tahun_ajaran.thn_ajaran == tahun);
+
+            let matchJurusan = !jurusan ||
+                (data.jurusan &&
+                    data.jurusan.nama_jurusan == jurusan);
+
+            let matchKelas = !kelas ||
+                (data.kelas &&
+                    data.kelas.nama_kelas.toLowerCase()
+                    .includes(kelas));
+
+            let matchKeyword = !keyword ||
+                (data.nama_lengkap &&
+                    data.nama_lengkap.toLowerCase()
+                    .includes(keyword)) ||
+                (data.nipd &&
+                    data.nipd.toLowerCase()
+                    .includes(keyword));
+
+            return matchTahun &&
+                matchJurusan &&
+                matchKelas &&
+                matchKeyword;
+        });
+    }
+
+    document
+        .getElementById('filter_tahun')
+        .addEventListener('change', applyFilter);
+
+    document
+        .getElementById('filter_jurusan')
+        .addEventListener('change', applyFilter);
+
+    document
+        .getElementById('filter_kelas')
+        .addEventListener('keyup', applyFilter);
+
+    document
+        .getElementById('filter_keyword')
+        .addEventListener('keyup', applyFilter);
+
+    function resetFilter() {
+
+        document.getElementById('filter_tahun').value = '';
+        document.getElementById('filter_jurusan').value = '';
+        document.getElementById('filter_kelas').value = '';
+        document.getElementById('filter_keyword').value = '';
+
+        tableSiswa.clearFilter();
+    }
+
+    async function saveBayar() {
+
+        let id = document.getElementById('id_bayar').value;
+
+        const url = "{{ route('bayar.set-lunas', ':id') }}".replace(':id', id);
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector(
+                    'meta[name="csrf-token"]'
+                ).content
+            },
+            body: JSON.stringify({
+                tgl_bayar: document.getElementById('tgl_bayar').value,
+                no_kwitansi: document.getElementById('no_kwitansi').value,
+                keterangan: document.getElementById('keterangan').value
+            })
+        });
+
+        const result = await response.json();
+
+                Swal.fire({
+                    icon: "success",
+                    title: result.title,
+                    text: result.msg
+                });
+ const modal = tailwind.Modal.getOrCreateInstance(
+                    document.querySelector("#modal-bayar-form")
+                );
+
+                modal.hide();
+        tableDetail.replaceData();
+
+    }
+
+    function openModalBayar() {
+
+        let idBayar = document.getElementById('id_bayar').value;
+
+        if (!idBayar) {
+
+           Swal.fire(
+    'Peringatan',
+    'Pilih data pembayaran terlebih dahulu',
+    'warning'
+);
+
+            return;
+        }
+
+        const modal = tailwind.Modal.getOrCreateInstance(
+            document.querySelector("#modal-bayar-form")
+        );
+
+        modal.show();
     }
 </script>
 
