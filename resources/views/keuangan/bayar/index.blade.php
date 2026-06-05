@@ -24,6 +24,7 @@ Pembayaran Siswa
                 <div class="flex flex-col sm:flex-row items-center p-5 border-b border-slate-200/60">
 
                     <h2 class="font-medium text-base mr-auto"> Data Pembayaran Siswa</h2>
+                    <div class="flex gap-2">
 
                     <button
                         class="btn btn-primary"
@@ -34,6 +35,15 @@ Pembayaran Siswa
 
                     </button>
 
+                     <button
+                        class="btn btn-success"
+                        onclick="cetakKewajiban()">
+
+                        <i data-lucide="printer" class="w-4 h-4 mr-1"></i>
+                        Cetak Kewajiban
+
+                    </button>
+                    </div>
                 </div>
 
                 <div class="p-5" id="basic-table">
@@ -120,7 +130,7 @@ Pembayaran Siswa
                             type="button"
                             class="btn btn-warning"
                             data-tw-toggle="modal"
-                            data-tw-target="#modal-detail-form">
+                            data-tw-target="#modal-cicilan-form">
 
                             <i data-lucide="wallet" class="w-4 h-4 mr-1"></i>
                             Cicilan
@@ -136,26 +146,7 @@ Pembayaran Siswa
                             Bayar
 
                         </button>
-                        <!-- <button
-                            type="button"
-                            class="btn btn-dark"
-                            onclick="setDefaultDetail()">
-
-                            Set Default
-
-                        </button>
-
-
-                        <button
-                            type="button"
-                            class="btn btn-primary"
-                            data-tw-toggle="modal"
-                            data-tw-target="#modal-detail-form">
-
-                            <i data-lucide="plus" class="w-4 h-4 mr-1"></i>
-                            Tambah Detail
-
-                        </button> -->
+                       
                     </div>
                 </div>
 
@@ -166,6 +157,8 @@ Pembayaran Siswa
                         <div class="overflow-x-auto">
 
                         <input type="hidden" id="id_bayar" value="">
+                                                <input type="hidden" id="nipd" value="">
+
                             <div id="tableHistoryBayar"></div>
 
                         </div>
@@ -183,16 +176,10 @@ Pembayaran Siswa
 
 @include('keuangan.bayar.modal_bulanan_all_siswa')
 @include('keuangan.bayar.modal_bayar')
+@include('keuangan.bayar.modal_cicilan')
 
-<style>
-.tabulator-row.tabulator-selected {
-    background-color: #dbeafe !important;
-}
 
-.tabulator-row.tabulator-selected:hover {
-    background-color: #bfdbfe !important;
-}
-</style>
+
 
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -201,8 +188,7 @@ Pembayaran Siswa
     let tableSiswa = new Tabulator("#tableBayar", {
 
         ajaxURL: "{{ route('bayar.data') }}",
-
-
+        selectableRows: 1,
         pagination: true,
         paginationMode: "remote",
         paginationSize: 10,
@@ -240,11 +226,27 @@ Pembayaran Siswa
         ]
     });
 
-
+    let selectedSiswaId = null;
     let currentTemplateId = 0;
     tableSiswa.on("rowClick", function(e, row) {
+        document.getElementById('nipd').value = row.getData().nipd;
+
+            selectedSiswaId = row.getData().nipd; // atau id_siswa
         showDetail(row.getData().nipd);
     });
+
+    function cetakKewajiban() {
+
+        if (!selectedSiswaId) {
+            alert('Pilih siswa terlebih dahulu');
+            return;
+        }
+
+        const cetakUrl = "{{ url('/bayar/createReportPdf') }}";
+
+
+        window.open(`${cetakUrl}/${selectedSiswaId}`, '_blank');
+    }
 
 
     let detailLoaded = {};
@@ -422,7 +424,6 @@ Pembayaran Siswa
 
 
      tableDetail.on("rowClick", function(e, row) {
-      //  showDetail(row.getData().nipd);
 
         let data = row.getData();
 
@@ -834,6 +835,79 @@ Pembayaran Siswa
         );
 
         modal.show();
+    }
+
+
+    async function saveCicilan() {
+
+        try {
+
+            const response = await fetch('{{ route("bayar.simpanCicilan") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document
+                        .querySelector('meta[name="csrf-token"]')
+                        .getAttribute('content'),
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    id_csiswa: document.getElementById('nipd').value,
+                    tgl_bayar: document.getElementById('tgl_bayar').value,
+                    no_kwitansi: document.getElementById('no_kwitansi').value,
+                    keterangan: document.getElementById('keterangan').value,
+                    jml_dpp: document.getElementById('jml_dpp').value || 0,
+                    jml_seragam: document.getElementById('jml_seragam').value || 0,
+                    jml_spp: document.getElementById('jml_spp').value || 0,
+                    jml_tabungan: document.getElementById('jml_tabungan').value || 0,
+                    jml_osis: document.getElementById('jml_osis').value || 0,
+                    //cicilan: document.getElementById('cicilan').value || 0
+                })
+            });
+
+            const result = await response.json();
+
+            //console.log('hasilllll', result);
+
+            if (result.success) {
+
+                 Swal.fire({
+                    icon: "success",
+                    title: result.title,
+                    text: result.msg
+                });
+
+                const modal = tailwind.Modal.getInstance(
+                    document.querySelector('#modal-cicilan-form')
+                );
+
+                modal.hide();
+
+                // reload tabel jika ada
+               // if (typeof table !== 'undefined') {
+                    tableDetail.replaceData();
+               // }
+
+            } else {
+
+                Swal.fire({
+                    icon: "error",
+                    title: result.title,
+                    text: result.msg
+                });
+            }
+
+        } catch (error) {
+
+            console.error(error);
+
+             Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "Terjadi kesalahan saat menyimpan data"
+                });
+              
+        }
     }
 </script>
 

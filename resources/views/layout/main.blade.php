@@ -19,10 +19,36 @@ License: You must have a valid license purchased only from themeforest(the above
     <meta name="description" content="Tinker admin is super flexible, powerful, clean & modern responsive tailwind admin template with unlimited possibilities.">
     <meta name="keywords" content="admin template, Tinker Admin Template, dashboard template, flat admin template, responsive admin template, web app">
     <meta name="author" content="LEFT4CODE">
+
+    <style>
+        .tabulator-row.tabulator-selected {
+            background-color: #dbeafe !important;
+        }
+
+        .tabulator-row.tabulator-selected:hover {
+            background-color: #bfdbfe !important;
+        }
+
+        .sidebar-mini .side-menu__title {
+            display: none;
+        }
+
+        .sidebar-mini .side-menu {
+            justify-content: center;
+        }
+
+        .sidebar-mini .side-menu__icon {
+            margin-right: 0 !important;
+        }
+
+        .sidebar-mini .side-nav {
+            width: 70px !important;
+        }
+    </style>
     <title>@yield('tittle')</title>
     <!-- BEGIN: CSS Assets-->
     <link rel="stylesheet" href="{{asset('public/dist/css/app.css')}}" />
-   
+
     <link href="https://unpkg.com/tabulator-tables@6.2.5/dist/css/tabulator.min.css" rel="stylesheet">
 
     <script type="text/javascript" src="https://unpkg.com/tabulator-tables@6.2.5/dist/js/tabulator.min.js"></script>
@@ -53,6 +79,8 @@ License: You must have a valid license purchased only from themeforest(the above
     @endphp
     @endif
     <!-- BEGIN: Mobile Menu -->
+
+
     <div class="mobile-menu md:hidden">
         <div class="mobile-menu-bar">
             <a href="" class="flex mr-auto">
@@ -293,13 +321,18 @@ License: You must have a valid license purchased only from themeforest(the above
             </ul>
         </div>
     </div>
+
+
     <!-- END: Mobile Menu -->
     <div class="flex mt-[4.7rem] md:mt-0 overflow-hidden">
         <!-- BEGIN: Side Menu -->
-        <nav class="side-nav">
+        <nav id="sidebar" class="side-nav">
+
             <a href="" class="intro-x flex items-center pl-5 pt-4 mt-3">
                 <img alt="Midone - HTML Admin Template" class="w-6" src="{{asset('public/dist/images/logo.png')}}">
                 <span class="hidden xl:block text-white text-lg ml-3"> SIAMI </span>
+
+
             </a>
             <div class="side-nav__devider my-6"></div>
             <ul>
@@ -540,6 +573,16 @@ License: You must have a valid license purchased only from themeforest(the above
         <div class="content">
             <!-- BEGIN: Top Bar -->
             <div class="top-bar -mx-4 px-4 md:mx-0 md:px-0">
+
+                <div class="mr-3">
+                    <button
+                        id="btnToggleSidebar"
+                        class="btn btn-outline-secondary">
+
+                        <i data-lucide="menu"></i>
+
+                    </button>
+                </div>
                 <!-- BEGIN: Breadcrumb -->
                 <nav aria-label="breadcrumb" class="-intro-x mr-auto hidden sm:flex">
                     @yield('top-nav')
@@ -601,6 +644,17 @@ License: You must have a valid license purchased only from themeforest(the above
     {{-- ckeditor --}}
     <script src="//cdn.ckeditor.com/4.22.1/full/ckeditor.js"></script>
     {{-- ckeditor --}}
+
+    <script>
+        // Toggle sidebar
+        document
+            .getElementById('btnToggleSidebar')
+            .addEventListener('click', function() {
+
+                document.body.classList.toggle('sidebar-mini');
+
+            });
+    </script>
 </body>
 
 </html>

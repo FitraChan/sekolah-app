@@ -15,12 +15,12 @@ Calon Siswa
 <div class="max-w-7xl mx-auto p-6">
     <!-- Bagian Tombol Aksi -->
     <div class="flex gap-2 mb-3">
-         <a href="{{ route('calon-siswa.create') }}"
-       class="btn btn-primary">
+        <a href="{{ route('calon-siswa.create') }}"
+            class="btn btn-primary">
 
-        + Tambah Calon Siswa
+            + Tambah Calon Siswa
 
-    </a>
+        </a>
     </div>
 
     <!-- Sistem Grid untuk membagi tabel menjadi sebelah-menyebelah -->
@@ -55,70 +55,69 @@ Calon Siswa
 
 
 <script>
+    let table = new Tabulator("#table-calon-siswa", {
 
-let table = new Tabulator("#table-calon-siswa", {
+        ajaxURL: "{{ route('calon-siswa.data') }}",
 
-    ajaxURL: "{{ route('calon-siswa.data') }}",
 
-    layout: "fitDataStretch",
+        layout: "fitDataStretch",
+        height: "500px",
+        pagination: true,
 
-    pagination: true,
+        paginationSize: 10,
 
-    paginationSize: 10,
+        columns: [
 
-    columns: [
-
-        {
-            title: "No",
-            formatter: "rownum",
-            width: 70
-        },
-
-        {
-            title: "Nama Lengkap",
-            field: "nama_lengkap",
-            width: 250
-        },
-
-        {
-            title: "JK",
-            field: "jk",
-            width: 100
-        },
-
-        {
-            title: "NISN",
-            field: "nisn",
-            width: 180
-        },
-
-        {
-            title: "No HP",
-            field: "no_hp",
-            width: 180
-        },
-
-        {
-            title: "Jurusan",
-            field: "nama_jurusan",
-            width: 220
-        },
-
-        {
-            title: "Gelombang",
-            field: "nama_gelombang",
-            width: 220
-        },
-
-        {
-            title: "Action",
-            hozAlign: "center",
-
-            formatter: function(cell)
             {
-                let data = cell.getData();
+                title: "No",
+                formatter: "rownum",
+                width: 70
+            },
 
-                return `
+            {
+                title: "Nama Lengkap",
+                field: "nama_lengkap",
+                width: 250
+            },
+
+            {
+                title: "JK",
+                field: "jk",
+                width: 100
+            },
+
+            {
+                title: "NISN",
+                field: "nisn",
+                width: 180
+            },
+
+            {
+                title: "No HP",
+                field: "no_hp",
+                width: 180
+            },
+
+            {
+                title: "Jurusan",
+                field: "nama_jurusan",
+                width: 220
+            },
+
+            {
+                title: "Gelombang",
+                field: "nama_gelombang",
+                width: 220
+            },
+
+            {
+                title: "Action",
+                hozAlign: "center",
+
+                formatter: function(cell) {
+                    let data = cell.getData();
+
+                    return `
 
                     <div class="flex gap-2">
 
@@ -142,113 +141,102 @@ let table = new Tabulator("#table-calon-siswa", {
                     </div>
 
                 `;
+                }
             }
-        }
-    ]
-});
-
-
-function editData(data)
-{
-    document.getElementById('edit_id').value = data.id;
-    document.getElementById('edit_nama_lengkap').value =
-        data.nama_lengkap;
-    document.getElementById('edit_jk').value =
-        data.jk;
-
-    document.getElementById('edit_nisn').value =
-        data.nisn;
-
-    document.getElementById('edit_no_hp').value =
-        data.no_hp;
-
-    document.getElementById('edit_id_jurusan').value =
-        data.id_jurusan;
-
-    document.getElementById('edit_id_gelombang').value =
-        data.id_gelombang;
-}
-
-
-function saveData(type)
-{
-    let prefix = type == 'add'
-        ? 'add_'
-        : 'edit_';
-
-    let id = type == 'edit'
-        ? document.getElementById('edit_id').value
-        : '';
-
-   let url = type == 'edit'
-    ? "{{ url('calon-siswa/update') }}/" + id
-    : "{{ url('calon-siswa/store') }}";
-
-    fetch(url, {
-
-        method: 'POST',
-
-        headers: {
-
-            'Content-Type': 'application/json',
-
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-
-        body: JSON.stringify({
-
-            nama_lengkap:
-                document.getElementById(prefix + 'nama_lengkap').value,
-
-            jk:
-                document.getElementById(prefix + 'jk').value,
-
-            nisn:
-                document.getElementById(prefix + 'nisn').value,
-
-            no_hp:
-                document.getElementById(prefix + 'no_hp').value,
-
-            id_jurusan:
-                document.getElementById(prefix + 'id_jurusan').value,
-
-            id_gelombang:
-                document.getElementById(prefix + 'id_gelombang').value,
-        })
-
-    })
-    .then(res => res.json())
-    .then(res => {
-
-        table.replaceData();
-
+        ]
     });
-}
 
 
-function deleteData(id)
-{
-    if(confirm('Yakin hapus data?'))
-    {
-        fetch("{{ url('calon-siswa/delete') }}/" + id, {
+    function editData(data) {
+        document.getElementById('edit_id').value = data.id;
+        document.getElementById('edit_nama_lengkap').value =
+            data.nama_lengkap;
+        document.getElementById('edit_jk').value =
+            data.jk;
 
-            method: 'DELETE',
+        document.getElementById('edit_nisn').value =
+            data.nisn;
 
-            headers: {
+        document.getElementById('edit_no_hp').value =
+            data.no_hp;
 
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            }
+        document.getElementById('edit_id_jurusan').value =
+            data.id_jurusan;
 
-        })
-        .then(res => res.json())
-        .then(res => {
-
-            table.replaceData();
-
-        });
+        document.getElementById('edit_id_gelombang').value =
+            data.id_gelombang;
     }
-}
 
+
+    function saveData(type) {
+        let prefix = type == 'add' ?
+            'add_' :
+            'edit_';
+
+        let id = type == 'edit' ?
+            document.getElementById('edit_id').value :
+            '';
+
+        let url = type == 'edit' ?
+            "{{ url('calon-siswa/update') }}/" + id :
+            "{{ url('calon-siswa/store') }}";
+
+        fetch(url, {
+
+                method: 'POST',
+
+                headers: {
+
+                    'Content-Type': 'application/json',
+
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+
+                body: JSON.stringify({
+
+                    nama_lengkap: document.getElementById(prefix + 'nama_lengkap').value,
+
+                    jk: document.getElementById(prefix + 'jk').value,
+
+                    nisn: document.getElementById(prefix + 'nisn').value,
+
+                    no_hp: document.getElementById(prefix + 'no_hp').value,
+
+                    id_jurusan: document.getElementById(prefix + 'id_jurusan').value,
+
+                    id_gelombang: document.getElementById(prefix + 'id_gelombang').value,
+                })
+
+            })
+            .then(res => res.json())
+            .then(res => {
+
+                table.replaceData();
+
+            });
+    }
+
+
+    function deleteData(id) {
+        if (confirm('Yakin hapus data?')) {
+            fetch("{{ url('calon-siswa/delete') }}/" + id, {
+
+                    method: 'DELETE',
+
+                    headers: {
+
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+
+                })
+                .then(res => res.json())
+                .then(res => {
+
+                    table.replaceData();
+
+                });
+        }
+    }
 </script>
 
 @endsection

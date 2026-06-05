@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\DetTempBayar;
 use App\Models\Kelas;
 use App\Models\LogModel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 
 
@@ -53,47 +54,47 @@ class BayarController extends Controller
             'kelas:idx,nama_kelas',
             'templateBayar:id,keterangan'
         ])
-        ->orderBy('nipd', 'desc')
-        ->paginate($request->size ?? 10);
+            ->orderBy('nipd', 'desc')
+            ->paginate($request->size ?? 10);
     }
 
     public function detail($nipd)
     {
         return Bayar::where('id_siswa', $nipd)
-        ->orderBy('tgl_bayar', 'desc')
-        ->get()
-        ->map(function ($row) {
+            ->orderBy('tgl_bayar', 'desc')
+            ->get()
+            ->map(function ($row) {
 
-            return [
-                'id'            => $row->id,
-                'id_siswa'      => $row->id_siswa,
-                'tahun_ajaran'  => $row->id_tahun ?? '',
-                'bulan'         => $row->id_bulan ?? '',
-                'tgl_bayar'     => $row->tgl_bayar,
-                'tot_bayar'     => $row->tot_bayar,
-                'tot_kwajiban'  => $row->tot_kwajiban,
-                'keterangan'    => $row->keterangan,
-                'no_kwitansi'   => $row->no_kwitansi,
-            ];
-        });
+                return [
+                    'id'            => $row->id,
+                    'id_siswa'      => $row->id_siswa,
+                    'tahun_ajaran'  => $row->id_tahun ?? '',
+                    'bulan'         => $row->id_bulan ?? '',
+                    'tgl_bayar'     => $row->tgl_bayar,
+                    'tot_bayar'     => $row->tot_bayar,
+                    'tot_kwajiban'  => $row->tot_kwajiban,
+                    'keterangan'    => $row->keterangan,
+                    'no_kwitansi'   => $row->no_kwitansi,
+                ];
+            });
     }
 
-     public function detailBayar($id)
+    public function detailBayar($id)
     {
-        return DetBayar::where('id_bayar', $id)        
-        ->get()
-        ->map(function ($row) {
+        return DetBayar::where('id_bayar', $id)
+            ->get()
+            ->map(function ($row) {
 
-            return [
-                'id'            => $row->id,
-                'id_bayar'  => $row->id_bayar ?? '',
-                'nama_item' => $row->itemBayar->nama_item ?? '',
-                'kwajiban_bayar'     => $row->kwajiban_bayar,
-                'potongan'     => $row->potongan,
-                'jml_bayar'  => $row->jml_bayar,
-               
-            ];
-        });
+                return [
+                    'id'            => $row->id,
+                    'id_bayar'  => $row->id_bayar ?? '',
+                    'nama_item' => $row->itemBayar->nama_item ?? '',
+                    'kwajiban_bayar'     => $row->kwajiban_bayar,
+                    'potongan'     => $row->potongan,
+                    'jml_bayar'  => $row->jml_bayar,
+
+                ];
+            });
     }
 
     public function setDefBulan(Request $request)
@@ -123,10 +124,10 @@ class BayarController extends Controller
                 ]);
 
                 $detailTemplate = DetTempBayar::where('id_template', $row->id_template_bayar)
-                        ->whereHas('itemBayar', function ($q) {
-                            $q->where('id_kategori', 5);
-                        })
-                        ->get();
+                    ->whereHas('itemBayar', function ($q) {
+                        $q->where('id_kategori', 5);
+                    })
+                    ->get();
 
                 foreach ($detailTemplate as $item) {
 
@@ -165,7 +166,6 @@ class BayarController extends Controller
                 'title'   => 'Success',
                 'msg'     => "Proses berhasil dilakukan pada Bulan {$idBulan}, Tahun {$idTahun}, Jurusan {$idJurusan}. Berhasil {$berhasil}, Gagal {$gagal}"
             ]);
-
         } catch (\Exception $e) {
 
             DB::rollBack();
@@ -177,6 +177,8 @@ class BayarController extends Controller
             ], 500);
         }
     }
+
+
 
     public function updateTotalBayar($id)
     {
@@ -239,7 +241,6 @@ class BayarController extends Controller
                 'title'   => 'Sukses',
                 'msg'     => 'Data telah tersimpan'
             ]);
-
         } catch (\Exception $e) {
 
             DB::rollBack();
@@ -250,5 +251,161 @@ class BayarController extends Controller
                 'msg'     => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function simpanCicilan(Request $request)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            $bayar = Bayar::create([
+                'id_tahun'    => date('Y'),
+                'id_bulan'    => date('m'),
+                'id_siswa'    => $request->id_csiswa,
+                'no_kwitansi' => $request->no_kwitansi,
+                'tgl_bayar'   => date('Y-m-d', strtotime($request->tgl_bayar ?? now())),
+                'id_kasir'    => auth()->user()->id,
+                'keterangan'  => $request->keterangan,
+            ]);
+
+            $idBayar = $bayar->id;
+
+            $items = [
+                [
+                    'nominal' => $request->jml_dpp,
+                    'id_item' => 2,
+                ],
+                [
+                    'nominal' => $request->jml_seragam,
+                    'id_item' => 5,
+                ],
+                [
+                    'nominal' => $request->jml_spp,
+                    'id_item' => 6,
+                ],
+                [
+                    'nominal' => $request->jml_tabungan,
+                    'id_item' => 7,
+                ],
+                [
+                    'nominal' => $request->jml_osis,
+                    'id_item' => 8,
+                ],
+            ];
+
+            foreach ($items as $item) {
+
+                if ($item['nominal'] > 0) {
+
+                    $detail =  DetBayar::create([
+                        'id_bayar'   => $idBayar,
+                        'id_item'    => $item['id_item'],
+                        'jml_bayar'  => $item['nominal'],
+                        'id_cicilan' => $request->cicilan,
+                    ]);
+                }
+            }
+
+            $this->updateKewajiban($idBayar);
+            $this->updateBayar($idBayar);
+
+            LogModel::create([
+                'tanggal' => now(),
+                'tabel' => 'tb_bayar',
+                'aksi' => 'create',
+                'user' => auth()->user()->id,
+                'ip' => $request->ip(),
+                'keterangan' => json_encode($bayar),
+                'serial' => url('simpanCicilan')
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'title'   => 'Sukses',
+                'bayar'   => $bayar,
+                'detail'  => $items,
+                'msg'     => 'Data telah tersimpan. ID : ' . $idBayar,
+                'id'      => $idBayar,
+            ]);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'title'   => 'Peringatan',
+                'msg'     => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function updateBayar($id)
+    {
+        $total = DetBayar::where('id_bayar', $id)
+            ->sum('jml_bayar');
+
+        return Bayar::where('id', $id)
+            ->update([
+                'tot_bayar' => $total
+            ]);
+    }
+    public function updateKewajiban($id)
+    {
+        $total = DetBayar::where('id_bayar', $id)
+            ->selectRaw('COALESCE(SUM(kwajiban_bayar),0) - COALESCE(SUM(potongan),0) as total')
+            ->value('total');
+
+        return Bayar::where('id', $id)
+            ->update([
+                'tot_kwajiban' => $total
+            ]);
+    }
+
+    public function createReportPdf(Request $request, $id)
+    {
+        $hasil = DB::table('tb_bayar')
+            ->join('tb_det_bayar', 'tb_bayar.id', '=', 'tb_det_bayar.id_bayar')
+            ->join('tb_itembayar', 'tb_det_bayar.id_item', '=', 'tb_itembayar.id')
+            ->select(
+                'tb_bayar.id_siswa',
+                'tb_det_bayar.id_item',
+                'tb_itembayar.nama_item',
+                DB::raw('SUM(tb_bayar.tot_bayar) as SUMT1'),
+                DB::raw('SUM(tb_bayar.tot_kwajiban) as SUMK1'),
+                DB::raw('SUM(tb_det_bayar.jml_bayar) as SUMB'),
+                DB::raw('SUM(tb_det_bayar.kwajiban_bayar) as SUMK2'),
+                DB::raw('SUM(tb_det_bayar.potongan) as SUMP')
+            )
+            ->where('tb_bayar.id_siswa', $id)
+            ->groupBy(
+                'tb_bayar.id_siswa',
+                'tb_det_bayar.id_item',
+                'tb_itembayar.nama_item'
+            )
+            ->orderBy('tb_det_bayar.id_item')
+            ->get();
+
+        $atas = Siswa::with('kelas', 'jurusan')->where('nipd', $id)->first();
+
+        $profile = DB::table('tb_profile')->first();
+
+        $data = compact('hasil', 'atas', 'profile');
+
+
+
+        if ($request->has('grid')) {
+            return response()->json($data);
+        }
+
+        //return view('keuangan.bayar.rptkewajiban_pdf', $data);
+        $pdf = Pdf::loadView(
+            'keuangan.bayar.rptkewajiban_pdf',
+            $data
+        )->setPaper('A4', 'landscape');
+
+        return $pdf->stream('laporan-kewajiban-' . $atas->nipd . '.pdf');
     }
 }

@@ -192,8 +192,14 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/bayar/setDefBulan', [BayarController::class, 'setDefBulan'])
         ->name('bayar.setDefBulan');
 
-        Route::post('/bayar/set-lunas/{id}', [BayarController::class, 'setLunas'])
+    Route::post('/bayar/set-lunas/{id}', [BayarController::class, 'setLunas'])
     ->name('bayar.set-lunas');
+
+    Route::post('/bayar/simpanCicilan', [BayarController::class, 'simpanCicilan'])
+    ->name('bayar.simpanCicilan');
+
+    Route::get('/bayar/createReportPdf/{id}', [BayarController::class, 'createReportPdf'])
+    ->name('bayar.createReportPdf');
 });
 
 

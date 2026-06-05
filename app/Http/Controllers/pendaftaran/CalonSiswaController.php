@@ -181,24 +181,22 @@ class CalonSiswaController extends Controller
 
     public function data()
     {
-        $data = CalonSiswa::with([
-            'gelombang',
-            'jurusan'
-        ])
+       $data = CalonSiswa::with([
+        'gelombang',
+        'jurusan',
+        'tahunAjaran'
+            ])
+            ->whereHas('tahunAjaran', function ($q) {
+                $q->where('isaktiv', 1);
+            })
             ->latest('id')
             ->get()
             ->map(function ($item) {
-
                 return [
-
                     'id' => $item->id,
-
                     'nama_lengkap' => $item->nama_lengkap,
-
                     'jk' => $item->jk,
-
                     'nisn' => $item->nisn,
-
                     'no_hp' => $item->no_hp,
 
                     'nama_jurusan' =>
