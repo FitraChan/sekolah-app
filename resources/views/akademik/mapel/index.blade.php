@@ -235,6 +235,9 @@ function saveData()
         ? "{{ url('mapel/update') }}/" + id
         : "{{ url('mapel/store') }}";
         
+        console.log(url);
+        
+        
 
     fetch(url, {
 

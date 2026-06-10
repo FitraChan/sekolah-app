@@ -26,7 +26,7 @@ class MapelController extends Controller
             'jurusan',
             'kategoriMapel'
         ])
-        ->orderBy('nama_mapel')
+        ->orderBy('id','desc')
         ->get()
         ->map(function ($item) {
 
@@ -52,7 +52,6 @@ class MapelController extends Controller
                 'smt4' => $item->smt4,
                 'smt5' => $item->smt5,
                 'smt6' => $item->smt6,
-
                 'ket' => $item->ket,
             ];
         });

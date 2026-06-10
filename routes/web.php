@@ -23,6 +23,8 @@ use App\Http\Controllers\keuangan\DetBayarCalonSiswaController;
 use App\Http\Controllers\akademik\KelasController;
 use App\Http\Controllers\akademik\JurusanController;
 use App\Http\Controllers\akademik\MapelController;
+use App\Http\Controllers\akademik\MasterJadwalController;
+
 
 
 
@@ -306,6 +308,17 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('mapel/update/{id}', [MapelController::class, 'update']);
 
     Route::delete('mapel/delete/{id}', [MapelController::class, 'destroy']);
+    Route::get('/master-jadwal', [MasterJadwalController::class, 'index'])
+        ->name('master-jadwal.index');
+
+    Route::get('master-jadwal/data', [MasterJadwalController::class, 'data'])
+        ->name('master-jadwal.data');
+
+    Route::post('master-jadwal/store', [MasterJadwalController::class, 'store']);
+
+    Route::post('master-jadwal/update/{id}', [MasterJadwalController::class, 'update']);
+
+    Route::delete('master-jadwal/delete/{id}', [MasterJadwalController::class, 'destroy']);
 
 });
 
