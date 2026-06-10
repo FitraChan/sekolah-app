@@ -12,5 +12,5 @@ class KatPeriodeBayar extends Model
         'nama_kategori'
     ];
 
-    public $timestamps = false;
+   // public $timestamps = false;
 }

@@ -45,6 +45,112 @@ class BayarController extends Controller
         );
     }
 
+    public function update(Request $request, $id)
+    {
+        try {
+
+            $bayar = Bayar::findOrFail($id);
+
+            // Simpan data lama untuk log
+
+            $bayar->update([
+                'no_kwitansi' => $request->no_kwitansi,
+                'tgl_bayar'   => date('Y-m-d', strtotime($request->tgl_bayar ?? now())),
+                'id_kasir'    => auth()->user()->id,
+                'keterangan'  => $request->keterangan,
+            ]);
+
+           LogModel::create([
+                'tanggal' => now(),
+                'tabel' => 'tb_bayar',
+                'aksi' => 'update',
+                'user' => auth()->user()->id,
+                'ip' => $request->ip(),
+                'keterangan' => json_encode($bayar),
+                'serial' => url('update')
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'title'   => 'Sukses',
+                'msg'     => 'Data telah tersimpan'
+            ]);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'success' => false,
+                'title'   => 'Peringatan',
+                'msg'     => 'Gagal mengubah data',
+                'error'   => $e->getMessage()
+            ], 500);
+
+        }
+    }
+
+    public function destroy(Request $request, $id)
+    {
+        try {
+
+            $user = auth()->user();
+
+            
+
+            DB::beginTransaction();
+
+            $bayar = Bayar::findOrFail($id);
+
+            $detailBayar = DetBayar::where('id_bayar', $id)->get();
+
+            // Log tb_bayar
+            LogModel::create([
+                'tanggal'    => now(),
+                'tabel'      => 'tb_bayar',
+                'aksi'       => 'delete',
+                'user'       => $user->id,
+                'ip'         => $request->ip(),
+                'serial'     => $request->userAgent(),
+                'keterangan' => json_encode($bayar),
+            ]);
+
+            // Log tb_det_bayar
+            LogModel::create([
+                'tanggal'    => now(),
+                'tabel'      => 'tb_det_bayar',
+                'aksi'       => 'delete',
+                'user'       => $user->id,
+                'ip'         => $request->ip(),
+                'serial'     => $request->userAgent(),
+                'keterangan' => json_encode($detailBayar),
+            ]);
+
+            // Hapus detail terlebih dahulu
+            DetBayar::where('id_bayar', $id)->delete();
+
+            // Hapus master
+            $bayar->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'title'   => 'Success',
+                'msg'     => 'Proses berhasil dilakukan'
+            ]);
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'title'   => 'Gagal',
+                'msg'     => 'Proses gagal dilakukan',
+                'error'   => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function data(Request $request)
     {
         return Siswa::with([
@@ -89,6 +195,7 @@ class BayarController extends Controller
                     'id'            => $row->id,
                     'id_bayar'  => $row->id_bayar ?? '',
                     'nama_item' => $row->itemBayar->nama_item ?? '',
+                    'id_item' => $row->id_item ?? '',
                     'kwajiban_bayar'     => $row->kwajiban_bayar,
                     'potongan'     => $row->potongan,
                     'jml_bayar'  => $row->jml_bayar,
@@ -408,4 +515,7 @@ class BayarController extends Controller
 
         return $pdf->stream('laporan-kewajiban-' . $atas->nipd . '.pdf');
     }
+
+
+    
 }

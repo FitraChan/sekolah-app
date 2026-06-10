@@ -10,7 +10,7 @@ class Gelombang extends Model
 
     protected $primaryKey = 'id';
 
-    public $timestamps = false;
+ //   public $timestamps = false;
 
     protected $fillable = [
         'id_tahun',

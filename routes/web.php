@@ -17,6 +17,18 @@ use App\Http\Controllers\keuangan\KatPeriodeBayarController;
 use App\Http\Controllers\keuangan\ItemBayarController;
 use App\Http\Controllers\keuangan\TemplateBayarController;
 use App\Http\Controllers\keuangan\BayarController;
+use App\Http\Controllers\keuangan\DetBayarController;
+use App\Http\Controllers\keuangan\BayarCalonSiswaController;
+use App\Http\Controllers\keuangan\DetBayarCalonSiswaController;
+use App\Http\Controllers\akademik\KelasController;
+use App\Http\Controllers\akademik\JurusanController;
+use App\Http\Controllers\akademik\MapelController;
+
+
+
+
+
+
 
 
 
@@ -178,6 +190,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/bayar', [BayarController::class, 'index'])
         ->name('bayar.index');
 
+    Route::put('/bayar/{id}', [BayarController::class, 'update'])
+    ->name('bayar.update');
+
     // Data siswa untuk DataTables/Ajax
     Route::get('/bayar/data', [BayarController::class, 'data'])
         ->name('bayar.data');
@@ -200,6 +215,98 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::get('/bayar/createReportPdf/{id}', [BayarController::class, 'createReportPdf'])
     ->name('bayar.createReportPdf');
+
+    Route::post('/det-bayar/store', [DetBayarController::class, 'store'])
+    ->name('det-bayar.store');
+
+    Route::put('/det-bayar/{id}', [DetBayarController::class, 'update'])
+    ->name('det-bayar.update');
+
+    Route::delete('/det-bayar/{id}', [DetBayarController::class, 'destroy'])
+    ->name('det-bayar.destroy');
+
+    Route::post('/det-bayar/set-regis', [DetBayarController::class, 'setRegis'])
+    ->name('det-bayar.set-regis');
+   
+    Route::delete('/bayar/{id}', [BayarController::class, 'destroy'])
+    ->name('bayar.destroy');
+
+    Route::get('/bayar-calon-siswa', [BayarCalonSiswaController::class, 'index'])
+        ->name('bayar-calon-siswa.index');
+
+    Route::put('/bayar-calon-siswa/{id}', [BayarCalonSiswaController::class, 'update'])
+    ->name('bayar-calon-siswa.update');
+
+    Route::delete('/bayar-calon-siswa/{id}', [BayarCalonSiswaController::class, 'destroy'])
+    ->name('bayar-calon-siswa.destroy');
+
+    Route::get('/bayar-calon-siswa/data', [BayarCalonSiswaController::class, 'data'])
+    ->name('bayar-calon-siswa.data');
+
+    Route::get('/bayar-calon-siswa/detail/{nipd}', [BayarCalonSiswaController::class, 'detail'])
+    ->name('bayar-calon-siswa.detail');
+
+    Route::get('/bayar-calon-siswa/detailBayar/{nipd}', [BayarCalonSiswaController::class, 'detailBayar'])
+    ->name('bayar-calon-siswa.detailBayar');
+
+    Route::post('/bayar-calon-siswa/setDefBulan', [BayarCalonSiswaController::class, 'setDefBulan'])
+    ->name('bayar-calon-siswa.setDefBulan');
+
+    Route::post('/bayar-calon-siswa/set-lunas/{id}', [BayarCalonSiswaController::class, 'setLunas'])
+    ->name('bayar-calon-siswa.set-lunas');
+
+    Route::post('/bayar-calon-siswa/simpanCicilan', [BayarCalonSiswaController::class, 'simpanCicilan'])
+    ->name('bayar-calon-siswa.simpanCicilan');
+
+    Route::get('/bayar-calon-siswa/createReportPdf/{id}', [BayarCalonSiswaController::class, 'createReportPdf'])
+    ->name('bayar-calon-siswa.createReportPdf');
+
+
+    Route::post('det-bayar-calon-siswa/store', [DetBayarCalonSiswaController::class, 'store'])
+        ->name('det-bayar-calon-siswa.store');
+
+    Route::put('det-bayar-calon-siswa/{id}', [DetBayarCalonSiswaController::class, 'update'])
+        ->name('det-bayar-calon-siswa.update');
+
+    Route::delete('det-bayar-calon-siswa/{id}', [DetBayarCalonSiswaController::class, 'destroy'])
+        ->name('det-bayar-calon-siswa.destroy');
+
+
+    Route::get('/kelas', [KelasController::class, 'index'])->name('kelas.index');
+
+    Route::get('kelas/data', [KelasController::class, 'data'])->name('kelas.data');
+
+    Route::post('kelas/store', [KelasController::class, 'store']);
+
+    Route::post('kelas/update/{id}', [KelasController::class, 'update']);
+
+    Route::delete('kelas/delete/{id}', [KelasController::class, 'destroy']);
+
+
+     Route::get('/jurusan', [JurusanController::class, 'index'])
+        ->name('jurusan.index');
+
+    Route::get('jurusan/data', [JurusanController::class, 'data'])
+        ->name('jurusan.data');
+
+    Route::post('jurusan/store', [JurusanController::class, 'store']);
+
+    Route::post('jurusan/update/{id}', [JurusanController::class, 'update']);
+
+    Route::delete('jurusan/delete/{id}', [JurusanController::class, 'destroy']);
+
+    Route::get('/mapel', [MapelController::class, 'index'])
+        ->name('mapel.index');
+
+    Route::get('mapel/data', [MapelController::class, 'data'])
+        ->name('mapel.data');
+
+    Route::post('mapel/store', [MapelController::class, 'store']);
+
+    Route::post('mapel/update/{id}', [MapelController::class, 'update']);
+
+    Route::delete('mapel/delete/{id}', [MapelController::class, 'destroy']);
+
 });
 
 

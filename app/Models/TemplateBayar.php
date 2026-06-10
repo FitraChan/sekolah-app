@@ -17,7 +17,7 @@ class TemplateBayar extends Model
         'sts'
     ];
 
-    public $timestamps = false;
+   // public $timestamps = false;
 
     /*
     |--------------------------------------------------------------------------

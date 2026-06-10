@@ -16,7 +16,7 @@ class ItemBayar extends Model
         'def_value'
     ];
 
-    public $timestamps = false;
+   // public $timestamps = false;
 
     public function kategori()
     {

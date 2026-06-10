@@ -10,7 +10,7 @@ class TmpTinggal extends Model
 
     protected $primaryKey = 'id';
 
-    public $timestamps = false;
+  //  public $timestamps = false;
 
     protected $fillable = [
         'nama_tmp_tinggal',

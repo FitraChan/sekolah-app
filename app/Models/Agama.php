@@ -10,7 +10,7 @@ class Agama extends Model
 
     protected $primaryKey = 'id';
 
-    public $timestamps = false;
+   // public $timestamps = false;
 
     protected $fillable = [
         'nama_agama',

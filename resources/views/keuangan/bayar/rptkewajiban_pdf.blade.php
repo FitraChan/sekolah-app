@@ -69,7 +69,7 @@
     <hr>
 
     <h3 class="center">
-        LAPORAN KEWAJIBAN SISWA
+        LAPORAN CALON KEWAJIBAN SISWA
     </h3>
 
     <br>

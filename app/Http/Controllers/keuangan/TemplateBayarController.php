@@ -171,6 +171,12 @@ class TemplateBayarController extends Controller
             'sts'           => $request->sts,
         ]);
 
+          Siswa::where('id_thn_ajaran', $row->id_tahun)
+        ->whereNull('id_template_bayar')
+        ->update([
+            'id_template_bayar' => $row->id
+        ]);
+
         LogModel::create([
             'tanggal' => now(),
             'tabel' => 'tb_template_bayar',

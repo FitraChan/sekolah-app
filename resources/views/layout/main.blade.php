@@ -199,7 +199,6 @@ License: You must have a valid license purchased only from themeforest(the above
                             </a>
                         </li>
 
-
                         <li>
                             <a href="{{ route('broadcast.index') }}"
                                 class="menu {{ $side == 'broadcast' ? 'menu--active' : '' }}">
@@ -228,13 +227,13 @@ License: You must have a valid license purchased only from themeforest(the above
                         <div class="menu__icon"> <i data-lucide="box"></i> </div>
                         <div class="menu__title">
                             Keuangan
-                            <div class="menu__sub-icon {{ in_array($side, ['kat-item-bayar', 'kat-periode-bayar', 'item-bayar', 'template-bayar']) ? 'transform rotate-180' : '' }}">
+                            <div class="menu__sub-icon {{ in_array($side, ['kat-item-bayar', 'kat-periode-bayar', 'item-bayar', 'template-bayar', 'bayar','bayar-calon-siswa']) ? 'transform rotate-180' : '' }}">
                                 <i data-lucide="chevron-down"></i>
                             </div>
                         </div>
                     </a>
                     <!-- Sub-Menu Wrapper -->
-                    <ul class="{{ in_array($side, ['kat-item-bayar','kat-periode-bayar','item-bayar','template-bayar']) ? 'menu__sub-open' : '' }}">
+                    <ul class="{{ in_array($side, ['kat-item-bayar','kat-periode-bayar','item-bayar','template-bayar','bayar','bayar-calon-siswa']) ? 'menu__sub-open' : '' }}">
                         <li>
                             <!-- Sub-Menu Gelombang -->
                             <a href="{{ route('kat-item-bayar.index') }}" class="menu {{ $side == 'kat-item-bayar' ? 'menu--active' : '' }}">
@@ -303,6 +302,65 @@ License: You must have a valid license purchased only from themeforest(the above
 
                             </a>
                         </li>
+
+                        <li>
+                            <a href="{{ route('bayar-calon-siswa.index') }}"
+                                class="menu {{ $side == 'bayar-calon-siswa' ? 'menu--active' : '' }}">
+
+                                <div class="menu__icon">
+                                    <i data-lucide="credit-card"></i>
+                                </div>
+
+                                <div class="menu__title">
+                                    Bayar Calon Siswa
+                                </div>
+
+                            </a>
+                        </li>
+
+
+
+                    </ul>
+                </li>
+
+
+                <li>
+                    <!-- Indikator 'menu--active' dipasang di menu utama jika salah satu sub-menunya sedang aktif -->
+                    <a href="javascript:;" class="menu">
+                        <div class="menu__icon"> <i data-lucide="box"></i> </div>
+                        <div class="menu__title">
+                            Akademik
+                            <div class="menu__sub-icon {{ in_array($side, ['kelas']) ? 'transform rotate-180' : '' }}">
+                                <i data-lucide="chevron-down"></i>
+                            </div>
+                        </div>
+                    </a>
+                    <!-- Sub-Menu Wrapper -->
+                    <ul class="{{ in_array($side, ['kelas']) ? 'menu__sub-open' : '' }}">
+                        <li>
+                            <!-- Sub-Menu Gelombang -->
+                            <a href="{{ route('kelas.index') }}" class="menu {{ $side == 'kelas' ? 'menu--active' : '' }}">
+                                <div class="menu__icon"> <i data-lucide="hard-drive"></i> </div>
+                                <div class="menu__title"> Kelas </div>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{{ route('jurusan.index') }}" class="menu {{ $side == 'jurusan' ? 'menu--active' : '' }}">
+                                <div class="menu__icon"> <i data-lucide="credit-card"></i> </div>
+                                <div class="menu__title"> Jurusan </div>
+                            </a>
+                        </li>   
+
+
+
+                        <li>
+                            <!-- Sub-side-menu Gelombang -->
+                            <a href="{{ route('mapel.index') }}" class="menu {{ $side == 'mapel' ? 'menu--active' : '' }}">
+                                <div class="menu__icon"> <i data-lucide="credit-card"></i> </div>
+                                <div class="menu__title"> Mata Pelajaran </div>
+                            </a>
+                        </li>   
                     </ul>
                 </li>
 
@@ -474,13 +532,13 @@ License: You must have a valid license purchased only from themeforest(the above
                         <div class="side-menu__icon"> <i data-lucide="box"></i> </div>
                         <div class="side-menu__title">
                             Keuangan
-                            <div class="side-menu__sub-icon {{ in_array($side, ['kat-item-bayar', 'kat-periode-bayar', 'item-bayar', 'template-bayar']) ? 'transform rotate-180' : '' }}">
+                            <div class="side-menu__sub-icon {{ in_array($side, ['kat-item-bayar', 'kat-periode-bayar', 'item-bayar', 'template-bayar', 'bayar','bayar-calon-siswa']) ? 'transform rotate-180' : '' }}">
                                 <i data-lucide="chevron-down"></i>
                             </div>
                         </div>
                     </a>
                     <!-- Sub-Menu Wrapper -->
-                    <ul class="{{ in_array($side, ['kat-item-bayar','kat-periode-bayar','item-bayar','template-bayar']) ? 'side-menu__sub-open' : '' }}">
+                    <ul class="{{ in_array($side, ['kat-item-bayar','kat-periode-bayar','item-bayar','template-bayar','bayar','bayar-calon-siswa']) ? 'side-menu__sub-open' : '' }}">
                         <li>
                             <!-- Sub-Menu Gelombang -->
                             <a href="{{ route('kat-item-bayar.index') }}" class="side-menu {{ $side == 'kat-item-bayar' ? 'side-menu--active' : '' }}">
@@ -549,6 +607,66 @@ License: You must have a valid license purchased only from themeforest(the above
 
                             </a>
                         </li>
+
+                        <li>
+                            <a href="{{ route('bayar-calon-siswa.index') }}"
+                                class="side-menu {{ $side == 'bayar-calon-siswa' ? 'side-menu--active' : '' }}">
+
+                                <div class="side-menu__icon">
+                                    <i data-lucide="credit-card"></i>
+                                </div>
+
+                                <div class="side-menu__title">
+                                    Bayar Calon Siswa
+                                </div>
+
+                            </a>
+                        </li>    
+
+
+
+                    </ul>
+                </li>
+
+                <li>
+                    <!-- Indikator 'menu--active' dipasang di menu utama jika salah satu sub-menunya sedang aktif -->
+                    <a href="javascript:;" class="side-menu">
+                        <div class="side-menu__icon"> <i data-lucide="file-text"></i> </div>
+                        <div class="side-menu__title">
+                            Akademik
+                            <div class="side-menu__sub-icon {{ in_array($side, ['kelas','jurusan','mapel']) ? 'transform rotate-180' : '' }}">
+                                <i data-lucide="chevron-down"></i>
+                            </div>
+                        </div>
+                    </a>
+                    <!-- Sub-side-menu Wrapper -->
+                    <ul class="{{ in_array($side, ['kelas','jurusan','mapel']) ? 'side-menu__sub-open' : '' }}">
+                        <li>
+                            <!-- Sub-side-menu Gelombang -->
+                            <a href="{{ route('kelas.index') }}" class="side-menu {{ $side == 'kelas' ? 'side-menu--active' : '' }}">
+                                <div class="side-menu__icon"> <i data-lucide="hard-drive"></i> </div>
+                                <div class="side-menu__title"> Kelas </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('jurusan.index') }}" class="side-menu {{ $side == 'jurusan' ? 'side-menu--active' : '' }}">
+                                <div class="side-menu__icon"> <i data-lucide="credit-card"></i> </div>
+                                <div class="side-menu__title"> Jurusan </div>
+                            </a>
+                        </li>   
+
+
+
+                        <li>
+                            <!-- Sub-side-menu Gelombang -->
+                            <a href="{{ route('mapel.index') }}" class="side-menu {{ $side == 'mapel' ? 'side-menu--active' : '' }}">
+                                <div class="side-menu__icon"> <i data-lucide="credit-card"></i> </div>
+                                <div class="side-menu__title"> Mata Pelajaran </div>
+                            </a>
+                        </li>   
+
+
+
                     </ul>
                 </li>
 

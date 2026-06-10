@@ -4,16 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Bayar extends Model
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes;
 
     protected $table = 'tb_bayar';
 
     protected $primaryKey = 'id';
 
-    public $timestamps = false;
+    //public $timestamps = false;
 
     protected $fillable = [
         'id_tahun',
