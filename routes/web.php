@@ -320,6 +320,12 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::delete('master-jadwal/delete/{id}', [MasterJadwalController::class, 'destroy']);
 
+
+    Route::post(
+    'master-jadwal/update-guru',
+    [MasterJadwalController::class, 'updateGuru']
+    )->name('master-jadwal.update-guru');
+
 });
 
 

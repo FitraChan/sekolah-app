@@ -23,7 +23,7 @@ class MasterJadwal extends Model
         return $this->belongsTo(
             Kelas::class,
             'id_kelas',
-            'id'
+            'idx'
         );
     }
 

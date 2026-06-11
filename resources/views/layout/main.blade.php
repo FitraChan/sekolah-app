@@ -330,13 +330,13 @@ License: You must have a valid license purchased only from themeforest(the above
                         <div class="menu__icon"> <i data-lucide="box"></i> </div>
                         <div class="menu__title">
                             Akademik
-                            <div class="menu__sub-icon {{ in_array($side, ['kelas']) ? 'transform rotate-180' : '' }}">
+                            <div class="menu__sub-icon {{ in_array($side, ['kelas','jurusan','mapel','master-jadwal']) ? 'transform rotate-180' : '' }}">
                                 <i data-lucide="chevron-down"></i>
                             </div>
                         </div>
                     </a>
                     <!-- Sub-Menu Wrapper -->
-                    <ul class="{{ in_array($side, ['kelas']) ? 'menu__sub-open' : '' }}">
+                    <ul class="{{ in_array($side, ['kelas','jurusan','mapel','master-jadwal']) ? 'menu__sub-open' : '' }}">
                         <li>
                             <!-- Sub-Menu Gelombang -->
                             <a href="{{ route('kelas.index') }}" class="menu {{ $side == 'kelas' ? 'menu--active' : '' }}">
@@ -359,6 +359,15 @@ License: You must have a valid license purchased only from themeforest(the above
                             <a href="{{ route('mapel.index') }}" class="menu {{ $side == 'mapel' ? 'menu--active' : '' }}">
                                 <div class="menu__icon"> <i data-lucide="credit-card"></i> </div>
                                 <div class="menu__title"> Mata Pelajaran </div>
+                            </a>
+                        </li>   
+
+
+                        <li>
+                            <!-- Sub-side-menu Gelombang -->
+                            <a href="{{ route('master-jadwal.index') }}" class="menu {{ $side == 'master-jadwal' ? 'menu--active' : '' }}">
+                                <div class="menu__icon"> <i data-lucide="credit-card"></i> </div>
+                                <div class="menu__title"> Penjadwalan </div>
                             </a>
                         </li>   
                     </ul>
@@ -662,6 +671,15 @@ License: You must have a valid license purchased only from themeforest(the above
                             <a href="{{ route('mapel.index') }}" class="side-menu {{ $side == 'mapel' ? 'side-menu--active' : '' }}">
                                 <div class="side-menu__icon"> <i data-lucide="credit-card"></i> </div>
                                 <div class="side-menu__title"> Mata Pelajaran </div>
+                            </a>
+                        </li>   
+
+
+                          <li>
+                            <!-- Sub-side-menu Gelombang -->
+                            <a href="{{ route('master-jadwal.index') }}" class="side-menu {{ $side == 'master-jadwal' ? 'side-menu--active' : '' }}">
+                                <div class="side-menu__icon"> <i data-lucide="file-text"></i> </div>
+                                <div class="side-menu__title"> Penjadwalan </div>
                             </a>
                         </li>   
 
