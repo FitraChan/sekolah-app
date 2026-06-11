@@ -326,6 +326,16 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     [MasterJadwalController::class, 'updateGuru']
     )->name('master-jadwal.update-guru');
 
+    Route::get(
+    '/detail-jadwal/data',
+    [MasterJadwalController::class, 'dataDetail']
+)->name('detail-jadwal.data');
+
+Route::post(
+    '/detail-jadwal/update',
+    [MasterJadwalController::class, 'updateDetail']
+)->name('detail-jadwal.update');
+
 });
 
 

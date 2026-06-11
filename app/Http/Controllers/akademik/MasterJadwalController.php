@@ -9,6 +9,7 @@ use App\Models\TahunAjaran;
 use App\Models\Kelas;
 use App\Models\Mapel;
 use App\Models\Gtk;
+use App\Models\JamPelajaran;
 use App\Models\Jurusan;
 use App\Models\PenjadwalanHari;
 use Illuminate\Support\Facades\DB;
@@ -20,6 +21,7 @@ class MasterJadwalController extends Controller
     {
         return view('akademik.master_jadwal.index', [
             'side'  => 'master-jadwal',
+            'jam' => JamPelajaran::orderBy('id', 'desc')->get(),
             'jurusan' => Jurusan::orderBy('id', 'desc')->get(),
             'tahun' => TahunAjaran::orderBy('id', 'desc')->get(),
             'kelas' => Kelas::orderBy('nama_kelas')->get(),
@@ -76,6 +78,85 @@ class MasterJadwalController extends Controller
 
         return response()->json($data);
     }
+
+    public function dataDetail(Request $request)
+{
+    $query = PenjadwalanHari::with([
+       
+        'jam',
+        'jadwal.tahun',
+        'jadwal.kelas',
+        'jadwal.mapel',
+        'jadwal.guru'
+    ]);
+
+    if ($request->id_tahun) {
+
+        $query->whereHas('jadwal', function ($q) use ($request) {
+
+            $q->where('id_tahun', $request->id_tahun);
+        });
+    }
+
+    if ($request->id_kelas) {
+
+        $query->whereHas('jadwal', function ($q) use ($request) {
+
+            $q->where('id_kelas', $request->id_kelas);
+        });
+    }
+
+    if ($request->id_jurusan) {
+
+        $query->whereHas('jadwal.kelas', function ($q) use ($request) {
+
+            $q->where('id_jurusan', $request->id_jurusan);
+        });
+    }
+
+    $hari = [
+    1 => 'Senin',
+    2 => 'Selasa',
+    3 => 'Rabu',
+    4 => 'Kamis',
+    5 => 'Jumat',
+    6 => 'Sabtu',
+    7 => 'Minggu',
+];
+
+    $data = $query
+        ->orderBy('id', 'desc')
+        ->selectRaw("
+        tb_penjadwalan_hari.*,
+        DAYNAME((19900100 + tb_penjadwalan_hari.id_hari)) as hari
+        ")
+        ->get()
+        ->map(function ($item) {
+
+            return [
+
+                'id'              => $item->id,
+                'idpenjadwalan'   => $item->idpenjadwalan,
+                'id_hari'         => $item->id_hari,
+                'hari'            => $hari[$item->id_hari] ?? '',
+                'jam_ke'          => $item->jam->jam_ke ?? '',
+                'jam_awal'        => $item->jam->jam_awal ?? '',
+                'jam_akhir'       => $item->jam->jam_akhir ?? '',
+
+                'tahun_ajaran'    => $item->jadwal->tahun->thn_ajaran ?? '',
+                'semester'        => $item->jadwal->semester ?? '',
+                'angkatan'        => $item->jadwal->angkatan ?? '',
+
+                'nama_kelas'      => $item->jadwal->kelas->nama_kelas ?? '',
+                'nama_mapel'      => $item->jadwal->mapel->nama_mapel ?? '',
+                'nama_gtk'        => $item->jadwal->guru->nama_gtk ?? '',
+
+                'jml_jam'         => $item->jadwal->jml_jam ?? '',
+            ];
+        });
+
+    return response()->json($data);
+}
 
     public function store(Request $request)
     {
