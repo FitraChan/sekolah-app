@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\akademik;
 
 use App\Http\Controllers\Controller;
+use App\Models\Absensi;
 use Illuminate\Http\Request;
 use App\Models\MasterJadwal;
 use App\Models\TahunAjaran;
@@ -11,7 +12,7 @@ use App\Models\Mapel;
 use App\Models\Gtk;
 use App\Models\JamPelajaran;
 use App\Models\Jurusan;
-use App\Models\PenjadwalanHari;
+use App\Models\TransAjar;
 
 use Illuminate\Support\Facades\DB;
 use App\Models\LogModel;
@@ -77,5 +78,43 @@ class AbsensiController extends Controller
             });
 
         return response()->json($data);
+    }
+
+    public function dataAbsensi(Request $request, $id)
+    {
+
+        $data = Absensi::with('siswa')
+            ->where('idtransajar', $id)
+            ->orderBy('id', 'desc')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id'         => $item->id,
+                    'nipd'       => $item->nipd,
+                    'nama'       => $item->siswa->nama ?? '-',
+                    'jk'         => $item->siswa->jk ?? '-',
+                    'sts_hadir'  => $item->sts_hadir,
+                    'ket_hadir'  => $item->ket_hadir,
+                ];
+            });
+
+        $transAjar = TransAjar::withCount([
+            'hadir as H',
+            'sakit as S',
+            'izin as I',
+            'alfa as A',
+        ])->findOrFail($id);
+
+        return response()->json([
+            'rekap' => [
+                'hadir' => $transAjar->H,
+                'sakit' => $transAjar->S,
+                'izin'  => $transAjar->I,
+                'alfa'  => $transAjar->A,
+                'pertemuan_ke' => $transAjar->idpertemuan,
+                'tanggal' => $transAjar->tgl,
+            ],
+            'data' => $data,
+        ]);
     }
 }
