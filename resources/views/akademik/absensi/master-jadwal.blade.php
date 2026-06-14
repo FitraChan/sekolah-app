@@ -1,47 +1,5 @@
 <div class="max-w-7xl mx-auto p-6">
-
-    <div class="flex gap-2 mb-3">
-
-        <button
-            class="btn btn-primary"
-            data-tw-toggle="modal"
-            data-tw-target="#modal-add-jadwal">
-
-            + Tambah Jadwal
-
-        </button>
-
-        <button
-            class="btn btn-warning"
-            onclick="inisialisasiJadwal()">
-
-            <i data-lucide="save" class="w-4 h-4 mr-1"></i>
-
-            Inisialisasi Jadwal
-        </button>
-
-         <button
-            class="btn btn-danger"
-            onclick="isiNilai()">
-
-            <i data-lucide="activity" class="w-4 h-4 mr-1"></i>
-
-            Isi Nilai Awal
-        </button>
-
-
-        <button
-            class="btn btn-success"
-            onclick="saveGuru()">
-            <i data-lucide="credit-card" class="w-4 h-4 mr-1"></i>
-            Simpan Perubahan Guru
-
-        </button>
-
-
-
-    </div>
-
+   
     <div class="grid grid-cols-12 gap-6 mt-5">
 
         <div class="intro-y col-span-12">

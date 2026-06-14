@@ -12,6 +12,10 @@
 
         </button>
 
+
+        
+
+
     </div>
 
     <div class="grid grid-cols-12 gap-6 mt-5">
@@ -166,10 +170,19 @@ let tableDetail = new Tabulator("#table-detail-jadwal", {
     columns: [
 
         {
-            title: "No",
-            formatter: "rownum",
-            width: 60,
-            hozAlign: "center"
+             title: "No",
+                    width: 70,
+                    hozAlign: "center",
+                    formatter: function(cell) {
+
+                        let row = cell.getRow();
+                        let table = row.getTable();
+
+                        let page = table.getPage();
+                        let size = table.getPageSize();
+
+                        return ((page - 1) * size) + row.getPosition(true);
+                    }
         },
 
         {
@@ -323,11 +336,8 @@ function loadDetailData()
 function resetDetailFilter()
 {
     document.getElementById('filter_tahun_detail').value = '';
-
     document.getElementById('filter_jurusan_detail').value = '';
-
     document.getElementById('filter_kelas_detail').value = '';
-
     loadDetailData();
 }
 
@@ -343,34 +353,21 @@ function saveDetailJadwal()
     fetch(
         "{{ route('detail-jadwal.update') }}",
         {
-
             method: "POST",
-
             headers: {
-
                 "Content-Type": "application/json",
-
                 "X-CSRF-TOKEN": "{{ csrf_token() }}"
-
             },
-
             body: JSON.stringify({
-
                 data: changedRowsDetail
-
             })
-
         }
     )
     .then(res => res.json())
     .then(res => {
-
         alert(res.msg);
-
         changedRowsDetail = [];
-
         tableDetail.replaceData();
-
     });
 }
 

@@ -69,9 +69,19 @@ Calon Siswa
         columns: [
 
             {
-                title: "No",
-                formatter: "rownum",
-                width: 70
+                    title: "No",
+                    width: 70,
+                    hozAlign: "center",
+                    formatter: function(cell) {
+
+                        let row = cell.getRow();
+                        let table = row.getTable();
+
+                        let page = table.getPage();
+                        let size = table.getPageSize();
+
+                        return ((page - 1) * size) + row.getPosition(true);
+                    }
             },
 
             {

@@ -24,6 +24,10 @@ use App\Http\Controllers\akademik\KelasController;
 use App\Http\Controllers\akademik\JurusanController;
 use App\Http\Controllers\akademik\MapelController;
 use App\Http\Controllers\akademik\MasterJadwalController;
+use App\Http\Controllers\akademik\NilaiController;
+use App\Http\Controllers\akademik\AbsensiController;
+
+
 
 
 
@@ -329,12 +333,65 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get(
     '/detail-jadwal/data',
     [MasterJadwalController::class, 'dataDetail']
-)->name('detail-jadwal.data');
+    )->name('detail-jadwal.data');
 
-Route::post(
-    '/detail-jadwal/update',
-    [MasterJadwalController::class, 'updateDetail']
-)->name('detail-jadwal.update');
+    Route::post(
+        '/detail-jadwal/update',
+        [MasterJadwalController::class, 'updateDetail']
+    )->name('detail-jadwal.update');
+
+    Route::post(
+    '/master-jadwal/inisialisasi',
+    [MasterJadwalController::class, 'inisialisasi']
+    )->name('master-jadwal.inisialisasi');
+
+    Route::post(
+    '/master-jadwal/isi-nilai',
+    [MasterJadwalController::class, 'isiNilai']
+    )->name('master-jadwal.isi-nilai');
+
+     Route::get(
+            '/nilai',
+            [NilaiController::class, 'index']
+        )->name('nilai.index');
+
+        Route::get(
+            'nilai/data',
+            [NilaiController::class, 'data']
+        )->name('nilai.data');
+
+        Route::post(
+            'nilai/store',
+            [NilaiController::class, 'store']
+        )->name('store');
+
+        // Route::post(
+        //     'nilai/update/{id}',
+        //     [NilaiController::class, 'update']
+        // )->name('update');
+
+        Route::delete(
+            'nilai/delete/{id}',
+            [NilaiController::class, 'delete']
+        )->name('delete');
+
+        Route::get(
+            'nilai/show/{id}',
+            [NilaiController::class, 'show']
+        )->name('show');
+
+        Route::get(
+            'nilai/detail/{id}',
+            [NilaiController::class, 'detIndex']
+        )->name('detail');
+
+
+        Route::post('/nilai-harian/update', [NilaiController::class, 'update'])
+        ->name('nilai-harian.update');
+
+
+        Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi.index');
+        Route::get('/absensi/data', [AbsensiController::class, 'data'])->name('absensi.data');;
 
 });
 

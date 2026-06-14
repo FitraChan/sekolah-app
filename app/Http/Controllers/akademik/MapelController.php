@@ -12,49 +12,81 @@ use App\Models\LogModel;
 class MapelController extends Controller
 {
     public function index()
-    {
+    { 
         return view('akademik.mapel.index', [
             'side' => 'mapel',
+            'kurikulum' =>  Mapel::select('kurikulum')->distinct()->orderBy('kurikulum')->get(),
             'jurusan' => Jurusan::orderBy('nama_jurusan')->get(),
             'kategori' => KategoriMapel::orderBy('no_kat')->get(),
         ]);
     }
 
-    public function data()
+    public function data(Request $request)
     {
-        $data = Mapel::with([
+        $query = Mapel::with([
             'jurusan',
             'kategoriMapel'
-        ])
-        ->orderBy('id','desc')
-        ->get()
-        ->map(function ($item) {
+        ]);
 
-            return [
+        if ($request->filled('id_jurusan')) {
 
-                'id' => $item->id,
+            $query->where(
+                'id_jurusan',
+                $request->id_jurusan
+            );
+        }
 
-                'nama_mapel' => $item->nama_mapel,
+        if ($request->filled('kurikulum')) {
 
-                'id_jurusan' => $item->id_jurusan,
+            $query->where(
+                'kurikulum',
+                $request->kurikulum
+            );
+        }
 
-                'jurusan' => $item->jurusan?->nama_jurusan,
+        if ($request->filled('keyword')) {
 
-                'id_kategori_mapel' => $item->id_kategori_mapel,
+            $query->where(function ($q) use ($request) {
 
-                'kategori' => $item->kategoriMapel?->nama_kategori_mapel,
+                $q->where(
+                    'nama_mapel',
+                    'like',
+                    '%' . $request->keyword . '%'
+                );
+            });
+        }
 
-                'kurikulum' => $item->kurikulum,
+        $data = $query
+            ->orderBy('nama_mapel')
+            ->get()
+            ->map(function ($item) {
 
-                'smt1' => $item->smt1,
-                'smt2' => $item->smt2,
-                'smt3' => $item->smt3,
-                'smt4' => $item->smt4,
-                'smt5' => $item->smt5,
-                'smt6' => $item->smt6,
-                'ket' => $item->ket,
-            ];
-        });
+                return [
+
+                    'id' => $item->id,
+
+                    'nama_mapel' => $item->nama_mapel,
+
+                    'id_jurusan' => $item->id_jurusan,
+
+                    'jurusan' => $item->jurusan?->nama_jurusan,
+
+                    'id_kategori_mapel' => $item->id_kategori_mapel,
+
+                    'kategori' => $item->kategoriMapel?->nama_kategori_mapel,
+
+                    'kurikulum' => $item->kurikulum,
+
+                    'smt1' => $item->smt1,
+                    'smt2' => $item->smt2,
+                    'smt3' => $item->smt3,
+                    'smt4' => $item->smt4,
+                    'smt5' => $item->smt5,
+                    'smt6' => $item->smt6,
+
+                    'ket' => $item->ket,
+                ];
+            });
 
         return response()->json($data);
     }
