@@ -135,22 +135,17 @@ const hariOptions = {
 };
 
 const jamOptions = @json(
-
-    $jam->mapWithKeys(function($item){
-
+    $jam->mapWithKeys(function ($item) {
         return [
-
             $item->id =>
-                'Jam Ke-' + $item->jam_ke +
-                ' (' +
-                $item->jam_awal +
-                ' - ' +
-                $item->jam_akhir +
+                'Jam Ke-' . $item->jam_ke .
+                ' (' .
+                $item->jam_awal .
+                ' - ' .
+                $item->jam_akhir .
                 ')'
         ];
-
     })
-
 );
 
 let changedRowsDetail = [];
@@ -349,6 +344,8 @@ function saveDetailJadwal()
 
         return;
     }
+
+    console.log(changedRowsDetail);
 
     fetch(
         "{{ route('detail-jadwal.update') }}",

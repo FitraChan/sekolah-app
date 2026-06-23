@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Jurusan;
 use App\Models\User;
+use App\Models\Gtk;
+
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -37,10 +39,12 @@ class AuthController extends Controller
             return redirect()->route('calon-siswa.profil');
         }
 
-       
-
-         if ($user->hasRole('Akademik')) {
+        if ($user->hasRole('Akademik')) {
             return redirect()->route('admin');
+        }
+
+        if ($user->hasRole('guru')) {
+            return redirect()->route('dashboard');
         }
 
         Auth::logout();
@@ -65,6 +69,11 @@ class AuthController extends Controller
             ->get();
 
         return view('auth.registrasi', $data);
+    }
+
+    public function registerGuru()
+    {        
+        return view('auth.registrasiGuru');
     }
 
 
@@ -200,9 +209,9 @@ class AuthController extends Controller
             $pesan = "Selamat {$nama}, anda telah terdaftar di SMK Pandawa Bali Global Abiansemal. Silahkan melakukan pembayaran pendaftaran dan upload bukti bayar melalui halaman personal anda.";
 
             $pesanAdmin = "Pendaftaran online baru
-Nama : {$nama}
-No Daftar : {$nodaftar}
-No HP : {$telp}";
+            Nama : {$nama}
+            No Daftar : {$nodaftar}
+            No HP : {$telp}";
 
             // Contoh pemanggilan service WA
             // app(WhatsappService::class)->send($telp, $pesan);
@@ -220,5 +229,43 @@ No HP : {$telp}";
                 ->withInput()
                 ->with('error', $e->getMessage());
         }
+    }
+
+    public function cekRegisterGuru(Request $request)
+    {
+        // 1. Validasi input
+        $request->validate([
+            'nama_gtk' => 'required|string|max:100',
+            'nik' => 'nullable|string|max:50',
+            'jk' => 'nullable|in:L,P',
+            'no_hp' => 'required|string|max:20',
+            'email' => 'nullable|email|unique:users,email',     
+            //'email' => 'required',      
+            'password' => 'required|min:6|confirmed',
+        ]);
+
+        $user = User::create([
+            'name' => $request->nama_gtk,
+            'email' => $request->email, // login pakai akun_ptk
+            'password' => Hash::make($request->password),
+            'role' => 'guru',
+            
+        ]);
+
+        $user->assignRole('guru');
+
+        // 2. Simpan ke database
+        $guru = Gtk::create([
+            'nama_gtk' => $request->nama_gtk,
+            'nik' => $request->nik,
+            'jk' => $request->jk,
+            'no_hp' => $request->no_hp,
+            'email' => $request->email,                       
+            'user_id' => $user->id
+           
+        ]);
+
+        // 3. Response
+         return redirect('/');
     }
 }

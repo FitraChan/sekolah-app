@@ -53,4 +53,9 @@ class MasterJadwal extends Model
             'id'
         );
     }
+
+    public function quiz()
+    {
+        return $this->belongsTo(Quiz::class, 'master_kelas_id');
+    }
 }

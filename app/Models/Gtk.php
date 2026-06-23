@@ -8,7 +8,7 @@ class Gtk extends Model
 {
     protected $table = 'tb_gtk';
 
-    public $timestamps = false;
+   // public $timestamps = false;
 
     protected $fillable = [
         'nama_gtk',
@@ -78,7 +78,8 @@ class Gtk extends Model
         'foto',
         'password',
         'password2',
-        'role'
+        'role',
+        'user_id'
     ];
 
     /**

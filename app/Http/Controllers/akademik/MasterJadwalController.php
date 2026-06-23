@@ -28,6 +28,7 @@ class MasterJadwalController extends Controller
             'kelas' => Kelas::orderBy('nama_kelas')->get(),
             'mapel' => Mapel::orderBy('nama_mapel')->get(),
             'guru'  => Gtk::orderBy('nama_gtk')->get(),
+
         ]);
     }
 
@@ -142,6 +143,8 @@ class MasterJadwalController extends Controller
                     'jam_ke'          => $item->jam->jam_ke ?? '',
                     'jam_awal'        => $item->jam->jam_awal ?? '',
                     'jam_akhir'       => $item->jam->jam_akhir ?? '',
+
+                        'id_jam'          => $item->id_jam,
 
                     'tahun_ajaran'    => $item->jadwal->tahun->thn_ajaran ?? '',
                     'semester'        => $item->jadwal->semester ?? '',
@@ -287,7 +290,7 @@ class MasterJadwalController extends Controller
         try {
 
             // Hapus jadwal lama
-            DB::table('tb_master_jadwal')
+           $ids = DB::table('tb_master_jadwal')
                 ->where('id_tahun', $thn)
                 ->where('semester', $smt)
                 ->whereIn(
@@ -296,6 +299,14 @@ class MasterJadwalController extends Controller
                         ->select('idx')
                         ->where('id_jurusan', $jurusan)
                 )
+                ->pluck('id');
+
+            DB::table('tb_penjadwalan_hari')
+                ->whereIn('idpenjadwalan', $ids)
+                ->delete();
+
+            DB::table('tb_master_jadwal')
+                ->whereIn('id', $ids)
                 ->delete();
 
             $angkatan = $thn;
@@ -373,19 +384,37 @@ class MasterJadwalController extends Controller
 
     public function updateDetail(Request $request)
     {
-        foreach ($request->data as $row) {
+        DB::beginTransaction();
 
-            PenjadwalanHari::where('id', $row['id'])
-                ->update([
-                    'id_hari' => $row['id_hari'],
-                    'id_jam'  => $row['id_jam'] ?? 0,
-                ]);
+        try {
+
+            foreach ($request->data as $row) {
+
+                PenjadwalanHari::where('id', $row['id'])
+                    ->update([
+                        'id_hari' => $row['id_hari'],
+                        'id_jam'  => $row['id_jam'] ?? 0,
+                    ]);
+
+               
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'msg' => 'Detail jadwal berhasil disimpan'
+            ]);
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'msg' => $e->getMessage()
+            ], 500);
         }
-
-        return response()->json([
-            'success' => true,
-            'msg' => 'Detail jadwal berhasil disimpan'
-        ]);
     }
 
 

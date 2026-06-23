@@ -219,6 +219,31 @@ License: You must have a valid license purchased only from themeforest(the above
 
                 @endif
 
+                 @if(Auth::user()->hasRole('guru'))
+                <li>
+                    <!-- Indikator 'menu--active' dipasang di menu utama jika salah satu sub-menunya sedang aktif -->
+                    <a href="javascript:;" class="menu">
+                        <div class="menu__icon"> <i data-lucide="box"></i> </div>
+                        <div class="menu__title">
+                            Pendaftaran
+                            <div class="menu__sub-icon {{ in_array($side, ['gelombang', 'master-lainnya']) ? 'transform rotate-180' : '' }}">
+                                <i data-lucide="chevron-down"></i>
+                            </div>
+                        </div>
+                    </a>
+                    <!-- Sub-Menu Wrapper -->
+                    <ul class="{{ in_array($side, ['gelombang', 'calon-siswa','set-kelas','rekap_kelas','daftar-siswa']) ? 'menu__sub-open' : '' }}">
+                        <li>
+                            <!-- Sub-Menu Gelombang -->
+                            <a href="{{ route('gelombang.index') }}" class="menu {{ $side == 'gelombang' ? 'menu--active' : '' }}">
+                                <div class="menu__icon"> <i data-lucide="activity"></i> </div>
+                                <div class="menu__title"> Gelombang </div>
+                            </a>
+                        </li>
+                    </ul>
+                </li>  
+@endif  
+
                 @if(Auth::user()->hasRole('admin'))
 
                 <li>
@@ -330,13 +355,13 @@ License: You must have a valid license purchased only from themeforest(the above
                         <div class="menu__icon"> <i data-lucide="box"></i> </div>
                         <div class="menu__title">
                             Akademik
-                            <div class="menu__sub-icon {{ in_array($side, ['kelas','jurusan','mapel','master-jadwal','nilai','absensi']) ? 'transform rotate-180' : '' }}">
+                            <div class="menu__sub-icon {{ in_array($side, ['kelas','jurusan','mapel','master-jadwal','nilai','absensi','soal']) ? 'transform rotate-180' : '' }}">
                                 <i data-lucide="chevron-down"></i>
                             </div>
                         </div>
                     </a>
                     <!-- Sub-Menu Wrapper -->
-                    <ul class="{{ in_array($side, ['kelas','jurusan','mapel','master-jadwal','nilai','absensi']) ? 'menu__sub-open' : '' }}">
+                    <ul class="{{ in_array($side, ['kelas','jurusan','mapel','master-jadwal','nilai','absensi','soal']) ? 'menu__sub-open' : '' }}">
                         <li>
                             <!-- Sub-Menu Gelombang -->
                             <a href="{{ route('kelas.index') }}" class="menu {{ $side == 'kelas' ? 'menu--active' : '' }}">
@@ -379,15 +404,24 @@ License: You must have a valid license purchased only from themeforest(the above
                             </a>
                         </li>   
 
-
-
                          <li>
-                            <!-- Sub-side-menu Gelombang -->
                             <a href="{{ route('absensi.index') }}" class="menu {{ $side == 'absensi' ? 'menu--active' : '' }}">
                                 <div class="menu__icon"> <i data-lucide="users"></i> </div>
                                 <div class="menu__title"> Absensi </div>
                             </a>
                         </li>  
+
+
+
+                        <li>
+                            <a href="{{ route('soal.index') }}" class="menu {{ $side == 'soal' ? 'menu--active' : '' }}">
+                                <div class="menu__icon"> <i data-lucide="calendar"></i> </div>
+                                <div class="menu__title"> Soal Ujian </div>
+                            </a>
+                        </li>  
+
+
+                        
 
                     </ul>
                 </li>
@@ -445,6 +479,33 @@ License: You must have a valid license purchased only from themeforest(the above
                 </li>
 
                 @endif
+
+                
+
+        @if(Auth::user()->hasRole('guru'))
+                <li>
+                    <!-- Indikator 'menu--active' dipasang di menu utama jika salah satu sub-menunya sedang aktif -->
+                    <a href="javascript:;" class="side-menu">
+                        <div class="side-menu__icon"> <i data-lucide="box"></i> </div>
+                        <div class="side-menu__title">
+                            Pendaftaran
+                            <div class="side-menu__sub-icon {{ in_array($side, ['gelombang', 'master-lainnya']) ? 'transform rotate-180' : '' }}">
+                                <i data-lucide="chevron-down"></i>
+                            </div>
+                        </div>
+                    </a>
+                    <!-- Sub-side-menu Wrapper -->
+                    <ul class="{{ in_array($side, ['gelombang', 'calon-siswa','set-kelas','rekap_kelas','daftar-siswa']) ? 'side-menu__sub-open' : '' }}">
+                        <li>
+                            <!-- Sub-side-menu Gelombang -->
+                            <a href="{{ route('gelombang.index') }}" class="side-menu {{ $side == 'gelombang' ? 'side-menu--active' : '' }}">
+                                <div class="side-menu__icon"> <i data-lucide="activity"></i> </div>
+                                <div class="side-menu__title"> Gelombang </div>
+                            </a>
+                        </li>
+                    </ul>
+                </li>  
+@endif 
 
 
 
@@ -662,13 +723,13 @@ License: You must have a valid license purchased only from themeforest(the above
                         <div class="side-menu__icon"> <i data-lucide="file-text"></i> </div>
                         <div class="side-menu__title">
                             Akademik
-                            <div class="side-menu__sub-icon {{ in_array($side, ['kelas','jurusan','mapel','master-jadwal','nilai','absensi']) ? 'transform rotate-180' : '' }}">
+                            <div class="side-menu__sub-icon {{ in_array($side, ['kelas','jurusan','mapel','master-jadwal','nilai','absensi','soal']) ? 'transform rotate-180' : '' }}">
                                 <i data-lucide="chevron-down"></i>
                             </div>
                         </div>
                     </a>
                     <!-- Sub-side-menu Wrapper -->
-                    <ul class="{{ in_array($side, ['kelas','jurusan','mapel','master-jadwal','nilai','absensi']) ? 'side-menu__sub-open' : '' }}">
+                    <ul class="{{ in_array($side, ['kelas','jurusan','mapel','master-jadwal','nilai','absensi','soal']) ? 'side-menu__sub-open' : '' }}">
                         <li>
                             <!-- Sub-side-menu Gelombang -->
                             <a href="{{ route('kelas.index') }}" class="side-menu {{ $side == 'kelas' ? 'side-menu--active' : '' }}">
@@ -712,11 +773,20 @@ License: You must have a valid license purchased only from themeforest(the above
                         </li>  
                         
                         
-                          <li>
+                        <li>
                             <!-- Sub-side-menu Gelombang -->
                             <a href="{{ route('absensi.index') }}" class="side-menu {{ $side == 'absensi' ? 'side-menu--active' : '' }}">
                                 <div class="side-menu__icon"> <i data-lucide="users"></i> </div>
                                 <div class="side-menu__title"> Absensi </div>
+                            </a>
+                        </li>
+                        
+                        
+                        <li>
+                            <!-- Sub-side-menu Gelombang -->
+                            <a href="{{ route('soal.index') }}" class="side-menu {{ $side == 'soal' ? 'side-menu--active' : '' }}">
+                                <div class="side-menu__icon"> <i data-lucide="calendar"></i> </div>
+                                <div class="side-menu__title"> Soal </div>
                             </a>
                         </li>  
 

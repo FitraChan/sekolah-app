@@ -7,11 +7,9 @@
             <div class="intro-y box">
 
                 <div class="flex flex-col sm:flex-row items-center p-5 border-b border-slate-200/60">
-
                     <h2 class="font-medium text-base mr-auto">
                         Daftar Jadwal
                     </h2>
-
                 </div>
 
                 <div class="p-5">
@@ -126,6 +124,7 @@
         pagination: true,
 
         paginationSize: 10,
+        selectableRows: 1,
 
 
 
@@ -255,6 +254,40 @@
             }
         ]
     });
+
+      table.on("rowClick", function(e, row) {
+
+
+
+        showDetail(
+            
+            row.getData()
+        );
+
+
+    });
+
+      function showDetail(data) {
+
+       // console.log(data);
+
+         if (window.tableRekap) {
+            window.tableRekap.setData(
+                "{{ url('absensi/dataAbsensi') }}/" + data.id
+            );
+
+
+                document.getElementById('id_jadwal').value = data.id;
+
+                document.getElementById('filter_mapel_detail').value = data.nama_mapel;
+                document.getElementById('filter_guru_detail').value = data.nama_gtk;
+                document.getElementById('filter_kelas_detail').value = data.nama_kelas;
+
+
+        }
+
+
+      }
 
     function loadData() {
         table.setData(

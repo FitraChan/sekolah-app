@@ -1,31 +1,31 @@
 @extends('layout.main')
 
 @section('tittle')
-Absensi
+Master Soal & Ujian
 @endsection
 
 @section('top-nav')
 <ol class="breadcrumb">
-    <li class="breadcrumb-item">Absensi</li>
+    <li class="breadcrumb-item">Data Soal</li>
 </ol>
 @endsection
 
 @section('body')
 
 <div class="max-w-7xl mx-auto p-6">
+
     <ul class="nav nav-boxed-tabs" role="tablist">
+
         <li class="nav-item flex-1" role="presentation">
             <button
                 class="nav-link w-full py-2 active"
                 data-tw-toggle="pill"
-                data-tw-target="#master-jadwal"
+                data-tw-target="#tab-jadwal"
                 type="button"
                 role="tab"
-                aria-controls="master-jadwal"
+                aria-controls="tab-jadwal"
                 aria-selected="true">
-
                 Master Jadwal
-
             </button>
         </li>
 
@@ -33,14 +33,25 @@ Absensi
             <button
                 class="nav-link w-full py-2"
                 data-tw-toggle="pill"
-                data-tw-target="#detail-jadwal"
+                data-tw-target="#tab-soal"
                 type="button"
                 role="tab"
-                aria-controls="detail-jadwal"
+                aria-controls="tab-soal"
                 aria-selected="false">
+                Master Soal
+            </button>
+        </li>
 
-                Proses Belajar Mengajar
-
+        <li class="nav-item flex-1" role="presentation">
+            <button
+                class="nav-link w-full py-2"
+                data-tw-toggle="pill"
+                data-tw-target="#tab-ujian"
+                type="button"
+                role="tab"
+                aria-controls="tab-ujian"
+                aria-selected="false">
+                Master Ujian
             </button>
         </li>
 
@@ -48,33 +59,38 @@ Absensi
 
     <div class="tab-content mt-5">
 
+        {{-- Master Jadwal --}}
         <div
-            id="master-jadwal"
+            id="tab-jadwal"
             class="tab-pane leading-relaxed active"
             role="tabpanel">
 
-            @include('akademik.absensi.master-jadwal')
+            @include('akademik.soal.jadwal')
 
         </div>
 
+        {{-- Master Soal --}}
         <div
-            id="detail-jadwal"
+            id="tab-soal"
             class="tab-pane leading-relaxed"
             role="tabpanel">
 
-            @include('akademik.absensi.proses_absensi')
+            @include('akademik.soal.soal')
+
+        </div>
+
+        {{-- Master Ujian --}}
+        <div
+            id="tab-ujian"
+            class="tab-pane leading-relaxed"
+            role="tabpanel">
+
+            @include('akademik.soal.ujian')
 
         </div>
 
     </div>
 
 </div>
-
-@include('akademik.absensi.tab.add-absen')
-@include('akademik.absensi.tab.edit-absen')
-@include('akademik.absensi.tab.add-rekap')
-
-
-
 
 @endsection

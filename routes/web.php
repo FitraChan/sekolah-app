@@ -26,6 +26,8 @@ use App\Http\Controllers\akademik\MapelController;
 use App\Http\Controllers\akademik\MasterJadwalController;
 use App\Http\Controllers\akademik\NilaiController;
 use App\Http\Controllers\akademik\AbsensiController;
+use App\Http\Controllers\akademik\SoalController;
+
 
 
 
@@ -60,8 +62,10 @@ Route::get('/logout', [AuthController::class, 'Logout'])->name('logout');
 
 
 Route::get('registerSiswa', [AuthController::class, 'registerSiswa'])->name('registerSiswa');
-
+Route::get('registerGuru', [AuthController::class, 'registerGuru'])->name('registerGuru');
 Route::post('/cekregister', [AuthController::class, 'cekregister'])->name('cekregister');
+Route::post('/cekRegisterGuru', [AuthController::class, 'cekRegisterGuru'])->name('cekRegisterGuru');
+
 
 
 
@@ -391,7 +395,26 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
 
         Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi.index');
-        Route::get('/absensi/data', [AbsensiController::class, 'data'])->name('absensi.data');;
+        Route::get('/absensi/data', [AbsensiController::class, 'data'])->name('absensi.data');
+
+        Route::get('/absensi/dataDetailAbsensi/{id}', [AbsensiController::class, 'dataDetailAbsensi'])->name('dataDetailAbsensi');
+        Route::get('/absensi/dataAbsensi/{id}', [AbsensiController::class, 'dataAbsensi'])->name('dataAbsensi');
+
+        Route::post('/absensi/store', [AbsensiController::class, 'store'])->name('absensi.store');
+
+        Route::post('/absensi/simpanDetailAbsensi', [AbsensiController::class, 'simpanDetailAbsensi'])->name('absensi.simpanDetailAbsensi');
+
+        Route::get('/soal', [SoalController::class, 'index'])->name('soal.index');
+
+        Route::get('/soal/data', [SoalController::class, 'data'])->name('soal.data');
+
+
+        Route::get('/soal/dataSoal/{id}', [SoalController::class, 'dataSoal'])->name('soal.dataSoal');
+        Route::get('/soal/dataUjian/{id}', [SoalController::class, 'dataUjian'])->name('soal.dataUjian');
+
+
+
+
 
 });
 
@@ -510,6 +533,13 @@ Route::middleware(['auth', 'role:calon'])->group(function () {
     )->name('calon-siswa.update-status');
 
     Route::post('/calon-siswa/upload/{id}', [CalonSiswaController::class, 'updateUpload'])->name('calon-siswa.update.upload');
+});
+
+Route::middleware(['auth', 'role:guru'])->group(function () {
+
+  Route::get('/dashboard', [Home::class, 'index'])
+        ->name('dashboard');
+
 });
 
 

@@ -80,7 +80,7 @@ class AbsensiController extends Controller
         return response()->json($data);
     }
 
-    public function dataAbsensi(Request $request, $id)
+    public function dataDetailAbsensi($id)
     {
 
         $data = Absensi::with('siswa')
@@ -91,30 +91,157 @@ class AbsensiController extends Controller
                 return [
                     'id'         => $item->id,
                     'nipd'       => $item->nipd,
-                    'nama'       => $item->siswa->nama ?? '-',
+                    'nama'       => $item->siswa->nama_lengkap ?? '-',
                     'jk'         => $item->siswa->jk ?? '-',
                     'sts_hadir'  => $item->sts_hadir,
                     'ket_hadir'  => $item->ket_hadir,
                 ];
             });
 
+        return response()->json($data);
+    }
+
+    public function dataAbsensi($id)
+    {
         $transAjar = TransAjar::withCount([
             'hadir as H',
             'sakit as S',
             'izin as I',
             'alfa as A',
-        ])->findOrFail($id);
+        ])->where('idjadwal', $id)
+        ->orderBy('created_at','desc')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'hadir' => $item->H ?? 0,
+                    'sakit' => $item->S ?? 0,
+                    'izin' => $item->I ?? 0,
+                    'alfa' => $item->A ?? 0,
+                    'pertemuan_ke' => $item->idpertemuan ?? 0,
+                    'tanggal' => $item->tgl ?? '-',
+                ];
+            });
 
-        return response()->json([
-            'rekap' => [
-                'hadir' => $transAjar->H,
-                'sakit' => $transAjar->S,
-                'izin'  => $transAjar->I,
-                'alfa'  => $transAjar->A,
-                'pertemuan_ke' => $transAjar->idpertemuan,
-                'tanggal' => $transAjar->tgl,
-            ],
-            'data' => $data,
-        ]);
+                return response()->json($transAjar);
+
+       
+    }
+
+    public function store(Request $request)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            $transAjar = TransAjar::create([
+                'idjadwal'        => $request->idjadwal,
+                'idpertemuan'     => $request->idpertemuan,
+                'materi'          => $request->materi,
+                'keterangan'      => $request->keterangan,
+                'guru_pengganti'  => $request->guru_pengganti,
+                'tgl'             => date('Y-m-d', strtotime($request->tgl_pbm)),
+                'jml_h'           => $request->jml_h ?? 0,
+                'jml_i'           => $request->jml_i ?? 0,
+                'jml_s'           => $request->jml_s ?? 0,
+                'jml_a'           => $request->jml_a ?? 0,
+            ]);
+
+            $idt = $transAjar->id;
+
+            DB::insert("
+            INSERT INTO tb_hadir_siswa (idtransajar, nipd)
+            SELECT ?, tb_nilai.nipd
+            FROM tb_nilai
+            WHERE tb_nilai.idjadwal = ?
+            ORDER BY tb_nilai.nipd
+        ", [
+                $idt,
+                $request->idjadwal
+            ]);
+
+              LogModel::create([
+                    'tanggal'    => now(),
+                    'tabel'      => 'tb_mapel',
+                    'aksi'       => 'create',
+                    'user'       => auth()->id(),
+                    'ip'         => $request->ip(),
+                    'keterangan' => json_encode($transAjar),
+                    'serial'     => $request->header('User-Agent')
+                ]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'title'   => 'Sukses',
+                'msg'     => 'Data telah tersimpan'
+            ]);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'title'   => 'Peringatan',
+                'msg'     => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function simpanDetailAbsensi(Request $request)
+    {
+        try {
+
+            $data = $request->input('data');
+
+            if (!$data || !is_array($data)) {
+                return response()->json([
+                    'success' => false,
+                    'msg' => 'Data tidak valid'
+                ]);
+            }
+
+            DB::beginTransaction();
+
+            foreach ($data as $row) {
+
+                DB::table('tb_hadir_siswa')
+                    ->where('id', $row['id'])
+                    ->update([
+                        'sts_hadir' => $row['sts_hadir'],
+                        'ket_hadir' => $row['ket_hadir'] ?? null,
+                        'updated_at' => now()
+                    ]);
+
+
+
+                    LogModel::create([
+                        'tanggal'    => now(),
+                        'tabel'      => 'tb_hadir_siswa',
+                        'aksi'       => 'update',
+                        'user'       => auth()->id(),
+                        'ip'         => $request->ip(),
+                        'keterangan' => json_encode($row),
+                        'serial'     => $request->fullUrl()
+                    ]);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'msg' => 'Absensi berhasil disimpan'
+            ]);
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'msg' => $e->getMessage()
+            ]);
+        }
     }
 }
