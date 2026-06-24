@@ -5,6 +5,7 @@ use App\Http\Controllers\auth\AuthController;
 use App\Http\Controllers\Home;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\KonfigController;
 
 // use App\Http\Controllers\GelombangController;
 
@@ -27,6 +28,8 @@ use App\Http\Controllers\akademik\MasterJadwalController;
 use App\Http\Controllers\akademik\NilaiController;
 use App\Http\Controllers\akademik\AbsensiController;
 use App\Http\Controllers\akademik\SoalController;
+use App\Http\Controllers\guru\PenilaianGuruController;
+
 
 
 
@@ -201,7 +204,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         ->name('bayar.index');
 
     Route::put('/bayar/{id}', [BayarController::class, 'update'])
-    ->name('bayar.update');
+        ->name('bayar.update');
 
     // Data siswa untuk DataTables/Ajax
     Route::get('/bayar/data', [BayarController::class, 'data'])
@@ -218,58 +221,58 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         ->name('bayar.setDefBulan');
 
     Route::post('/bayar/set-lunas/{id}', [BayarController::class, 'setLunas'])
-    ->name('bayar.set-lunas');
+        ->name('bayar.set-lunas');
 
     Route::post('/bayar/simpanCicilan', [BayarController::class, 'simpanCicilan'])
-    ->name('bayar.simpanCicilan');
+        ->name('bayar.simpanCicilan');
 
     Route::get('/bayar/createReportPdf/{id}', [BayarController::class, 'createReportPdf'])
-    ->name('bayar.createReportPdf');
+        ->name('bayar.createReportPdf');
 
     Route::post('/det-bayar/store', [DetBayarController::class, 'store'])
-    ->name('det-bayar.store');
+        ->name('det-bayar.store');
 
     Route::put('/det-bayar/{id}', [DetBayarController::class, 'update'])
-    ->name('det-bayar.update');
+        ->name('det-bayar.update');
 
     Route::delete('/det-bayar/{id}', [DetBayarController::class, 'destroy'])
-    ->name('det-bayar.destroy');
+        ->name('det-bayar.destroy');
 
     Route::post('/det-bayar/set-regis', [DetBayarController::class, 'setRegis'])
-    ->name('det-bayar.set-regis');
-   
+        ->name('det-bayar.set-regis');
+
     Route::delete('/bayar/{id}', [BayarController::class, 'destroy'])
-    ->name('bayar.destroy');
+        ->name('bayar.destroy');
 
     Route::get('/bayar-calon-siswa', [BayarCalonSiswaController::class, 'index'])
         ->name('bayar-calon-siswa.index');
 
     Route::put('/bayar-calon-siswa/{id}', [BayarCalonSiswaController::class, 'update'])
-    ->name('bayar-calon-siswa.update');
+        ->name('bayar-calon-siswa.update');
 
     Route::delete('/bayar-calon-siswa/{id}', [BayarCalonSiswaController::class, 'destroy'])
-    ->name('bayar-calon-siswa.destroy');
+        ->name('bayar-calon-siswa.destroy');
 
     Route::get('/bayar-calon-siswa/data', [BayarCalonSiswaController::class, 'data'])
-    ->name('bayar-calon-siswa.data');
+        ->name('bayar-calon-siswa.data');
 
     Route::get('/bayar-calon-siswa/detail/{nipd}', [BayarCalonSiswaController::class, 'detail'])
-    ->name('bayar-calon-siswa.detail');
+        ->name('bayar-calon-siswa.detail');
 
     Route::get('/bayar-calon-siswa/detailBayar/{nipd}', [BayarCalonSiswaController::class, 'detailBayar'])
-    ->name('bayar-calon-siswa.detailBayar');
+        ->name('bayar-calon-siswa.detailBayar');
 
     Route::post('/bayar-calon-siswa/setDefBulan', [BayarCalonSiswaController::class, 'setDefBulan'])
-    ->name('bayar-calon-siswa.setDefBulan');
+        ->name('bayar-calon-siswa.setDefBulan');
 
     Route::post('/bayar-calon-siswa/set-lunas/{id}', [BayarCalonSiswaController::class, 'setLunas'])
-    ->name('bayar-calon-siswa.set-lunas');
+        ->name('bayar-calon-siswa.set-lunas');
 
     Route::post('/bayar-calon-siswa/simpanCicilan', [BayarCalonSiswaController::class, 'simpanCicilan'])
-    ->name('bayar-calon-siswa.simpanCicilan');
+        ->name('bayar-calon-siswa.simpanCicilan');
 
     Route::get('/bayar-calon-siswa/createReportPdf/{id}', [BayarCalonSiswaController::class, 'createReportPdf'])
-    ->name('bayar-calon-siswa.createReportPdf');
+        ->name('bayar-calon-siswa.createReportPdf');
 
 
     Route::post('det-bayar-calon-siswa/store', [DetBayarCalonSiswaController::class, 'store'])
@@ -293,7 +296,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::delete('kelas/delete/{id}', [KelasController::class, 'destroy']);
 
 
-     Route::get('/jurusan', [JurusanController::class, 'index'])
+    Route::get('/jurusan', [JurusanController::class, 'index'])
         ->name('jurusan.index');
 
     Route::get('jurusan/data', [JurusanController::class, 'data'])
@@ -330,13 +333,13 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
 
     Route::post(
-    'master-jadwal/update-guru',
-    [MasterJadwalController::class, 'updateGuru']
+        'master-jadwal/update-guru',
+        [MasterJadwalController::class, 'updateGuru']
     )->name('master-jadwal.update-guru');
 
     Route::get(
-    '/detail-jadwal/data',
-    [MasterJadwalController::class, 'dataDetail']
+        '/detail-jadwal/data',
+        [MasterJadwalController::class, 'dataDetail']
     )->name('detail-jadwal.data');
 
     Route::post(
@@ -345,77 +348,77 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     )->name('detail-jadwal.update');
 
     Route::post(
-    '/master-jadwal/inisialisasi',
-    [MasterJadwalController::class, 'inisialisasi']
+        '/master-jadwal/inisialisasi',
+        [MasterJadwalController::class, 'inisialisasi']
     )->name('master-jadwal.inisialisasi');
 
     Route::post(
-    '/master-jadwal/isi-nilai',
-    [MasterJadwalController::class, 'isiNilai']
+        '/master-jadwal/isi-nilai',
+        [MasterJadwalController::class, 'isiNilai']
     )->name('master-jadwal.isi-nilai');
 
-     Route::get(
-            '/nilai',
-            [NilaiController::class, 'index']
-        )->name('nilai.index');
+    Route::get(
+        '/nilai',
+        [NilaiController::class, 'index']
+    )->name('nilai.index');
 
-        Route::get(
-            'nilai/data',
-            [NilaiController::class, 'data']
-        )->name('nilai.data');
+    Route::get(
+        'nilai/data',
+        [NilaiController::class, 'data']
+    )->name('nilai.data');
 
-        Route::post(
-            'nilai/store',
-            [NilaiController::class, 'store']
-        )->name('store');
+    Route::post(
+        'nilai/store',
+        [NilaiController::class, 'store']
+    )->name('store');
 
-        // Route::post(
-        //     'nilai/update/{id}',
-        //     [NilaiController::class, 'update']
-        // )->name('update');
+    // Route::post(
+    //     'nilai/update/{id}',
+    //     [NilaiController::class, 'update']
+    // )->name('update');
 
-        Route::delete(
-            'nilai/delete/{id}',
-            [NilaiController::class, 'delete']
-        )->name('delete');
+    Route::delete(
+        'nilai/delete/{id}',
+        [NilaiController::class, 'delete']
+    )->name('delete');
 
-        Route::get(
-            'nilai/show/{id}',
-            [NilaiController::class, 'show']
-        )->name('show');
+    Route::get(
+        'nilai/show/{id}',
+        [NilaiController::class, 'show']
+    )->name('show');
 
-        Route::get(
-            'nilai/detail/{id}',
-            [NilaiController::class, 'detIndex']
-        )->name('detail');
+    Route::get(
+        'nilai/detail/{id}',
+        [NilaiController::class, 'detIndex']
+    )->name('detail');
 
 
-        Route::post('/nilai-harian/update', [NilaiController::class, 'update'])
+    Route::post('/nilai-harian/update', [NilaiController::class, 'update'])
         ->name('nilai-harian.update');
 
 
-        Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi.index');
-        Route::get('/absensi/data', [AbsensiController::class, 'data'])->name('absensi.data');
+    Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi.index');
+    Route::get('/absensi/data', [AbsensiController::class, 'data'])->name('absensi.data');
 
-        Route::get('/absensi/dataDetailAbsensi/{id}', [AbsensiController::class, 'dataDetailAbsensi'])->name('dataDetailAbsensi');
-        Route::get('/absensi/dataAbsensi/{id}', [AbsensiController::class, 'dataAbsensi'])->name('dataAbsensi');
+    Route::get('/absensi/dataDetailAbsensi/{id}', [AbsensiController::class, 'dataDetailAbsensi'])->name('dataDetailAbsensi');
+    Route::get('/absensi/dataAbsensi/{id}', [AbsensiController::class, 'dataAbsensi'])->name('dataAbsensi');
 
-        Route::post('/absensi/store', [AbsensiController::class, 'store'])->name('absensi.store');
+    Route::post('/absensi/store', [AbsensiController::class, 'store'])->name('absensi.store');
 
-        Route::post('/absensi/simpanDetailAbsensi', [AbsensiController::class, 'simpanDetailAbsensi'])->name('absensi.simpanDetailAbsensi');
+    Route::post('/absensi/simpanDetailAbsensi', [AbsensiController::class, 'simpanDetailAbsensi'])->name('absensi.simpanDetailAbsensi');
 
-        Route::get('/soal', [SoalController::class, 'index'])->name('soal.index');
+    Route::get('/soal', [SoalController::class, 'index'])->name('soal.index');
 
-        Route::get('/soal/data', [SoalController::class, 'data'])->name('soal.data');
-
-
-        Route::get('/soal/dataSoal/{id}', [SoalController::class, 'dataSoal'])->name('soal.dataSoal');
-        Route::get('/soal/dataUjian/{id}', [SoalController::class, 'dataUjian'])->name('soal.dataUjian');
+    Route::get('/soal/data', [SoalController::class, 'data'])->name('soal.data');
 
 
+    Route::get('/soal/dataSoal/{id}', [SoalController::class, 'dataSoal'])->name('soal.dataSoal');
+    Route::get('/soal/dataUjian/{id}', [SoalController::class, 'dataUjian'])->name('soal.dataUjian');
 
+    Route::get('/konfig', [KonfigController::class, 'index'])->name('konfig.index');
+    Route::get('konfig/data', [KonfigController::class, 'data'])->name('konfig.data');
 
-
+    Route::post('konfig/update/{id}', [KonfigController::class, 'update'])->name('konfig.update');
 });
 
 
@@ -537,10 +540,20 @@ Route::middleware(['auth', 'role:calon'])->group(function () {
 
 Route::middleware(['auth', 'role:guru'])->group(function () {
 
-  Route::get('/dashboard', [Home::class, 'index'])
+    Route::get('/dashboard', [Home::class, 'index'])
         ->name('dashboard');
 
+    Route::get(
+        '/pbm',
+        [PenilaianGuruController::class, 'index']
+    )->name('pbm.index');
+
+    Route::get('pbm/data',[PenilaianGuruController::class, 'data'])->name('pbm.data');
+    Route::get('pbm/dataMateri/{id}',[PenilaianGuruController::class, 'dataMateri'])->name('pbm.dataMateri');
+
 });
+
+
 
 
 Route::middleware(['auth', 'role:keuangan'])->group(function () {});

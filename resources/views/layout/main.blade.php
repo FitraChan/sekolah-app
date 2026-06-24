@@ -112,6 +112,21 @@ License: You must have a valid license purchased only from themeforest(the above
                     </a>
                 </li>
 
+
+                 <li>
+                    <a href="{{ route('konfig.index') }}" class="menu {{ $side == 'konfig' ? 'menu--active' : '' }}">
+
+                        <div class="menu__icon">
+                            <i data-lucide="file-text"></i>
+                        </div>
+
+                        <div class="menu__title">
+                            Konfig
+                        </div>
+
+                    </a>
+                </li>
+
                 @endif
 
 
@@ -225,19 +240,19 @@ License: You must have a valid license purchased only from themeforest(the above
                     <a href="javascript:;" class="menu">
                         <div class="menu__icon"> <i data-lucide="box"></i> </div>
                         <div class="menu__title">
-                            Pendaftaran
-                            <div class="menu__sub-icon {{ in_array($side, ['gelombang', 'master-lainnya']) ? 'transform rotate-180' : '' }}">
+                            Pengajaran
+                            <div class="menu__sub-icon {{ in_array($side, ['pbm', 'master-lainnya']) ? 'transform rotate-180' : '' }}">
                                 <i data-lucide="chevron-down"></i>
                             </div>
                         </div>
                     </a>
                     <!-- Sub-Menu Wrapper -->
-                    <ul class="{{ in_array($side, ['gelombang', 'calon-siswa','set-kelas','rekap_kelas','daftar-siswa']) ? 'menu__sub-open' : '' }}">
+                    <ul class="{{ in_array($side, ['pbm']) ? 'menu__sub-open' : '' }}">
                         <li>
                             <!-- Sub-Menu Gelombang -->
-                            <a href="{{ route('gelombang.index') }}" class="menu {{ $side == 'gelombang' ? 'menu--active' : '' }}">
+                            <a href="{{ route('pbm.index') }}" class="menu {{ $side == 'pbm' ? 'menu--active' : '' }}">
                                 <div class="menu__icon"> <i data-lucide="activity"></i> </div>
-                                <div class="menu__title"> Gelombang </div>
+                                <div class="menu__title"> PBM </div>
                             </a>
                         </li>
                     </ul>
@@ -478,6 +493,21 @@ License: You must have a valid license purchased only from themeforest(the above
                     </a>
                 </li>
 
+
+                 <li>
+                    <a href="{{ route('konfig.index') }}" class="side-menu {{ $side == 'konfig' ? 'side-menu--active' : '' }}">
+
+                        <div class="side-menu__icon">
+                            <i data-lucide="file-text"></i>
+                        </div>
+
+                        <div class="side-menu__title">
+                            Konfig
+                        </div>
+
+                    </a>
+                </li>
+
                 @endif
 
                 
@@ -488,19 +518,19 @@ License: You must have a valid license purchased only from themeforest(the above
                     <a href="javascript:;" class="side-menu">
                         <div class="side-menu__icon"> <i data-lucide="box"></i> </div>
                         <div class="side-menu__title">
-                            Pendaftaran
-                            <div class="side-menu__sub-icon {{ in_array($side, ['gelombang', 'master-lainnya']) ? 'transform rotate-180' : '' }}">
+                            Pengajaran
+                            <div class="side-menu__sub-icon {{ in_array($side, ['pbm']) ? 'transform rotate-180' : '' }}">
                                 <i data-lucide="chevron-down"></i>
                             </div>
                         </div>
                     </a>
                     <!-- Sub-side-menu Wrapper -->
-                    <ul class="{{ in_array($side, ['gelombang', 'calon-siswa','set-kelas','rekap_kelas','daftar-siswa']) ? 'side-menu__sub-open' : '' }}">
+                    <ul class="{{ in_array($side, ['pbm']) ? 'side-menu__sub-open' : '' }}">
                         <li>
                             <!-- Sub-side-menu Gelombang -->
-                            <a href="{{ route('gelombang.index') }}" class="side-menu {{ $side == 'gelombang' ? 'side-menu--active' : '' }}">
+                            <a href="{{ route('pbm.index') }}" class="side-menu {{ $side == 'pbm' ? 'side-menu--active' : '' }}">
                                 <div class="side-menu__icon"> <i data-lucide="activity"></i> </div>
-                                <div class="side-menu__title"> Gelombang </div>
+                                <div class="side-menu__title"> PBM </div>
                             </a>
                         </li>
                     </ul>
