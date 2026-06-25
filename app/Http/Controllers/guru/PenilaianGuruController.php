@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\guru;
 
 use App\Http\Controllers\Controller;
+use App\Models\Absensi;
 use Illuminate\Http\Request;
 use App\Models\MasterJadwal;
 use App\Models\Gtk;
 use App\Models\TransAjar;
 use App\Models\Quiz;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 
 
 
@@ -120,5 +123,385 @@ class PenilaianGuruController extends Controller
          return view('guru.materi_pbm.index', $data);
 
        //return response()->json($data);
+    }
+
+    public function dataAbsen(Request $request, $id = null)
+    {
+       $data['guru'] = Gtk::select('id', 'nama_gtk')->get();
+
+        $data['master'] = TransAjar::with([
+            'jadwal.kelas',
+            'jadwal.mapel',
+            'jadwal.guru',
+            'guruPengganti'
+        ])->findOrFail($id);
+
+        $data['id'] = $id;
+
+
+         $data['isi'] = Absensi::with([
+        'siswa'
+            ])
+            ->where('idtransajar', $id)
+            ->orderBy('nipd')
+            ->get()
+            ->map(function ($item) {
+
+                return [
+                    'id'         => $item->id,
+                    'nipd'       => $item->nipd,
+                    'nama_siswa' => $item->siswa->nama_lengkap ?? '',
+                    'sts_hadir'  => $item->sts_hadir,
+                    'keterangan' => $item->keterangan,
+                ];
+            });
+
+        return view('guru.materi_pbm.materi.absen', $data);
+    }
+
+    public function editMateri($id)
+    {
+        $data['materi'] = TransAjar::findOrFail($id);
+
+        $data['master'] = MasterJadwal::with(['kelas','mapel'])
+            ->findOrFail($data['materi']->idjadwal);
+
+        $data['guru'] = Gtk::select('id','nama_gtk')->get();
+
+        $data['id'] = $data['materi']->idjadwal;
+
+        return view('guru.materi_pbm.materi.tambah', $data);
+    }
+
+    public function tambahMateri($id)
+    {
+       $guru = Gtk::select('id', 'nama_gtk')->get();
+
+       $master = MasterJadwal::with(['kelas', 'mapel', 'guru'])
+            ->where('id', $id)
+            ->first();
+
+               
+
+        return view('guru.materi_pbm.materi.tambah', [
+            'side'  => 'pbm',
+            'guru' => $guru,   
+            'master' => $master,
+            'id' => $id,    
+            'materi' => null     
+        ]);
+    }
+
+  
+    public function simpanMateri(Request $request)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            $idjadwal = $request->idjadwal;
+            $idpertemuan = $request->idpertemuan;
+
+            $data = [
+                'idjadwal'       => $request->idjadwal,
+                'idpertemuan'    => $request->idpertemuan,
+                'judul_materi'   => $request->judul_materi,
+                'materi'         => $request->materi,
+                'url_video'      => $request->url_video,
+                'is_youtube'     => $request->is_youtube,
+                'judul_tugas'    => $request->judul_tugas,
+                'tugas'          => $request->tugas,
+                'keterangan'     => $request->keterangan,
+                'guru_pengganti' => $request->guru_pengganti,
+                'tgl'            => date('Y-m-d', strtotime($request->tgl)),
+                'tgl_batas_submit' => !empty($request->tgl_batas_submit)
+                ? date('Y-m-d H:i:s', strtotime($request->tgl_batas_submit))
+                : null,
+                'jml_h'          => $request->jml_h,
+                'jml_i'          => $request->jml_i,
+                'jml_s'          => $request->jml_s,
+                'jml_a'          => $request->jml_a,
+                'created_at'     => now(),
+                'updated_at'     => now(),
+            ];
+           
+            // Materi 1
+            if ($request->hasFile('url_materi_1')) {
+
+                $file = $request->file('url_materi_1');
+
+                $fileName = $idjadwal . '_' . $idpertemuan .
+                    '_materi_1_' . date('dmY') . '.' .
+                    $file->getClientOriginalExtension();
+
+                 $file->storeAs(
+                    'uploads/materi',
+                    $fileName,
+                    'public'
+                );
+
+                $data['url_materi_1'] =  'uploads/materi/' . $fileName;
+            }
+
+            // Materi 2
+            if ($request->hasFile('url_materi_2')) {
+
+                $file = $request->file('url_materi_2');
+
+                $fileName = $idjadwal . '_' . $idpertemuan .
+                    '_materi_2_' . date('dmY') . '.' .
+                    $file->getClientOriginalExtension();
+
+               // $file->move($uploadPath, $fileName);
+
+               $file->storeAs(
+                    'uploads/materi',
+                    $fileName,
+                    'public'
+                );
+
+                $data['url_materi_2'] =  'uploads/materi/' . $fileName;
+            }
+
+            // Materi 3
+            if ($request->hasFile('url_materi_3')) {
+
+                $file = $request->file('url_materi_3');
+
+                $fileName = $idjadwal . '_' . $idpertemuan .
+                    '_materi_3_' . date('dmY') . '.' .
+                    $file->getClientOriginalExtension();
+
+                $file->storeAs(
+                    'uploads/materi',
+                    $fileName,
+                    'public'
+                );
+
+                $data['url_materi_3'] =  'uploads/materi/' . $fileName;
+            }
+
+            // Tugas
+            if ($request->hasFile('url_tugas')) {
+
+                $file = $request->file('url_tugas');
+
+                $fileName = $idjadwal . '_' . $idpertemuan .
+                    '_tugas_' . date('dmY') . '.' .
+                    $file->getClientOriginalExtension();
+
+
+                  $file->storeAs(
+                    'uploads/materi',
+                    $fileName,
+                    'public'
+                );
+
+                $data['url_tugas'] =  'uploads/materi/' . $fileName;
+            }
+
+            // Insert tb_trans_ajar
+            $idt = DB::table('tb_trans_ajar')->insertGetId($data);
+
+            // Insert tb_hadir_siswa
+            DB::statement("
+                INSERT INTO tb_hadir_siswa(idtransajar, nipd)
+                SELECT ?, tb_nilai.nipd
+                FROM tb_nilai
+                WHERE tb_nilai.idjadwal = ?
+                ORDER BY tb_nilai.nipd
+            ", [$idt, $idjadwal]);
+
+           // print_r(' idtransajar => '.$idt.'  ')
+
+            DB::commit();
+
+            return redirect()
+                ->back()
+                ->with(
+                    'success',
+                    'Data berhasil disimpan'
+                );
+
+            //  return response()->json([
+            //     'success' => true,
+            //     'data' => $data,
+            //     'msg' => 'Data berhasil dihapus'
+            // ]);
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+             return redirect()
+                ->back()
+                ->with(
+                    'error',
+                    $e->getMessage()
+                );
+        }
+    }
+
+    public function hapusMateri($id)
+    {
+        try {
+
+            DB::table('tb_trans_ajar')
+                ->where('id', $id)
+                ->delete();
+
+            return response()->json([
+                'success' => true,
+                'msg' => 'Data berhasil dihapus'
+            ]);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'success' => false,
+                'msg' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function updateMateri(Request $request, $id)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            $materi = DB::table('tb_trans_ajar')
+                ->where('id', $id)
+                ->first();
+
+            if (!$materi) {
+                return redirect()
+                    ->back()
+                    ->with('error', 'Data tidak ditemukan');
+            }
+
+            $idjadwal = $request->idjadwal;
+            $idpertemuan = $request->idpertemuan;
+
+            $data = [
+                'idjadwal'       => $request->idjadwal,
+                'idpertemuan'    => $request->idpertemuan,
+                'judul_materi'   => $request->judul_materi,
+                'materi'         => $request->materi,
+                'url_video'      => $request->url_video,
+                'is_youtube'     => $request->is_youtube,
+                'judul_tugas'    => $request->judul_tugas,
+                'tugas'          => $request->tugas,
+                'keterangan'     => $request->keterangan,
+                'guru_pengganti' => $request->guru_pengganti,
+                'tgl'            => date('Y-m-d', strtotime($request->tgl)),
+                'tgl_batas_submit' => !empty($request->tgl_batas_submit)
+                ? date('Y-m-d H:i:s', strtotime($request->tgl_batas_submit))
+                : null,
+                'jml_h'          => $request->jml_h,
+                'jml_i'          => $request->jml_i,
+                'jml_s'          => $request->jml_s,
+                'jml_a'          => $request->jml_a,
+                'updated_at'     => now(),
+            ];
+
+            // =====================
+            // Materi 1
+            // =====================
+            if ($request->hasFile('url_materi_1')) {
+
+                $file = $request->file('url_materi_1');
+
+                $fileName = $idjadwal . '_' . $idpertemuan .
+                    '_materi_1_' . date('dmY') . '.' .
+                    $file->getClientOriginalExtension();
+
+                $file->storeAs(
+                    'uploads/materi',
+                    $fileName,
+                    'public'
+                );
+
+                $data['url_materi_1'] = 'uploads/materi/' . $fileName;
+            }
+
+            // =====================
+            // Materi 2
+            // =====================
+            if ($request->hasFile('url_materi_2')) {
+
+                $file = $request->file('url_materi_2');
+
+                $fileName = $idjadwal . '_' . $idpertemuan .
+                    '_materi_2_' . date('dmY') . '.' .
+                    $file->getClientOriginalExtension();
+
+                $file->storeAs(
+                    'uploads/materi',
+                    $fileName,
+                    'public'
+                );
+
+                $data['url_materi_2'] = 'uploads/materi/' . $fileName;
+            }
+
+            // =====================
+            // Materi 3
+            // =====================
+            if ($request->hasFile('url_materi_3')) {
+
+                $file = $request->file('url_materi_3');
+
+                $fileName = $idjadwal . '_' . $idpertemuan .
+                    '_materi_3_' . date('dmY') . '.' .
+                    $file->getClientOriginalExtension();
+
+                $file->storeAs(
+                    'uploads/materi',
+                    $fileName,
+                    'public'
+                );
+
+                $data['url_materi_3'] = 'uploads/materi/' . $fileName;
+            }
+
+            // =====================
+            // Tugas
+            // =====================
+            if ($request->hasFile('url_tugas')) {
+
+                $file = $request->file('url_tugas');
+
+                $fileName = $idjadwal . '_' . $idpertemuan .
+                    '_tugas_' . date('dmY') . '.' .
+                    $file->getClientOriginalExtension();
+
+                $file->storeAs(
+                    'uploads/materi',
+                    $fileName,
+                    'public'
+                );
+
+                $data['url_tugas'] = 'uploads/materi/' . $fileName;
+            }
+
+            DB::table('tb_trans_ajar')
+                ->where('id', $id)
+                ->update($data);
+
+            DB::commit();
+
+            return redirect()
+                ->back()
+                ->with('success', 'Data berhasil diupdate');
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return redirect()
+                ->back()
+                ->with('error', $e->getMessage());
+        }
     }
 }

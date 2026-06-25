@@ -305,10 +305,7 @@ console.log(data);
 
     // ambil semua data dari tabulator
         const data = tableAbsensi.getData();
-
-        console.log('data',data);
         
-
         // ambil hanya field penting
         const payload = data.map(row => ({
             id: row.id,

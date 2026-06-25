@@ -1,4 +1,17 @@
+@extends('layout.main')
 
+@section('tittle')
+Materi PBM
+@endsection
+
+@section('top-nav')
+<ol class="breadcrumb">
+    <li class="breadcrumb-item">PBM</li>
+    <li class="breadcrumb-item">Materi</li>
+</ol>
+@endsection
+
+@section('body')
 
 <div class="max-w-7xl mx-auto p-6">
 
@@ -19,10 +32,23 @@
 
         <div class="p-5">
 
-            <form id="form-materi" enctype="multipart/form-data">
+            @if ($errors->any())
+            <div class="alert alert-danger mb-5">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif
+
+            <form id="form-materi" action="{{ $materi ? route('pbm.updateMateri',$materi->id) : route('pbm.simpanMateri') }}" method="POST" enctype="multipart/form-data">
 
                 @csrf
 
+                @if($materi)
+                @method('PUT')
+                @endif
                 <input
                     type="hidden"
                     name="idjadwal"
@@ -38,7 +64,8 @@
                         <input
                             type="number"
                             name="idpertemuan"
-                            class="form-control">
+                            class="form-control"
+                            value="{{ old('idpertemuan',$materi->idpertemuan ?? '') }}">
                     </div>
 
                     <div class="col-span-12 md:col-span-6">
@@ -49,7 +76,8 @@
                         <input
                             type="text"
                             name="judul_materi"
-                            class="form-control">
+                            class="form-control"
+                            value="{{ old('judul_materi',$materi->judul_materi ?? '') }}">
                     </div>
 
                     <div class="col-span-12 md:col-span-6">
@@ -57,10 +85,16 @@
                             Tanggal
                         </label>
 
-                        <input
+                       <input
                             type="date"
                             name="tgl"
-                            class="form-control">
+                            class="form-control"
+                            value="{{ old(
+                                'tgl',
+                                !empty($materi?->tgl)
+                                    ? \Carbon\Carbon::parse($materi->tgl)->format('Y-m-d')
+                                    : ''
+                            ) }}">
                     </div>
 
                     <div class="col-span-12 md:col-span-6">
@@ -72,14 +106,14 @@
                             name="guru_pengganti"
                             class="form-select">
 
-                            <option value="">
-                                Pilih Guru
-                            </option>
+                            <option value="">Pilih Guru</option>
 
                             @foreach($guru as $row)
-                                <option value="{{ $row->id }}">
-                                    {{ $row->nama_gtk }}
-                                </option>
+                            <option
+                                value="{{ $row->id }}"
+                                {{ old('guru_pengganti', $materi->guru_pengganti ?? '') == $row->id ? 'selected' : '' }}>
+                                {{ $row->nama_gtk }}
+                            </option>
                             @endforeach
 
                         </select>
@@ -94,7 +128,8 @@
                         <input
                             type="text"
                             name="url_video"
-                            class="form-control">
+                            class="form-control"
+                            value="{{ old('url_video', $materi->url_video ?? '') }}">
                     </div>
 
                     <div class="col-span-12 md:col-span-6">
@@ -106,11 +141,15 @@
                             name="is_youtube"
                             class="form-select">
 
-                            <option value="1">
+                            <option
+                                value="1"
+                                {{ old('is_youtube', $materi->is_youtube ?? 1) == 1 ? 'selected' : '' }}>
                                 Video Youtube
                             </option>
 
-                            <option value="0">
+                            <option
+                                value="0"
+                                {{ old('is_youtube', $materi->is_youtube ?? 1) == 0 ? 'selected' : '' }}>
                                 File Video
                             </option>
 
@@ -129,7 +168,7 @@
                     <textarea
                         name="materi"
                         rows="10"
-                        class="form-control"></textarea>
+                        class="form-control">{{ old('materi', $materi->materi ?? '') }}</textarea>
 
                 </div>
 
@@ -144,6 +183,16 @@
                             type="file"
                             name="url_materi_1"
                             class="form-control">
+
+                        @if(!empty($materi?->url_materi_1))
+                        <div class="mt-2">
+                            <a href="{{ asset('public/storage/'.$materi->url_materi_1) }}"
+                                target="_blank"
+                                class="text-primary">
+                                Lihat Lampiran 1
+                            </a>
+                        </div>
+                        @endif
                     </div>
 
                     <div class="col-span-12 md:col-span-4">
@@ -155,6 +204,16 @@
                             type="file"
                             name="url_materi_2"
                             class="form-control">
+
+                        @if(!empty($materi?->url_materi_2))
+                        <div class="mt-2">
+                            <a href="{{ asset('public/storage/'.$materi->url_materi_2) }}"
+                                target="_blank"
+                                class="text-primary">
+                                Lihat Lampiran 2
+                            </a>
+                        </div>
+                        @endif
                     </div>
 
                     <div class="col-span-12 md:col-span-4">
@@ -166,6 +225,16 @@
                             type="file"
                             name="url_materi_3"
                             class="form-control">
+
+                        @if(!empty($materi?->url_materi_3))
+                        <div class="mt-2">
+                            <a href="{{ asset('public/storage/'.$materi->url_materi_3) }}"
+                                target="_blank"
+                                class="text-primary">
+                                Lihat Lampiran 3
+                            </a>
+                        </div>
+                        @endif
                     </div>
 
                 </div>
@@ -187,7 +256,8 @@
                         <input
                             type="text"
                             name="judul_tugas"
-                            class="form-control">
+                            class="form-control"
+                            value="{{ old('judul_tugas', $materi->judul_tugas ?? '') }}">
 
                     </div>
 
@@ -200,7 +270,13 @@
                         <input
                             type="datetime-local"
                             name="tgl_batas_submit"
-                            class="form-control">
+                            class="form-control"
+                            value="{{ old(
+        'tgl_batas_submit',
+        !empty($materi?->tgl_batas_submit)
+            ? \Carbon\Carbon::parse($materi->tgl_batas_submit)->format('Y-m-d\TH:i')
+            : ''
+    ) }}">
 
                     </div>
 
@@ -215,6 +291,16 @@
                             name="url_tugas"
                             class="form-control">
 
+                        @if(!empty($materi?->url_tugas))
+                        <div class="mt-2">
+                            <a href="{{ asset('public/storage/'.$materi->url_tugas) }}"
+                                target="_blank"
+                                class="text-primary">
+                                Lihat Lampiran Tugas
+                            </a>
+                        </div>
+                        @endif
+
                     </div>
 
                 </div>
@@ -228,7 +314,7 @@
                     <textarea
                         name="tugas"
                         rows="8"
-                        class="form-control"></textarea>
+                        class="form-control">{{ old('tugas', $materi->tugas ?? '') }}</textarea>
 
                 </div>
 
@@ -241,19 +327,19 @@
                     <textarea
                         name="keterangan"
                         rows="4"
-                        class="form-control"></textarea>
+                        class="form-control">{{ old('keterangan', $materi->keterangan ?? '') }}</textarea>
 
                 </div>
 
                 <div class="mt-6">
 
-                    <button
-                        type="submit"
-                        class="btn btn-success w-full">
+                   <button
+                    type="submit"
+                    class="btn btn-success w-full">
 
-                        Simpan Materi
+                    {{ $materi ? 'Update Materi' : 'Simpan Materi' }}
 
-                    </button>
+                </button>
 
                 </div>
 
@@ -264,4 +350,4 @@
     </div>
 
 </div>
-
+@endsection

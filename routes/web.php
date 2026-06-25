@@ -548,8 +548,21 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
         [PenilaianGuruController::class, 'index']
     )->name('pbm.index');
 
-    Route::get('pbm/data',[PenilaianGuruController::class, 'data'])->name('pbm.data');
-    Route::get('pbm/dataMateri/{id}',[PenilaianGuruController::class, 'dataMateri'])->name('pbm.dataMateri');
+    Route::get('pbm/data', [PenilaianGuruController::class, 'data'])->name('pbm.data');
+    Route::get('pbm/dataMateri/{id}', [PenilaianGuruController::class, 'dataMateri'])->name('pbm.dataMateri');
+    Route::get('pbm/tambahMateri/{id}', [PenilaianGuruController::class, 'tambahMateri'])->name('pbm.tambahMateri');
+    Route::post('pbm/simpanMateri', [PenilaianGuruController::class, 'simpanMateri'])->name('pbm.simpanMateri');
+    Route::delete(
+        'pbm/hapusMateri/{id}',
+        [PenilaianGuruController::class, 'hapusMateri']
+    )->name('pbm.hapusMateri');
+
+    Route::get('pbm/dataAbsen/{id}',[PenilaianGuruController::class, 'dataAbsen'])->name('pbm.dataAbsen');
+    Route::post('/absensi/simpanDetailAbsensi', [AbsensiController::class, 'simpanDetailAbsensi'])->name('absensi.simpanDetailAbsensi');
+    Route::get('pbm/editMateri/{id}', [PenilaianGuruController::class, 'editMateri'])->name('pbm.editMateri');
+    Route::put('pbm/updateMateri/{id}',[PenilaianGuruController::class, 'updateMateri'])->name('pbm.updateMateri');
+
+
 
 });
 

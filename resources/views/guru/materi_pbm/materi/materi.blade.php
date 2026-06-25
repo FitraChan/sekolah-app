@@ -17,23 +17,20 @@
         {{ $master->kelas->nama_kelas }}
     </h2>
 
-    <div class="md:ml-auto text-right">
-        <button
-            class="btn btn-primary shadow-md"
-            data-tw-toggle="modal"
-            data-tw-target="#modal-add-materi">
-
-            <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
-            Tambah Materi
-
-        </button>
-    </div>
+   <div class="md:ml-auto text-right">
+    <a href="{{ route('pbm.tambahMateri', $id) }}"
+       class="btn btn-primary shadow-md">
+        <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
+        Tambah Materi
+    </a>
+</div>
 
 </div>
 
         <div class="p-5">
-
-            <div id="table-materi"></div>
+<div class="overflow-x-auto">
+    <div id="table-materi"></div>
+</div>
 
         </div>
 
@@ -41,18 +38,22 @@
 
 </div>
 
+
 <script>
     let table = new Tabulator("#table-materi", {
 
         data: @json($isi),
 
         layout: "fitDataStretch",
+          responsiveLayout: false,
 
+
+       
         pagination: true,
 
         paginationSize: 10,
 
-        responsiveLayout: "collapse",
+       
 
         columns: [
 
@@ -88,11 +89,7 @@
                 widthGrow: 2
             },
 
-            {
-                title: "Keterangan",
-                field: "keterangan",
-                widthGrow: 2
-            },
+           
 
             {
                 title: "H",
@@ -131,16 +128,26 @@
 
                     let data = cell.getData();
 
+                    let urlAbsensi = "{{ url('pbm/dataAbsen') }}/" + data.id;
+
+                    let urlEdit = "{{ url('pbm/editMateri') }}/" + data.id;
+
                     return `
-                    <a href="/absensi/${data.id}"
+                    <a href="${urlAbsensi}"
                         class="btn btn-primary btn-sm mr-1">
-                        Absensi
+                        Absen
                     </a>
 
-                    <a href="/materi/${data.id}"
+                    <a href="${urlEdit}"
                         class="btn btn-success btn-sm">
-                        Detail
+                        Edit
                     </a>
+
+                      <button
+                        class="btn btn-danger btn-sm"
+                        onclick="hapusMateri(${data.id})">
+                        Hapus
+                    </button>
                 `;
                 }
             }
@@ -148,4 +155,41 @@
         ]
 
     });
+
+        function hapusMateri(id) {
+
+        if (!confirm('Yakin ingin menghapus data ini?')) {
+            return;
+        }
+
+        fetch(`{{ url('pbm/hapusMateri') }}/${id}`, {            
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector(
+                    'meta[name="csrf-token"]'
+                ).getAttribute('content'),
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(res => {
+
+            if (res.success) {
+
+                alert(res.msg);
+
+                location.reload();
+
+            } else {
+
+                alert(res.msg);
+            }
+
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Terjadi kesalahan');
+        });
+
+    }
 </script>
