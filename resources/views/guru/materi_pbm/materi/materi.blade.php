@@ -1,9 +1,9 @@
 <div class="max-w-7xl mx-auto p-6">
 
-    <div class="intro-y col-span-11 alert alert-success alert-dismissible show flex items-center mb-6" role="alert">
+    <div class="intro-y col-span-11 alert alert-secondary alert-dismissible show flex items-center mb-6" role="alert">
         <span><i data-lucide="info" class="w-4 h-4 mr-2"></i></span>
         <span>
-            <p> <?= 'Mata Pelajaran  ' . $master->mapel->nama_mapel; ?> </p>
+            <h2 class="font-semibold text-lg"> <?= 'Mata Pelajaran  ' . $master->mapel->nama_mapel; ?> </h2>
         </span>
         <button type="button" class="btn-close text-white" data-tw-dismiss="alert" aria-label="Close">
     </div>

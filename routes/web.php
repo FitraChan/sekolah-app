@@ -561,6 +561,9 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
     Route::post('/absensi/simpanDetailAbsensi', [AbsensiController::class, 'simpanDetailAbsensi'])->name('absensi.simpanDetailAbsensi');
     Route::get('pbm/editMateri/{id}', [PenilaianGuruController::class, 'editMateri'])->name('pbm.editMateri');
     Route::put('pbm/updateMateri/{id}',[PenilaianGuruController::class, 'updateMateri'])->name('pbm.updateMateri');
+    Route::post('pbm/simpanUjian',[PenilaianGuruController::class, 'simpanUjian'])->name('pbm.simpanUjian');
+    Route::delete('pbm/deleteUjian/{id}', [PenilaianGuruController::class, 'deleteUjian'])
+    ->name('pbm.deleteUjian');
 
 
 
