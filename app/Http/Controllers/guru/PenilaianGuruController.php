@@ -11,9 +11,10 @@ use App\Models\Gtk;
 use App\Models\TransAjar;
 use App\Models\Quiz;
 use App\Models\LogModel;
-use App\Models\DetQuiz;
 use App\Models\JenisSoal;
 use App\Models\Soal;
+use App\Models\Nilai;
+
 
 
 
@@ -622,7 +623,7 @@ class PenilaianGuruController extends Controller
     {
         $data['jenis_soal'] = JenisSoal::get();
 
-$konfig = konfig();
+        $konfig = konfig();
 
         $data['id'] = $id;
 
@@ -651,30 +652,27 @@ $konfig = konfig();
                 ];
             });
 
-             // Data ujian
-    $data['ujian'] = Quiz::findOrFail($id);
+        // Data ujian
+        $data['ujian'] = Quiz::findOrFail($id);
 
-    // Data master jadwal
-    $data['idmapel'] = MasterJadwal::find($data['ujian']->master_kelas_id);
+        // Data master jadwal
+        $data['idmapel'] = MasterJadwal::find($data['ujian']->master_kelas_id);
 
-    // Jadwal guru
-    $data['mapel'] = MasterJadwal::select(
+        // Jadwal guru
+        $data['mapel'] = MasterJadwal::select(
             'id',
-            'id_mapel',
-            'nama_mapel',
-            'id_gtk',
-            'nkelas',
-            'nama_kelas'
-        )
-        ->where('id_gtk', auth()->id())
-        ->where('id_tahun', $konfig['id_tahun'])
-        ->where('semester', $konfig['smt'])
-        ->get();
+            'id_mapel',           
+            'id_gtk'
+        )->with(['mapel','kelas'])
+            ->where('id_gtk', auth()->id())
+            ->where('id_tahun', $konfig['id_tahun'])
+            ->where('semester', $konfig['smt'])
+            ->get();
 
-    // Master soal
-    $data['mastersoal'] = Soal::where('lecture_id', $user->id)->get();
+        // Master soal
+        $data['mastersoal'] = Soal::where('lecture_id', auth()->id())->get();
 
-    /*
+        /*
     Jika ingin sesuai komentar CodeIgniter:
 
     $data['mastersoal'] = MasterSoal::where('lecture_id',$user->id)
@@ -682,27 +680,17 @@ $konfig = konfig();
         ->get();
     */
 
-    // Jawaban siswa
-    $data['jawabansiswa'] = DB::table('tb_nilai')
-        ->leftJoin('tb_siswa', 'tb_nilai.nipd', '=', 'tb_siswa.nipd')
-        ->leftJoin('quizs', 'tb_nilai.idjadwal', '=', 'quizs.master_kelas_id')
-        ->leftJoin('jawaban_pesertas', function ($join) {
-            $join->on('tb_nilai.nipd', '=', 'jawaban_pesertas.peserta_id')
-                 ->on('quizs.id', '=', 'jawaban_pesertas.quiz_id');
-        })
-        ->select(
-            'tb_nilai.nipd',
-            'jawaban_pesertas.id',
-            'tb_siswa.nama_lengkap',
-            'jawaban_pesertas.quiz_id',
-            'jawaban_pesertas.tgl_mulai_quiz',
-            'jawaban_pesertas.tgl_selesai_quiz',
-            'jawaban_pesertas.total_skor'
-        )
-        ->where('tb_nilai.idjadwal', $data['ujian']->master_kelas_id)
-        ->where('quizs.id', $id)
-        ->get();
+        // Jawaban siswa
+        $data['jawabansiswa'] = Nilai::with([
+            'siswa.jawabanPesertas' => function ($q) use ($id) {
+                $q->where('quiz_id', $id);
+            }
+        ])
+            ->where('idjadwal', $data['ujian']->master_kelas_id)
+            ->get();
 
-        return view('guru.materi_pbm.materi.absen', $data);
+
+
+        return view('guru.materi_pbm.ujian.detail-ujian.index', $data);
     }
 }

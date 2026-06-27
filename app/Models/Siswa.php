@@ -122,4 +122,9 @@ class Siswa extends Authenticatable
     {
         return $this->belongsTo(User::class, 'id_user');
     }
+
+    public function jawabanPesertas()
+    {
+        return $this->hasMany(JawabanPeserta::class, 'peserta_id', 'nipd');
+    }
 }

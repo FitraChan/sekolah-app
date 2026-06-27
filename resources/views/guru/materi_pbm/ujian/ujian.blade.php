@@ -26,8 +26,7 @@
                  <th class="text-center whitespace-nowrap">ACTIONS</th>
              </tr>
          </thead>
-<tbody id="tbody-ujian">
-    
+<tbody id="tbody-ujian">    
              @foreach($ujian as $row)
 
              <tr class="intro-x" id="row-{{ $row->id }}">
@@ -55,7 +54,7 @@
 
                  <td class="table-report__action w-56">
                      <div class="flex justify-center items-center">
-                         <a class="flex items-center mr-3" href="javascript:;"> <i data-lucide="check-square" class="w-4 h-4 mr-1"></i> Edit </a>
+                         <a class="flex items-center mr-3" href="{{ url('pbm/dataDetQuiz/' . $row->id) }}"> <i data-lucide="check-square" class="w-4 h-4 mr-1"></i> Edit </a>
                          <a href="javascript:void(0)"
                              class="flex items-center text-danger"
                              onclick="deleteUjian({{ $row->id }})">
@@ -68,9 +67,6 @@
                  </td>
              </tr>
              @endforeach
-
-
-
          </tbody>
      </table>
  </div>

@@ -564,6 +564,8 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
     Route::post('pbm/simpanUjian',[PenilaianGuruController::class, 'simpanUjian'])->name('pbm.simpanUjian');
     Route::delete('pbm/deleteUjian/{id}', [PenilaianGuruController::class, 'deleteUjian'])
     ->name('pbm.deleteUjian');
+    Route::get('pbm/dataDetQuiz/{id}', [PenilaianGuruController::class, 'dataDetQuiz'])->name('pbm.dataDetQuiz');
+
 
 
 

@@ -47,4 +47,9 @@ class Quiz extends Model
     {
         return $this->hasMany(DetailQuiz::class, 'quiz_id');
     }
+
+     public function jawabanPeserta()
+    {
+        return $this->hasMany(JawabanPeserta::class, 'quiz_id');
+    }
 }
