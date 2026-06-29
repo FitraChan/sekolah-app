@@ -565,6 +565,18 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
     Route::delete('pbm/deleteUjian/{id}', [PenilaianGuruController::class, 'deleteUjian'])
     ->name('pbm.deleteUjian');
     Route::get('pbm/dataDetQuiz/{id}', [PenilaianGuruController::class, 'dataDetQuiz'])->name('pbm.dataDetQuiz');
+    Route::post('/ckeditor/upload', [PenilaianGuruController::class, 'upload'])
+    ->name('ckeditor.upload');
+    Route::get('/pbm/cariSoal/{id}', [PenilaianGuruController::class, 'cariSoal'])
+    ->name('pbm.cariSoal');
+    Route::post('/pbm/updateSoal', [PenilaianGuruController::class, 'updateSoal'])->name('pbm.updateSoal');
+    Route::post('/pbm/storeSoal/{id}', [PenilaianGuruController::class, 'storeSoal'])->name('pbm.storeSoal');
+    Route::get('/pbm/dataMasterSoal', [PenilaianGuruController::class, 'dataMasterSoal']);
+    Route::post('/pbm/deleteDetUjian', [PenilaianGuruController::class, 'deleteDetUjian'])
+    ->name('pbm.deleteDetUjian');
+
+    Route::post('/pbm/createDetQuiz/{id}', [PenilaianGuruController::class, 'createDetQuiz'])
+    ->name('pbm.createDetQuiz');
 
 
 

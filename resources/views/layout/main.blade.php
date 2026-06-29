@@ -21,6 +21,16 @@ License: You must have a valid license purchased only from themeforest(the above
     <meta name="author" content="LEFT4CODE">
 
     <style>
+        .tabulator-cell {
+            white-space: normal !important;
+            word-break: break-word;
+            overflow: visible !important;
+        }
+
+        .tabulator-row {
+            min-height: 60px;
+        }
+
         .tabulator-row.tabulator-selected {
             background-color: #dbeafe !important;
         }
@@ -50,7 +60,8 @@ License: You must have a valid license purchased only from themeforest(the above
     <link rel="stylesheet" href="{{asset('public/dist/css/app.css')}}" />
 
     <link href="https://unpkg.com/tabulator-tables@6.2.5/dist/css/tabulator.min.css" rel="stylesheet">
-
+    <script src="{{ asset('public/ckeditor/ckeditor.js') }}"></script>
+    <script src="{{ asset('public/ckfinder/ckfinder.js') }}"></script>
     <script type="text/javascript" src="https://unpkg.com/tabulator-tables@6.2.5/dist/js/tabulator.min.js"></script>
     <!-- END: CSS Assets-->
 
@@ -113,7 +124,7 @@ License: You must have a valid license purchased only from themeforest(the above
                 </li>
 
 
-                 <li>
+                <li>
                     <a href="{{ route('konfig.index') }}" class="menu {{ $side == 'konfig' ? 'menu--active' : '' }}">
 
                         <div class="menu__icon">
@@ -234,7 +245,7 @@ License: You must have a valid license purchased only from themeforest(the above
 
                 @endif
 
-                 @if(Auth::user()->hasRole('guru'))
+                @if(Auth::user()->hasRole('guru'))
                 <li>
                     <!-- Indikator 'menu--active' dipasang di menu utama jika salah satu sub-menunya sedang aktif -->
                     <a href="javascript:;" class="menu">
@@ -256,8 +267,8 @@ License: You must have a valid license purchased only from themeforest(the above
                             </a>
                         </li>
                     </ul>
-                </li>  
-@endif  
+                </li>
+                @endif
 
                 @if(Auth::user()->hasRole('admin'))
 
@@ -390,7 +401,7 @@ License: You must have a valid license purchased only from themeforest(the above
                                 <div class="menu__icon"> <i data-lucide="credit-card"></i> </div>
                                 <div class="menu__title"> Jurusan </div>
                             </a>
-                        </li>   
+                        </li>
 
 
 
@@ -400,7 +411,7 @@ License: You must have a valid license purchased only from themeforest(the above
                                 <div class="menu__icon"> <i data-lucide="credit-card"></i> </div>
                                 <div class="menu__title"> Mata Pelajaran </div>
                             </a>
-                        </li>   
+                        </li>
 
 
                         <li>
@@ -409,7 +420,7 @@ License: You must have a valid license purchased only from themeforest(the above
                                 <div class="menu__icon"> <i data-lucide="credit-card"></i> </div>
                                 <div class="menu__title"> Penjadwalan </div>
                             </a>
-                        </li>   
+                        </li>
 
                         <li>
                             <!-- Sub-side-menu Gelombang -->
@@ -417,14 +428,14 @@ License: You must have a valid license purchased only from themeforest(the above
                                 <div class="menu__icon"> <i data-lucide="credit-card"></i> </div>
                                 <div class="menu__title"> Nilai </div>
                             </a>
-                        </li>   
+                        </li>
 
-                         <li>
+                        <li>
                             <a href="{{ route('absensi.index') }}" class="menu {{ $side == 'absensi' ? 'menu--active' : '' }}">
                                 <div class="menu__icon"> <i data-lucide="users"></i> </div>
                                 <div class="menu__title"> Absensi </div>
                             </a>
-                        </li>  
+                        </li>
 
 
 
@@ -433,10 +444,10 @@ License: You must have a valid license purchased only from themeforest(the above
                                 <div class="menu__icon"> <i data-lucide="calendar"></i> </div>
                                 <div class="menu__title"> Soal Ujian </div>
                             </a>
-                        </li>  
+                        </li>
 
 
-                        
+
 
                     </ul>
                 </li>
@@ -494,7 +505,7 @@ License: You must have a valid license purchased only from themeforest(the above
                 </li>
 
 
-                 <li>
+                <li>
                     <a href="{{ route('konfig.index') }}" class="side-menu {{ $side == 'konfig' ? 'side-menu--active' : '' }}">
 
                         <div class="side-menu__icon">
@@ -510,9 +521,9 @@ License: You must have a valid license purchased only from themeforest(the above
 
                 @endif
 
-                
 
-        @if(Auth::user()->hasRole('guru'))
+
+                @if(Auth::user()->hasRole('guru'))
                 <li>
                     <!-- Indikator 'menu--active' dipasang di menu utama jika salah satu sub-menunya sedang aktif -->
                     <a href="javascript:;" class="side-menu">
@@ -534,8 +545,8 @@ License: You must have a valid license purchased only from themeforest(the above
                             </a>
                         </li>
                     </ul>
-                </li>  
-@endif 
+                </li>
+                @endif
 
 
 
@@ -740,7 +751,7 @@ License: You must have a valid license purchased only from themeforest(the above
                                 </div>
 
                             </a>
-                        </li>    
+                        </li>
 
 
 
@@ -772,7 +783,7 @@ License: You must have a valid license purchased only from themeforest(the above
                                 <div class="side-menu__icon"> <i data-lucide="credit-card"></i> </div>
                                 <div class="side-menu__title"> Jurusan </div>
                             </a>
-                        </li>   
+                        </li>
 
 
 
@@ -782,7 +793,7 @@ License: You must have a valid license purchased only from themeforest(the above
                                 <div class="side-menu__icon"> <i data-lucide="credit-card"></i> </div>
                                 <div class="side-menu__title"> Mata Pelajaran </div>
                             </a>
-                        </li>   
+                        </li>
 
 
                         <li>
@@ -791,18 +802,18 @@ License: You must have a valid license purchased only from themeforest(the above
                                 <div class="side-menu__icon"> <i data-lucide="file-text"></i> </div>
                                 <div class="side-menu__title"> Penjadwalan </div>
                             </a>
-                        </li>   
+                        </li>
 
 
-                         <li>
+                        <li>
                             <!-- Sub-side-menu Gelombang -->
                             <a href="{{ route('nilai.index') }}" class="side-menu {{ $side == 'nilai' ? 'side-menu--active' : '' }}">
                                 <div class="side-menu__icon"> <i data-lucide="activity"></i> </div>
                                 <div class="side-menu__title"> Nilai </div>
                             </a>
-                        </li>  
-                        
-                        
+                        </li>
+
+
                         <li>
                             <!-- Sub-side-menu Gelombang -->
                             <a href="{{ route('absensi.index') }}" class="side-menu {{ $side == 'absensi' ? 'side-menu--active' : '' }}">
@@ -810,17 +821,17 @@ License: You must have a valid license purchased only from themeforest(the above
                                 <div class="side-menu__title"> Absensi </div>
                             </a>
                         </li>
-                        
-                        
+
+
                         <li>
                             <!-- Sub-side-menu Gelombang -->
                             <a href="{{ route('soal.index') }}" class="side-menu {{ $side == 'soal' ? 'side-menu--active' : '' }}">
                                 <div class="side-menu__icon"> <i data-lucide="calendar"></i> </div>
                                 <div class="side-menu__title"> Soal </div>
                             </a>
-                        </li>  
+                        </li>
 
-                        
+
 
 
 

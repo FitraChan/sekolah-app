@@ -41,9 +41,9 @@ Detail Ujian
                 </button>
 
                 <button
+                    type="button"
                     class="btn btn-warning"
-                    data-tw-toggle="modal"
-                    data-tw-target="#modal-soal">
+                    onclick="tambahSoal()">
                     <i data-lucide="plus-circle" class="w-4 h-4 mr-2"></i>
                     Soal Baru
                 </button>
@@ -217,4 +217,192 @@ Detail Ujian
     </div>
 
 </div>
+
+ @include('guru.materi_pbm.ujian.detail-ujian.modal.edit-modal')
+<script>
+
+    CKEDITOR.replace('e_editor', {
+    filebrowserBrowseUrl: "{{ asset('ckfinder/ckfinder.html') }}",
+    filebrowserImageBrowseUrl: "{{ asset('ckfinder/ckfinder.html?type=Images') }}",
+        filebrowserUploadUrl: "{{ route('ckeditor.upload') }}?_token={{ csrf_token() }}",
+    filebrowserUploadMethod: 'form',
+        removePlugins: 'easyimage,cloudservices'
+
+});
+
+document.getElementById("formEditSoal").addEventListener("submit", async function (e) {
+
+    e.preventDefault();
+
+    // Sinkronkan isi CKEditor ke textarea
+    for (let instance in CKEDITOR.instances) {
+        CKEDITOR.instances[instance].updateElement();
+    }
+
+    const form = this;
+    const formData = new FormData(form);
+
+    const btnSubmit = form.querySelector('button[type="submit"]');
+    btnSubmit.disabled = true;
+
+    try {
+
+        const mode = document.getElementById("form_mode").value;
+
+       const url = mode === "add"
+            ? "{{ url('pbm/storeSoal/'.$ujian->id) }}"
+            : "{{ url('pbm/updateSoal') }}";
+
+    const method = mode === "add"
+    ? "GET"
+    : "POST";
+
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
+                "Accept": "application/json"
+            },
+            body: formData
+        })
+
+        const res = await response.json();
+
+        btnSubmit.disabled = false;
+
+        if (response.ok && res.success) {
+
+             Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: res.message,
+                timer: 1500,
+                showConfirmButton: false
+            }).then(() => {
+                location.reload();
+            });
+
+
+            tailwind.Modal.getOrCreateInstance(
+                document.getElementById("modal-add-ujian")
+            ).hide();
+
+
+            // Reset form
+            form.reset();
+
+            document.getElementById("form_mode").value = "add";
+            document.getElementById("e_id").value = "";
+
+            // Reset CKEditor
+            CKEDITOR.instances.e_editor.setData("");
+
+            // Reset preview gambar
+            const preview = document.getElementById("preview_soal");
+            preview.src = "";
+            preview.classList.add("hidden");
+
+        } else {
+
+             Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: res.message || 'Gagal menyimpan data'
+            });
+
+        }
+
+    } catch (error) {
+
+        btnSubmit.disabled = false;
+
+        console.error(error);
+
+         Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Terjadi kesalahan pada server.'
+        });
+
+
+    }
+
+});
+
+async function tambahSoal() {
+
+    document.getElementById("form_mode").value = "add";
+
+    const form = document.getElementById("formEditSoal");
+  //  form.reset();
+
+    document.getElementById("e_id").value = "";
+
+    document.querySelector("#modal-add-ujian .modal-header h2").innerHTML =
+        "Tambah Soal";
+
+    CKEDITOR.instances.e_editor.setData("");
+
+    document.getElementById("preview_soal").src = "";
+    document.getElementById("preview_soal").classList.add("hidden");
+
+    try {
+
+        const response = await fetch("{{ url('pbm/dataMasterSoal') }}");
+
+        if (!response.ok) {
+            throw new Error("Gagal mengambil data.");
+        }
+
+        const res = await response.json();
+
+        // ==========================
+        // Jenis Soal
+        // ==========================
+        const jenis = document.getElementById("e_jenis_soal_id");
+        jenis.innerHTML = '<option value="">Pilih Jenis Soal</option>';
+
+        res.jenis_soal.forEach(item => {
+            jenis.innerHTML += `
+                <option value="${item.id}">
+                    ${item.jenis_soal}
+                </option>
+            `;
+        });
+
+        // ==========================
+        // Mapel
+        // ==========================
+        const mapel = document.getElementById("e_mapel_id");
+        mapel.innerHTML = '<option value="">Pilih Mata Pelajaran</option>';
+
+        res.mapel.forEach(item => {
+            mapel.innerHTML += `
+                <option value="${item.id_mapel}">
+                    ${item.mapel.nama_mapel}
+                </option>
+            `;
+        });
+
+        tailwind.Modal.getOrCreateInstance(
+            document.getElementById("modal-add-ujian")
+        ).show();
+
+    } catch (err) {
+
+        console.error(err);
+
+        console.log(err);
+        
+
+        Swal.fire({
+            icon: "error",
+            title: "Gagal",
+            text: "Tidak dapat mengambil data master."
+        });
+
+    }
+
+}
+</script>
 @endsection

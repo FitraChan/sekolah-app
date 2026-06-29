@@ -661,17 +661,37 @@ class PenilaianGuruController extends Controller
         // Jadwal guru
         $data['mapel'] = MasterJadwal::select(
             'id',
-            'id_mapel',           
+            'id_mapel',
             'id_gtk'
-        )->with(['mapel','kelas'])
+        )->with(['mapel', 'kelas'])
             ->where('id_gtk', auth()->id())
             ->where('id_tahun', $konfig['id_tahun'])
             ->where('semester', $konfig['smt'])
             ->get();
 
-        // Master soal
-        $data['mastersoal'] = Soal::where('lecture_id', auth()->id())->get();
+        $gtk = Gtk::where('user_id',auth()->id())->first();    
 
+        // Master soal
+            $data['mastersoal'] = Soal::with([
+                'mapel',
+                'jenisSoal'
+            ])
+            ->where('lecture_id', $gtk->id)
+            ->get()
+            ->map(function ($row) {
+
+                return [
+                    'id'             => $row->id,
+                    'judul_soal'     => $row->judul_soal,
+                    'soal'           => $row->soal,
+                    'smt'            => $row->smt,
+                    'jenis_soal'     => $row->jenisSoal->jenis_soal ?? '-',
+                    'nama_mapel'     => $row->mapel->nama_mapel ?? '-',
+                    'jawaban_benar'  => $row->jawaban_benar,
+                    'created_at'     => $row->created_at,
+                ];
+
+            });
         /*
     Jika ingin sesuai komentar CodeIgniter:
 
@@ -686,11 +706,354 @@ class PenilaianGuruController extends Controller
                 $q->where('quiz_id', $id);
             }
         ])
-            ->where('idjadwal', $data['ujian']->master_kelas_id)
-            ->get();
+        ->where('idjadwal', $data['ujian']->master_kelas_id)
+        ->get()
+        ->map(function ($row) {
+
+            $jawaban = $row->siswa->jawabanPesertas->first();
+
+            return [
+                'id'               => $row->id,
+                'nipd'              => $row->siswa->nipd ?? '',
+                'nama_lengkap'       => $row->siswa->nama_lengkap ?? '',
+                'tgl_mulai_quiz'   => optional($jawaban)->tgl_mulai_quiz,
+                'tgl_selesai_quiz' => optional($jawaban)->tgl_selesai_quiz,
+                'jwb_benar'        => optional($jawaban)->jwb_benar ?? 0,
+                'jwb_salah'        => optional($jawaban)->jwb_salah ?? 0,
+                'total_skor'       => optional($jawaban)->total_skor ?? 0,
+            ];
+
+        });
 
 
 
         return view('guru.materi_pbm.ujian.detail-ujian.index', $data);
     }
+
+    public function cariSoal($id)
+    {
+        $row = Soal::where('id', $id)->first();
+
+        $jenis_soal = JenisSoal::all();
+
+        $mapel = MasterJadwal::with(['mapel', 'guru'])
+            ->whereHas('guru', function ($q) {
+                $q->where('user_id', auth()->id());
+            })
+            ->select('id_mapel', 'id_gtk')
+            ->distinct()
+            ->get();
+
+
+
+        return response()->json([
+            'row' => $row,
+            'soal_id' => $id,
+            'jenis_soal' => $jenis_soal,
+            'mapel' => $mapel,
+        ]);
+    }
+
+    public function upload(Request $request)
+    {
+        if ($request->hasFile('upload')) {
+
+            $file = $request->file('upload');
+            $filename = time() . '.' . $file->getClientOriginalExtension();
+           
+            $file->storeAs(
+                'uploads/materi',
+                $filename,
+                'public'
+            );
+
+            // $data['url_tugas'] =  'uploads/materi/' . $filename;
+            $CKEditorFuncNum = $request->input('CKEditorFuncNum');
+            $url = asset('storage/app/public/uploads/materi/' . $filename);
+
+            $msg = 'File berhasil diupload. Size: ' .
+                number_format($file->getSize() / 1024, 2) . ' KB';
+            return response(
+                "<script>
+            window.parent.CKEDITOR.tools.callFunction(
+                {$CKEditorFuncNum},
+                '{$url}',
+                '{$msg}'
+            );
+        </script>"
+            )->header('Content-Type', 'text/html; charset=utf-8');
+        }
+
+        return response()->json([
+            'uploaded' => 0,
+        ]);
+    }
+
+    public function updateSoal(Request $request)
+    {
+      
+        DB::beginTransaction();
+
+        try {
+
+            $soal = Soal::findOrFail($request->id);
+
+
+
+            // ===========================
+            // Update data
+            // ===========================
+            $soal->update([
+
+                'lecture_id'      => auth()->user()->id,
+
+                'judul_soal'      => $request->judul_soal,
+                'soal'            => $request->soal,
+                'mapel_id'        => $request->mapel_id,
+                'jenis_soal_id'   => $request->jenis_soal_id,
+                'smt'             => $request->smt,
+
+                'jawaban_benar'   => $request->jawaban_benar,
+
+                'jawaban_a'       => $request->jawaban_a,
+                'jawaban_b'       => $request->jawaban_b,
+                'jawaban_c'       => $request->jawaban_c,
+                'jawaban_d'       => $request->jawaban_d,
+                'jawaban_e'       => $request->jawaban_e,
+
+            ]);
+
+            DB::commit();
+
+            LogModel::create([
+                'tanggal' => now(),
+                'tabel' => 'master_soals',
+                'aksi' => 'create',
+                'user' => auth()->user()->id,
+                'ip' => $request->ip(),
+                'keterangan' => json_encode($soal),
+                'serial' => url('pbm/updateSoal')
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data berhasil disimpan'
+            ]);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Data gagal disimpan',
+                // aktifkan hanya saat development
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function storeSoal(Request $request,$quizid)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            $soal = new Soal();
+
+            $soal->lecture_id      = auth()->id();
+            $soal->judul_soal      = $request->judul_soal;
+            $soal->soal            = $request->soal;
+            $soal->mapel_id        = $request->mapel_id;
+            $soal->jenis_soal_id   = $request->jenis_soal_id;
+            $soal->smt             = $request->smt;
+
+            $soal->jawaban_benar   = $request->jawaban_benar;
+
+            $soal->jawaban_a       = $request->jawaban_a;
+            $soal->jawaban_b       = $request->jawaban_b;
+            $soal->jawaban_c       = $request->jawaban_c;
+            $soal->jawaban_d       = $request->jawaban_d;
+            $soal->jawaban_e       = $request->jawaban_e;
+
+                
+            $soal->save();
+
+            $this->createDetQuiz2($quizid, $soal->id);
+
+            DB::commit();
+
+            LogModel::create([
+                'tanggal'    => now(),
+                'tabel'      => 'master_soals',
+                'aksi'       => 'create',
+                'user'       => auth()->id(),
+                'ip'         => $request->ip(),
+                'keterangan' => json_encode($soal),
+                'serial'     => url('pbm/storeSoal')
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data berhasil ditambahkan'
+            ]);
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Data gagal ditambahkan',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
+
+        
+    }
+
+    public function createDetQuiz2($quizid, $soalid)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            $noUrut = DetailQuiz::where('quiz_id', $quizid)
+                        ->max('no_urut');
+
+            $detail = DetailQuiz::create([
+                'quiz_id'    => $quizid,
+                'soal_id'    => $soalid,
+                'no_urut'    => ($noUrut ?? 0) + 1,
+            ]);
+
+            DB::commit();
+
+            return $detail;
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            throw $e;
+        }
+    }
+
+    public function dataMasterSoal()
+    {
+        $jenis_soal = JenisSoal::all();
+
+        $mapel = MasterJadwal::with(['mapel', 'guru'])
+            ->whereHas('guru', function ($q) {
+                $q->where('user_id', auth()->id());
+            })
+            ->select('id_mapel', 'id_gtk')
+            ->distinct()
+            ->get();
+
+        return response()->json([
+            'jenis_soal' => $jenis_soal,
+            'mapel'       => $mapel,
+        ]);
+    }
+
+    public function deleteDetUjian(Request $request)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            $detailQuiz = DetailQuiz::findOrFail($request->id);
+
+            // Simpan log sebelum data dihapus
+            LogModel::create([
+                'tanggal'    => now(),
+                'tabel'      => 'detail_quizs',
+                'aksi'       => 'delete',
+                'user'       => auth()->id(),
+                'ip'         => $request->ip(),
+                'keterangan' => json_encode($detailQuiz),
+                'serial'     => $request->userAgent(),
+            ]);
+
+            $detailQuiz->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'title'   => 'Success',
+                'message' => 'Proses berhasil dilakukan',
+            ]);
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'title'   => 'Gagal',
+                'message' => 'Proses gagal dilakukan',
+                // Aktifkan hanya saat development
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function createDetQuiz(Request $request, $quizid)
+    {
+        $request->validate([
+            'soal_id' => 'required|exists:master_soals,id',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+
+            // Ambil no urut terakhir
+            $nourut = DetailQuiz::where('quiz_id', $quizid)
+                ->max('no_urut');
+
+            $nourut = $nourut ?? 0;
+
+            // Simpan
+            $detail = DetailQuiz::create([
+                'quiz_id'    => $quizid,
+                'soal_id'    => $request->soal_id,
+                'no_urut'    => $nourut + 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            // Simpan log (opsional)
+            LogModel::create([
+                'tanggal'    => now(),
+                'tabel'      => 'detail_quizs',
+                'aksi'       => 'create',
+                'user'       => auth()->id(),
+                'ip'         => $request->ip(),
+                'serial'     => $request->userAgent(),
+                'keterangan' => json_encode($detail),
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data telah tersimpan.'
+            ]);
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menyimpan data.',
+                'error'   => $e->getMessage(), // hapus saat production
+            ], 500);
+
+        }
+    }
+
+
 }
