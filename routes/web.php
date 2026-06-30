@@ -29,6 +29,10 @@ use App\Http\Controllers\akademik\NilaiController;
 use App\Http\Controllers\akademik\AbsensiController;
 use App\Http\Controllers\akademik\SoalController;
 use App\Http\Controllers\guru\PenilaianGuruController;
+use App\Http\Controllers\guru\JadwalController;
+use App\Http\Controllers\guru\UjianController;
+
+
 
 
 
@@ -387,14 +391,14 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         [NilaiController::class, 'show']
     )->name('show');
 
-    Route::get(
-        'nilai/detail/{id}',
-        [NilaiController::class, 'detIndex']
-    )->name('detail');
+    // Route::get(
+    //     'nilai/detail/{id}',
+    //     [NilaiController::class, 'detIndex']
+    // )->name('detail');
 
 
-    Route::post('/nilai-harian/update', [NilaiController::class, 'update'])
-        ->name('nilai-harian.update');
+    // Route::post('/nilai-harian/update', [NilaiController::class, 'update'])
+    //     ->name('nilai-harian.update');
 
 
     Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi.index');
@@ -429,6 +433,8 @@ Route::middleware(['auth', 'role:admin|calon'])->group(function () {
         [CalonSiswaController::class, 'updateRegistrasiSiswa']
     )->name('calon-siswa.update.updateRegistrasiSiswa');
 });
+
+
 
 
 Route::middleware(['auth', 'role:admin|Akademik'])->group(function () {
@@ -577,13 +583,33 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
 
     Route::post('/pbm/createDetQuiz/{id}', [PenilaianGuruController::class, 'createDetQuiz'])
     ->name('pbm.createDetQuiz');
+    Route::get(
+        'pbm/nilai/{id}',
+        [PenilaianGuruController::class, 'nilai']
+    )->name('pbm.nilai');
+    Route::get('/jadwalGuru', [JadwalController::class, 'index'])->name('jadwalGuru.index');
 
+    
+    Route::get('/ujianGuru', [UjianController::class, 'index'])->name('ujianGuru.index');
+    Route::post('ujianGuru/store', [UjianController::class, 'store'])->name('ujianGuru.store');
+    Route::put('ujianGuru/update/{id}', [UjianController::class, 'update'])->name('ujianGuru.update');
+    Route::delete('ujianGuru/delete/{id}', [UjianController::class, 'destroy'])->name('ujianGuru.delete');
 
+    Route::get('/pbm/detail-ujian-siswa/{id}', [PenilaianGuruController::class, 'detUjianSiswa'])
+    ->name('pbm.detailUjianSiswa');
 
 
 });
 
+Route::middleware(['auth', 'role:guru|admin'])->group(function () {
+    Route::get(
+        'nilai/detail/{id}',
+        [NilaiController::class, 'detIndex']
+    )->name('detail');
 
+    Route::post('/nilai-harian/update', [NilaiController::class, 'update'])
+        ->name('nilai-harian.update');
+});
 
 
 Route::middleware(['auth', 'role:keuangan'])->group(function () {});

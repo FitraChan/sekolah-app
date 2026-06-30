@@ -186,6 +186,7 @@ class NilaiController extends Controller
         if ($request->semester) {
             $query->where('semester', $request->semester);
         }
+
        
         $data = $query
             ->get()

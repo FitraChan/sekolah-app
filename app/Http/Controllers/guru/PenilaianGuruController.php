@@ -14,6 +14,10 @@ use App\Models\LogModel;
 use App\Models\JenisSoal;
 use App\Models\Soal;
 use App\Models\Nilai;
+use App\Models\JawabanPeserta;
+use App\Models\DetailJawabanPeserta;
+
+
 
 
 
@@ -692,14 +696,7 @@ class PenilaianGuruController extends Controller
                 ];
 
             });
-        /*
-    Jika ingin sesuai komentar CodeIgniter:
-
-    $data['mastersoal'] = MasterSoal::where('lecture_id',$user->id)
-        ->where('mapel_id',$data['idmapel']->id_mapel)
-        ->get();
-    */
-
+       
         // Jawaban siswa
         $data['jawabansiswa'] = Nilai::with([
             'siswa.jawabanPesertas' => function ($q) use ($id) {
@@ -714,10 +711,11 @@ class PenilaianGuruController extends Controller
 
             return [
                 'id'               => $row->id,
+                'id_jawaban'       =>  optional($jawaban)->id,
                 'nipd'              => $row->siswa->nipd ?? '',
                 'nama_lengkap'       => $row->siswa->nama_lengkap ?? '',
-                'tgl_mulai_quiz'   => optional($jawaban)->tgl_mulai_quiz,
-                'tgl_selesai_quiz' => optional($jawaban)->tgl_selesai_quiz,
+                'tgl_mulai_quiz'   =>  date('d-m-Y H:i:s', strtotime(optional($jawaban)->tgl_mulai_quiz)),
+                'tgl_selesai_quiz' => date('d-m-Y H:i:s', strtotime(optional($jawaban)->tgl_selesai_quiz)),
                 'jwb_benar'        => optional($jawaban)->jwb_benar ?? 0,
                 'jwb_salah'        => optional($jawaban)->jwb_salah ?? 0,
                 'total_skor'       => optional($jawaban)->total_skor ?? 0,
@@ -1055,5 +1053,67 @@ class PenilaianGuruController extends Controller
         }
     }
 
+    public function nilai($id = null)
+    {
+      $mapel=MasterJadwal::with(['kelas','mapel'])->where('id',$id)->first();
+
+        return view('guru.pbm.nilai', [
+            'side'  => 'pbm',
+            'mapel' => $mapel
+
+            
+
+        ]);
+    }
+
+    public function detUjianSiswa($id)
+    {
+        $konfig = konfig();
+
+        $idGtk = Gtk::where('user_id', auth()->id())->first();
+
+        $jawabanPeserta = JawabanPeserta::find($id);
+
+        if (!$jawabanPeserta) {
+            return view('errornya');
+        }
+
+        $siswa = JawabanPeserta::with('siswa')
+            ->where('id', $id)
+            ->first();
+
+        $ujian = Quiz::with('masterJadwal')
+            ->find($jawabanPeserta->quiz_id);
+
+        $idMapel = MasterJadwal::find($ujian->master_kelas_id);
+
+        $jawabanSiswa = DetailJawabanPeserta::with([
+            'detailQuiz.soal'
+        ])
+        ->where('jawaban_peserta_id', $id)
+        ->get();
+
+        return view('guru.materi_pbm.ujian.detail-ujian.detail_jawaban', [
+
+            'side' => 'quiz',
+
+            'thn' => $konfig['id_tahun'],
+
+            'smt' => $konfig['smt'] == 1 ? 'Ganjil' : 'Genap',
+
+            'nama_gtk' => $idGtk->nama_gtk,
+
+            'jawabanpeserta' => $jawabanPeserta,
+
+            'siswa' => $siswa,
+
+            'ujian' => $ujian,
+
+            'idmapel' => $idMapel,
+
+            'jawabansiswa' => $jawabanSiswa,
+
+        ]);
+    }
 
 }

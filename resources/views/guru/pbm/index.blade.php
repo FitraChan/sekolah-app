@@ -116,11 +116,9 @@ let table = new Tabulator("#table-jadwal", {
                        Jadwal PBM
                     </a>
 
-                    <a href="{{ url('nilai/detindex') }}/${data.id}" class="btn btn-success btn-sm mr-1">
-                        Nilai Harian
-                    </a>
+                   
 
-                    <a href="{{ url('nilai/detindex2') }}/${data.id}" class="btn btn-warning btn-sm">
+                    <a href="{{ url('pbm/nilai') }}/${data.id}" class="btn btn-warning btn-sm">
                         Nilai Akhir
                     </a>
                 `;

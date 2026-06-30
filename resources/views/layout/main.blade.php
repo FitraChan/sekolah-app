@@ -252,13 +252,13 @@ License: You must have a valid license purchased only from themeforest(the above
                         <div class="menu__icon"> <i data-lucide="box"></i> </div>
                         <div class="menu__title">
                             Pengajaran
-                            <div class="menu__sub-icon {{ in_array($side, ['pbm', 'master-lainnya']) ? 'transform rotate-180' : '' }}">
+                            <div class="menu__sub-icon {{ in_array($side, ['pbm', 'jadwalGuru','ujianGuru']) ? 'transform rotate-180' : '' }}">
                                 <i data-lucide="chevron-down"></i>
                             </div>
                         </div>
                     </a>
                     <!-- Sub-Menu Wrapper -->
-                    <ul class="{{ in_array($side, ['pbm']) ? 'menu__sub-open' : '' }}">
+                    <ul class="{{ in_array($side, ['pbm','jadwalGuru','ujianGuru']) ? 'menu__sub-open' : '' }}">
                         <li>
                             <!-- Sub-Menu Gelombang -->
                             <a href="{{ route('pbm.index') }}" class="menu {{ $side == 'pbm' ? 'menu--active' : '' }}">
@@ -266,6 +266,23 @@ License: You must have a valid license purchased only from themeforest(the above
                                 <div class="menu__title"> PBM </div>
                             </a>
                         </li>
+
+
+                        <li>
+                            <a href="{{ route('jadwalGuru.index') }}" class="menu {{ $side == 'jadwalGuru' ? 'menu--active' : '' }}">
+                                <div class="menu__icon"> <i data-lucide="map"></i> </div>
+                                <div class="menu__title"> Jadwal </div>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{{ route('ujianGuru.index') }}" class="menu {{ $side == 'ujianGuru' ? 'menu--active' : '' }}">
+                                <div class="menu__icon"> <i data-lucide="pen-tool"></i> </div>
+                                <div class="menu__title"> Ujian </div>
+                            </a>
+                        </li>   
+
+
                     </ul>
                 </li>
                 @endif
@@ -530,13 +547,13 @@ License: You must have a valid license purchased only from themeforest(the above
                         <div class="side-menu__icon"> <i data-lucide="box"></i> </div>
                         <div class="side-menu__title">
                             Pengajaran
-                            <div class="side-menu__sub-icon {{ in_array($side, ['pbm']) ? 'transform rotate-180' : '' }}">
+                            <div class="side-menu__sub-icon {{ in_array($side, ['pbm','jadwalGuru','ujianGuru']) ? 'transform rotate-180' : '' }}">
                                 <i data-lucide="chevron-down"></i>
                             </div>
                         </div>
                     </a>
                     <!-- Sub-side-menu Wrapper -->
-                    <ul class="{{ in_array($side, ['pbm']) ? 'side-menu__sub-open' : '' }}">
+                    <ul class="{{ in_array($side, ['pbm','jadwalGuru','ujianGuru']) ? 'side-menu__sub-open' : '' }}">
                         <li>
                             <!-- Sub-side-menu Gelombang -->
                             <a href="{{ route('pbm.index') }}" class="side-menu {{ $side == 'pbm' ? 'side-menu--active' : '' }}">
@@ -544,6 +561,24 @@ License: You must have a valid license purchased only from themeforest(the above
                                 <div class="side-menu__title"> PBM </div>
                             </a>
                         </li>
+
+                        <li>
+                            <!-- Sub-side-menu Gelombang -->
+                            <a href="{{ route('jadwalGuru.index') }}" class="side-menu {{ $side == 'jadwalGuru' ? 'side-menu--active' : '' }}">
+                                <div class="side-menu__icon"> <i data-lucide="map"></i> </div>
+                                <div class="side-menu__title"> Jadwal </div>
+                            </a>
+                        </li>
+
+                        <li>
+                            <!-- Sub-side-menu Gelombang -->
+                            <a href="{{ route('ujianGuru.index') }}" class="side-menu {{ $side == 'ujianGuru' ? 'side-menu--active' : '' }}">
+                                <div class="side-menu__icon"> <i data-lucide="pen-tool"></i> </div>
+                                <div class="side-menu__title"> Ujian </div>
+                            </a>
+                        </li>            
+
+
                     </ul>
                 </li>
                 @endif

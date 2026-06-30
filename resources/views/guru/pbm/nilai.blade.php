@@ -1,3 +1,18 @@
+@extends('layout.main')
+
+@section('tittle')
+Penilaian Guru
+@endsection
+
+@section('top-nav')
+
+<ol class="breadcrumb">
+    <li class="breadcrumb-item">Nilai</li>
+</ol>
+@endsection
+
+@section('body')
+
 <div class="max-w-7xl mx-auto p-6">
 
     <div class="flex gap-2 mb-3">
@@ -35,23 +50,12 @@
                                 type="text"
                                 id="filter_mapel_detail"
                                 class="form-control"
+                                value=<?= $mapel->mapel->nama_mapel;  ?>
                                 placeholder="mata pelajaran...">
 
                         </div>
 
-                        <div class="col-span-12 md:col-span-4">
-
-                            <label class="form-label">
-                                Nama Guru
-                            </label>
-
-                            <input
-                                type="text"
-                                id="filter_guru_detail"
-                                class="form-control"
-                                placeholder="nama guru...">
-
-                        </div>
+                      
 
                         <div class="col-span-12 md:col-span-4">
 
@@ -63,6 +67,7 @@
                                 type="text"
                                 id="filter_kelas_detail"
                                 class="form-control"
+                                value="<?= $mapel->kelas->kelas.' '.$mapel->kelas->nama_kelas;  ?>"
                                 placeholder="kelas...">
 
                         </div>
@@ -103,9 +108,12 @@
 <script>
     let changedRowsDetail = [];
 
-    window.tableDetailNilai = new Tabulator("#table-detail-nilai", {
+    const id = "{{ request()->route('id') }}";
+
+    const tableDetailNilai = new Tabulator("#table-detail-nilai", {
         layout: "fitDataTable",
-        movableColumns: true,
+
+        ajaxURL: "{{ url('nilai/detail/' . request()->route('id')) }}",        movableColumns: true,
         columnHeaderVertAlign: "middle",
         columns: [
             {
@@ -537,3 +545,4 @@
         }
     }
 </script>
+@endsection
