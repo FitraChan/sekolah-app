@@ -1,7 +1,7 @@
 @extends('layout.main')
 
 @section('tittle')
-Jurusan
+Ujian
 @endsection
 
 @section('top-nav')
@@ -60,10 +60,12 @@ Jurusan
 
 </div>
 
+@include('guru.ujian.tambah')
+
 <script>
     const tableQuiz = new Tabulator("#table-ujian", {
 
-        data: @json($isi),
+        ajaxURL: "{{ route('ujianGuru.data') }}",
 
         layout: "fitDataStretch",
 
@@ -121,11 +123,11 @@ Jurusan
                             <i data-lucide="pencil" class="w-4 h-4 mr-1"></i>
                             Edit
                         </a>
-                    <a class="btn btn-sm btn-outline-danger"
-                        href="hapusQuiz(${data.id})">
+                    <button class="btn btn-sm btn-outline-danger"
+                        onclick="hapusQuiz(${data.id})">
                         <i data-lucide="trash-2" class="w-4 h-4 mr-1"></i>
                         Hapus
-                    </a>
+                    </button>
                 `;
 
                 }
@@ -135,5 +137,150 @@ Jurusan
         ]
 
     });
+
+    document.getElementById('btn-save-ujian').addEventListener('click', function(e) {
+        e.preventDefault();
+
+        const btn = this;
+        const form = document.getElementById('frm-tambah-ujian');
+        const formData = new FormData(form);
+
+        btn.disabled = true;
+        btn.innerHTML = 'Menyimpan...';
+
+        fetch("{{ route('ujianGuru.store') }}", {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                    "Accept": "application/json"
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(res => {
+
+                if (res.success) {
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: res.title,
+                        text: res.msg,
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+
+                    form.reset();
+
+                    // Tutup modal
+                    const modal = tailwind.Modal.getOrCreateInstance(
+                        document.querySelector('#modal-add-ujian')
+                    );
+                    modal.hide();
+
+                    console.log(res.data);
+
+
+                    // Reload DataTable jika ada
+                    if (typeof tableQuiz !== 'undefined') {
+                        tableQuiz.replaceData();
+                    }
+
+                } else {
+
+                    Swal.fire({
+                        icon: 'warning',
+                        title: res.title,
+                        text: res.msg
+                    });
+
+                }
+
+            })
+            .catch(error => {
+
+                console.error(error);
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Terjadi kesalahan pada server.'
+                });
+
+            })
+            .finally(() => {
+
+                btn.disabled = false;
+                btn.innerHTML = 'Simpan';
+
+            });
+
+    });
+
+    async function hapusQuiz(id) {
+
+        const konfirmasi = await Swal.fire({
+            title: "Hapus Ujian?",
+            text: "Data yang dihapus tidak dapat dikembalikan.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Ya, Hapus",
+            cancelButtonText: "Batal",
+            reverseButtons: true
+        });
+
+        if (!konfirmasi.isConfirmed) {
+            return;
+        }
+
+        try {
+            const url = "{{ url('ujianGuru/destroy') }}/" + id;
+            const response = await fetch(url, {
+                method: "DELETE",
+                headers: {
+                    "X-CSRF-TOKEN": document
+                        .querySelector('meta[name="csrf-token"]')
+                        .getAttribute("content"),
+                    "Accept": "application/json"
+                }
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+
+                Swal.fire({
+                    icon: "success",
+                    title: result.title,
+                    text: result.msg,
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+
+                // Reload Tabulator
+                tableQuiz.replaceData();
+
+            } else {
+
+                Swal.fire({
+                    icon: "error",
+                    title: result.title,
+                    text: result.msg
+                });
+
+            }
+
+        } catch (error) {
+
+            console.error(error);
+
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "Terjadi kesalahan pada server."
+            });
+
+        }
+
+    }
 </script>
 @endsection

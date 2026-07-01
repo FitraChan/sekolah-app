@@ -99,22 +99,19 @@
             },
             {
                 title: "Aksi",
-              
+
                 width: 120,
-                formatter: function(cell){
-
+                formatter: function(cell) {
                     let data = cell.getData();
+                    if (data.total_skor == 0) {
 
-                   
-                    if(data.total_skor == 0){
-
- return `
+                        return `
                        
                     `;
 
-                    }else{
+                    } else {
 
-                    return `
+                        return `
                         <a href="{{ url('pbm/detail-ujian-siswa') }}/${data.id_jawaban}"
                             class="btn btn-sm btn-outline-primary"
                             data-tw-toggle="tooltip"
@@ -134,63 +131,63 @@
 
     const searchInput = document.getElementById("search-jawaban");
 
-searchInput.addEventListener("keyup", function () {
-    const keyword = this.value.toLowerCase();
+    searchInput.addEventListener("keyup", function() {
+        const keyword = this.value.toLowerCase();
 
-    if (keyword === "") {
-        tableJawaban.clearFilter();
-        return;
-    }
-
-    tableJawaban.setFilter(function (data) {
-        return (
-            (data.nipd && data.nipd.toLowerCase().includes(keyword)) ||
-            (data.nama_lengkap && data.nama_lengkap.toLowerCase().includes(keyword)) ||
-            (String(data.total_skor).includes(keyword))
-        );
-    });
-});
-
-
-
-    document.getElementById("btn-pdf").addEventListener("click", function () {
-    tableJawaban.download("pdf", "Laporan_Jawaban_Siswa.pdf", {
-        orientation: "landscape",
-        jsPDF: {
-            unit: "pt",
-            format: "a4",
-        },
-        autoTable: function (doc) {
-            doc.setFontSize(18);
-            doc.text("LAPORAN HASIL UJIAN SISWA", 40, 35);
-            doc.setFontSize(11);
-            doc.text("Tanggal : " + new Date().toLocaleDateString(), 40, 55);
-            return {
-                startY: 70,
-                theme: "grid",
-                styles: {
-                    fontSize: 9,
-                    cellPadding: 4,
-                },
-                headStyles: {
-                    fillColor: [22, 160, 133],
-                    textColor: 255,
-                },
-                alternateRowStyles: {
-                    fillColor: [245, 245, 245],
-                },
-            };
+        if (keyword === "") {
+            tableJawaban.clearFilter();
+            return;
         }
 
+        tableJawaban.setFilter(function(data) {
+            return (
+                (data.nipd && data.nipd.toLowerCase().includes(keyword)) ||
+                (data.nama_lengkap && data.nama_lengkap.toLowerCase().includes(keyword)) ||
+                (String(data.total_skor).includes(keyword))
+            );
+        });
     });
 
-});
 
-document.getElementById("btn-excel").addEventListener("click", function () {
 
-    tableJawaban.download("xlsx", "Laporan_Hasil_Ujian.xlsx", {
-        sheetName: "Hasil Ujian"
+    document.getElementById("btn-pdf").addEventListener("click", function() {
+        tableJawaban.download("pdf", "Laporan_Jawaban_Siswa.pdf", {
+            orientation: "landscape",
+            jsPDF: {
+                unit: "pt",
+                format: "a4",
+            },
+            autoTable: function(doc) {
+                doc.setFontSize(18);
+                doc.text("LAPORAN HASIL UJIAN SISWA", 40, 35);
+                doc.setFontSize(11);
+                doc.text("Tanggal : " + new Date().toLocaleDateString(), 40, 55);
+                return {
+                    startY: 70,
+                    theme: "grid",
+                    styles: {
+                        fontSize: 9,
+                        cellPadding: 4,
+                    },
+                    headStyles: {
+                        fillColor: [22, 160, 133],
+                        textColor: 255,
+                    },
+                    alternateRowStyles: {
+                        fillColor: [245, 245, 245],
+                    },
+                };
+            }
+
+        });
+
     });
 
-});
+    document.getElementById("btn-excel").addEventListener("click", function() {
+
+        tableJawaban.download("xlsx", "Laporan_Hasil_Ujian.xlsx", {
+            sheetName: "Hasil Ujian"
+        });
+
+    });
 </script>

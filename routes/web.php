@@ -31,6 +31,8 @@ use App\Http\Controllers\akademik\SoalController;
 use App\Http\Controllers\guru\PenilaianGuruController;
 use App\Http\Controllers\guru\JadwalController;
 use App\Http\Controllers\guru\UjianController;
+use App\Http\Controllers\guru\SoalGuruController;
+
 
 
 
@@ -591,12 +593,32 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
 
     
     Route::get('/ujianGuru', [UjianController::class, 'index'])->name('ujianGuru.index');
+
+    Route::get('ujianGuru/data', [UjianController::class, 'data'])->name('ujianGuru.data');
+
     Route::post('ujianGuru/store', [UjianController::class, 'store'])->name('ujianGuru.store');
     Route::put('ujianGuru/update/{id}', [UjianController::class, 'update'])->name('ujianGuru.update');
-    Route::delete('ujianGuru/delete/{id}', [UjianController::class, 'destroy'])->name('ujianGuru.delete');
+    Route::delete('ujianGuru/destroy/{id}', [UjianController::class, 'destroy'])->name('ujianGuru.destroy');
 
     Route::get('/pbm/detail-ujian-siswa/{id}', [PenilaianGuruController::class, 'detUjianSiswa'])
     ->name('pbm.detailUjianSiswa');
+
+
+    Route::get('/soalGuru', [SoalGuruController::class, 'index'])->name('soalGuru.index');
+
+     Route::get('soalGuru/data', [SoalGuruController::class, 'data'])
+        ->name('soalGuru.data');
+
+    // Simpan
+    Route::get('soalGuru/create', [SoalGuruController::class, 'create'])
+        ->name('soalGuru.create');
+
+         Route::get('soalGuru/update/{id}', [SoalGuruController::class, 'update'])
+        ->name('soalGuru.update');
+
+         Route::delete('soalGuru/destroy/{id}', [SoalGuruController::class, 'destroy'])
+        ->name('soalGuru.destroy');
+
 
 
 });

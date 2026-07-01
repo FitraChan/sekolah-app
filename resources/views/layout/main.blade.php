@@ -252,13 +252,13 @@ License: You must have a valid license purchased only from themeforest(the above
                         <div class="menu__icon"> <i data-lucide="box"></i> </div>
                         <div class="menu__title">
                             Pengajaran
-                            <div class="menu__sub-icon {{ in_array($side, ['pbm', 'jadwalGuru','ujianGuru']) ? 'transform rotate-180' : '' }}">
+                            <div class="menu__sub-icon {{ in_array($side, ['pbm', 'jadwalGuru','ujianGuru','soalGuru']) ? 'transform rotate-180' : '' }}">
                                 <i data-lucide="chevron-down"></i>
                             </div>
                         </div>
                     </a>
                     <!-- Sub-Menu Wrapper -->
-                    <ul class="{{ in_array($side, ['pbm','jadwalGuru','ujianGuru']) ? 'menu__sub-open' : '' }}">
+                    <ul class="{{ in_array($side, ['pbm','jadwalGuru','ujianGuru','soalGuru']) ? 'menu__sub-open' : '' }}">
                         <li>
                             <!-- Sub-Menu Gelombang -->
                             <a href="{{ route('pbm.index') }}" class="menu {{ $side == 'pbm' ? 'menu--active' : '' }}">
@@ -279,6 +279,14 @@ License: You must have a valid license purchased only from themeforest(the above
                             <a href="{{ route('ujianGuru.index') }}" class="menu {{ $side == 'ujianGuru' ? 'menu--active' : '' }}">
                                 <div class="menu__icon"> <i data-lucide="pen-tool"></i> </div>
                                 <div class="menu__title"> Ujian </div>
+                            </a>
+                        </li>   
+
+
+                          <li>
+                            <a href="{{ route('soalGuru.index') }}" class="menu {{ $side == 'soalGuru' ? 'menu--active' : '' }}">
+                                <div class="menu__icon"> <i data-lucide="monitor"></i> </div>
+                                <div class="menu__title">Master Soal </div>
                             </a>
                         </li>   
 
@@ -547,13 +555,13 @@ License: You must have a valid license purchased only from themeforest(the above
                         <div class="side-menu__icon"> <i data-lucide="box"></i> </div>
                         <div class="side-menu__title">
                             Pengajaran
-                            <div class="side-menu__sub-icon {{ in_array($side, ['pbm','jadwalGuru','ujianGuru']) ? 'transform rotate-180' : '' }}">
+                            <div class="side-menu__sub-icon {{ in_array($side, ['pbm','jadwalGuru','ujianGuru','soalGuru']) ? 'transform rotate-180' : '' }}">
                                 <i data-lucide="chevron-down"></i>
                             </div>
                         </div>
                     </a>
                     <!-- Sub-side-menu Wrapper -->
-                    <ul class="{{ in_array($side, ['pbm','jadwalGuru','ujianGuru']) ? 'side-menu__sub-open' : '' }}">
+                    <ul class="{{ in_array($side, ['pbm','jadwalGuru','ujianGuru','soalGuru']) ? 'side-menu__sub-open' : '' }}">
                         <li>
                             <!-- Sub-side-menu Gelombang -->
                             <a href="{{ route('pbm.index') }}" class="side-menu {{ $side == 'pbm' ? 'side-menu--active' : '' }}">
@@ -576,7 +584,16 @@ License: You must have a valid license purchased only from themeforest(the above
                                 <div class="side-menu__icon"> <i data-lucide="pen-tool"></i> </div>
                                 <div class="side-menu__title"> Ujian </div>
                             </a>
-                        </li>            
+                        </li>    
+                        
+                        
+                          <li>
+                            <!-- Sub-side-menu Gelombang -->
+                            <a href="{{ route('soalGuru.index') }}" class="side-menu {{ $side == 'soalGuru' ? 'side-menu--active' : '' }}">
+                                <div class="side-menu__icon"> <i data-lucide="monitor"></i> </div>
+                                <div class="side-menu__title"> Master Soal </div>
+                            </a>
+                        </li>  
 
 
                     </ul>
