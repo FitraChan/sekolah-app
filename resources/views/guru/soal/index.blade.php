@@ -26,6 +26,16 @@ Soal
 
         </a>
 
+
+         <a href="#"
+            class="btn btn-warning"
+            data-tw-toggle="modal"
+            data-tw-target="#modal-import-soal">
+    <i data-lucide="mail" class="w-4 h-4 mr-2"></i>
+            import
+
+        </a>
+
     </div>
 
     <div class="grid grid-cols-12 gap-6 mt-5">
@@ -59,6 +69,9 @@ Soal
     </div>
 
 </div>
+
+ @include('guru.soal.modal-import')
+
 
 <script>
 
@@ -110,7 +123,8 @@ Soal
         {
             title: "Soal",
             field: "soal",
-            width: 220
+            width: 220,
+             formatter: "html"
         },
 
         {
@@ -142,7 +156,7 @@ Soal
                 let data = cell.getData();
 
                 return `
-                    <a href="{{ url('soalGuru') }}/${data.id}"
+                    <a href="{{ url('soalGuru/edit') }}/${data.id}"
                         class="btn btn-sm btn-outline-primary mr-1">
                         <i data-lucide="pencil" class="w-4 h-4"></i>
                         Edit
@@ -164,6 +178,69 @@ Soal
     }
 
 });
+
+
+function hapusSoal(id) {
+
+    Swal.fire({
+        title: 'Yakin?',
+        text: 'Data soal akan dihapus.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Hapus',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+
+        if (!result.isConfirmed) return;
+
+        fetch(`{{ url('soalGuru') }}/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(res => {
+
+            if (res.success) {
+
+                Swal.fire({
+                    icon: 'success',
+                    title: res.title,
+                    text: res.msg,
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+
+                tableSoal.replaceData();
+
+            } else {
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: res.title,
+                    text: res.msg
+                });
+
+            }
+
+        })
+        .catch(error => {
+
+            console.error(error);
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Terjadi kesalahan pada server.'
+            });
+
+        });
+
+    });
+
+}
 </script>
 
 @endsection

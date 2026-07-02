@@ -565,33 +565,33 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
         [PenilaianGuruController::class, 'hapusMateri']
     )->name('pbm.hapusMateri');
 
-    Route::get('pbm/dataAbsen/{id}',[PenilaianGuruController::class, 'dataAbsen'])->name('pbm.dataAbsen');
+    Route::get('pbm/dataAbsen/{id}', [PenilaianGuruController::class, 'dataAbsen'])->name('pbm.dataAbsen');
     Route::post('/absensi/simpanDetailAbsensi', [AbsensiController::class, 'simpanDetailAbsensi'])->name('absensi.simpanDetailAbsensi');
     Route::get('pbm/editMateri/{id}', [PenilaianGuruController::class, 'editMateri'])->name('pbm.editMateri');
-    Route::put('pbm/updateMateri/{id}',[PenilaianGuruController::class, 'updateMateri'])->name('pbm.updateMateri');
-    Route::post('pbm/simpanUjian',[PenilaianGuruController::class, 'simpanUjian'])->name('pbm.simpanUjian');
+    Route::put('pbm/updateMateri/{id}', [PenilaianGuruController::class, 'updateMateri'])->name('pbm.updateMateri');
+    Route::post('pbm/simpanUjian', [PenilaianGuruController::class, 'simpanUjian'])->name('pbm.simpanUjian');
     Route::delete('pbm/deleteUjian/{id}', [PenilaianGuruController::class, 'deleteUjian'])
-    ->name('pbm.deleteUjian');
+        ->name('pbm.deleteUjian');
     Route::get('pbm/dataDetQuiz/{id}', [PenilaianGuruController::class, 'dataDetQuiz'])->name('pbm.dataDetQuiz');
     Route::post('/ckeditor/upload', [PenilaianGuruController::class, 'upload'])
-    ->name('ckeditor.upload');
+        ->name('ckeditor.upload');
     Route::get('/pbm/cariSoal/{id}', [PenilaianGuruController::class, 'cariSoal'])
-    ->name('pbm.cariSoal');
+        ->name('pbm.cariSoal');
     Route::post('/pbm/updateSoal', [PenilaianGuruController::class, 'updateSoal'])->name('pbm.updateSoal');
     Route::post('/pbm/storeSoal/{id}', [PenilaianGuruController::class, 'storeSoal'])->name('pbm.storeSoal');
     Route::get('/pbm/dataMasterSoal', [PenilaianGuruController::class, 'dataMasterSoal']);
     Route::post('/pbm/deleteDetUjian', [PenilaianGuruController::class, 'deleteDetUjian'])
-    ->name('pbm.deleteDetUjian');
+        ->name('pbm.deleteDetUjian');
 
     Route::post('/pbm/createDetQuiz/{id}', [PenilaianGuruController::class, 'createDetQuiz'])
-    ->name('pbm.createDetQuiz');
+        ->name('pbm.createDetQuiz');
     Route::get(
         'pbm/nilai/{id}',
         [PenilaianGuruController::class, 'nilai']
     )->name('pbm.nilai');
     Route::get('/jadwalGuru', [JadwalController::class, 'index'])->name('jadwalGuru.index');
 
-    
+
     Route::get('/ujianGuru', [UjianController::class, 'index'])->name('ujianGuru.index');
 
     Route::get('ujianGuru/data', [UjianController::class, 'data'])->name('ujianGuru.data');
@@ -601,26 +601,33 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
     Route::delete('ujianGuru/destroy/{id}', [UjianController::class, 'destroy'])->name('ujianGuru.destroy');
 
     Route::get('/pbm/detail-ujian-siswa/{id}', [PenilaianGuruController::class, 'detUjianSiswa'])
-    ->name('pbm.detailUjianSiswa');
+        ->name('pbm.detailUjianSiswa');
 
 
     Route::get('/soalGuru', [SoalGuruController::class, 'index'])->name('soalGuru.index');
 
-     Route::get('soalGuru/data', [SoalGuruController::class, 'data'])
+    Route::get('soalGuru/data', [SoalGuruController::class, 'data'])
         ->name('soalGuru.data');
 
     // Simpan
     Route::get('soalGuru/create', [SoalGuruController::class, 'create'])
         ->name('soalGuru.create');
 
-         Route::get('soalGuru/update/{id}', [SoalGuruController::class, 'update'])
+
+    Route::post('soalGuru/store', [SoalGuruController::class, 'store'])
+        ->name('soalGuru.store');
+
+
+    Route::get('soalGuru/edit/{id}', [SoalGuruController::class, 'edit'])
+        ->name('soalGuru.edit');
+
+    Route::put('soalGuru/update/{id}', [SoalGuruController::class, 'update'])
         ->name('soalGuru.update');
 
-         Route::delete('soalGuru/destroy/{id}', [SoalGuruController::class, 'destroy'])
+    Route::delete('soalGuru/{id}', [SoalGuruController::class, 'destroy'])
         ->name('soalGuru.destroy');
-
-
-
+    Route::post('soalGuru/import', [SoalGuruController::class, 'import'])
+        ->name('soalGuru.import');
 });
 
 Route::middleware(['auth', 'role:guru|admin'])->group(function () {
