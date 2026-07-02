@@ -291,6 +291,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         ->name('det-bayar-calon-siswa.destroy');
 
 
+        
+
+
     Route::get('/kelas', [KelasController::class, 'index'])->name('kelas.index');
 
     Route::get('kelas/data', [KelasController::class, 'data'])->name('kelas.data');
@@ -461,6 +464,11 @@ Route::middleware(['auth', 'role:admin|Akademik'])->group(function () {
         ->name('calon-siswa.create');
     Route::delete('/calon-siswa/delete/{id}', [CalonSiswaController::class, 'destroy'])->name('calon-siswa.delete');
 
+
+
+
+   
+
     Route::post(
         '/calon-siswa/update/orang-tua/{id}',
         [CalonSiswaController::class, 'updateOrangTua']
@@ -544,6 +552,21 @@ Route::middleware(['auth', 'role:calon'])->group(function () {
     )->name('calon-siswa.update-status');
 
     Route::post('/calon-siswa/upload/{id}', [CalonSiswaController::class, 'updateUpload'])->name('calon-siswa.update.upload');
+
+     Route::post('/calon-siswa/ipaymu', [CalonSiswaController::class, 'ipaymu'])
+        ->name('calon-siswa.ipaymu');
+
+    // Route::post('/ipaymu/callback', [CalonSiswaController::class, 'callback'])
+    // ->name('ipaymu.callback');
+
+    Route::get('/calon-siswa/successPembayaran', [CalonSiswaController::class, 'successPembayaran'])
+        ->name('calon-siswa.success-pembayaran');
+
+    Route::get('/calon-siswa/cancelPembayaran', [CalonSiswaController::class, 'cancelPembayaran'])
+        ->name('calon-siswa.cancel-pembayaran');
+
+        
+
 });
 
 Route::middleware(['auth', 'role:guru'])->group(function () {

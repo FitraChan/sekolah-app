@@ -19,6 +19,21 @@ Calon Siswa
         <li id="orang-tua-tab" class="nav-item flex-1" role="presentation"> <button class="nav-link w-full py-2" data-tw-toggle="pill" data-tw-target="#orang-tua-tab" type="button" role="tab" aria-controls="orang-tua-tab" aria-selected="false"> Orang Tua </button> </li>
         <li id="upload-tab" class="nav-item flex-1" role="presentation"> <button class="nav-link w-full py-2" data-tw-toggle="pill" data-tw-target="#upload-tab" type="button" role="tab" aria-controls="upload-tab" aria-selected="false"> Upload Dokumen </button> </li>
 
+        <li id="pembayaran-tab" class="nav-item flex-1" role="presentation">
+            <button
+                class="nav-link w-full py-2"
+                data-tw-toggle="pill"
+                data-tw-target="#pembayaran-tab-content"
+                type="button"
+                role="tab"
+                aria-controls="pembayaran-tab-content"
+                aria-selected="false">
+
+                Pembayaran
+
+            </button>
+        </li>
+
        <?php    if (auth()->user()->hasRole('admin')) { ?> 
         <li id="bukti-tab" class="nav-item flex-1" role="presentation"> <button class="nav-link w-full py-2" data-tw-toggle="pill" data-tw-target="#bukti-tab" type="button" role="tab" aria-controls="bukti-tab" aria-selected="false"> Bukti Registrasi </button> </li>
 <?php } ?>
@@ -31,8 +46,15 @@ Calon Siswa
              <?php    if (auth()->user()->hasRole('admin')) { ?> 
   
         <div id="bukti-tab" class="tab-pane leading-relaxed" role="tabpanel" aria-labelledby="bukti-tab"> @include('pendaftaran.calon_siswa.tab.bukti') </div>
-
+      
         <?php } ?>
+
+          <div id="pembayaran-tab-content" class="tab-pane leading-relaxed" role="tabpanel" aria-labelledby="pembayaran-tab">
+
+            @include('pendaftaran.calon_siswa.tab.pembayaran')
+
+        </div>
+
 
     </div>
 </div>

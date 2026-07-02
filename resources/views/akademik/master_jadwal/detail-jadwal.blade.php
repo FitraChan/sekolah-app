@@ -86,6 +86,12 @@
 
                         </select>
 
+                         <input
+                            type="text"
+                            id="filter_mapel_detail"
+                            class="form-control w-72"
+                            placeholder="🔍 Cari Nama Mata Pelajaran...">
+
                         <button
                             class="btn btn-primary"
                             onclick="loadDetailData()">
@@ -321,7 +327,9 @@ function loadDetailData()
                 document.getElementById('filter_jurusan_detail').value,
 
             id_kelas:
-                document.getElementById('filter_kelas_detail').value
+                document.getElementById('filter_kelas_detail').value,
+
+             mapel: document.getElementById('filter_mapel_detail').value
 
         }
 

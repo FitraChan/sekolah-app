@@ -28,7 +28,7 @@
 
                     <div class="mt-3">
 
-                        <img src="{{ asset('storage/' . $rows->foto_siswa) }}"
+                        <img src="{{ asset('storage/app/public/' . $rows->foto_siswa) }}"
                              class="w-40 rounded-lg border shadow">
 
                     </div>
@@ -59,12 +59,12 @@
 
                         @if(in_array(strtolower($ext), ['jpg','jpeg','png']))
 
-                            <img src="{{ asset('storage/' . $rows->kk) }}"
+                            <img src="{{ asset('storage/app/public/' . $rows->kk) }}"
                                  class="w-40 rounded-lg border shadow">
 
                         @else
 
-                            <a href="{{ asset('storage/' . $rows->kk) }}"
+                            <a href="{{ asset('storage/app/public/' . $rows->kk) }}"
                                target="_blank"
                                class="btn btn-outline-primary">
 
@@ -102,12 +102,12 @@
 
                         @if(in_array(strtolower($ext), ['jpg','jpeg','png']))
 
-                            <img src="{{ asset('storage/' . $rows->akta_kelahiran) }}"
+                            <img src="{{ asset('storage/app/public/' . $rows->akta_kelahiran) }}"
                                  class="w-40 rounded-lg border shadow">
 
                         @else
 
-                            <a href="{{ asset('storage/' . $rows->akta_kelahiran) }}"
+                            <a href="{{ asset('storage/app/public/' . $rows->akta_kelahiran) }}"
                                target="_blank"
                                class="btn btn-outline-primary">
 
@@ -139,7 +139,7 @@
 
                     <div class="mt-3">
 
-                        <a href="{{ asset('storage/' . $rows->ijazah) }}"
+                        <a href="{{ asset('storage/app/public/' . $rows->ijazah) }}"
                            target="_blank"
                            class="btn btn-outline-primary">
 
@@ -169,7 +169,7 @@
 
                     <div class="mt-3">
 
-                        <a href="{{ asset('storage/' . $rows->raport) }}"
+                        <a href="{{ asset('storage/app/public/' . $rows->raport) }}"
                            target="_blank"
                            class="btn btn-outline-primary">
 
@@ -205,12 +205,12 @@
 
                         @if(in_array(strtolower($ext), ['jpg','jpeg','png']))
 
-                            <img src="{{ asset('storage/' . $rows->ktp_ayah) }}"
+                            <img src="{{ asset('storage/app/public/' . $rows->ktp_ayah) }}"
                                  class="w-40 rounded-lg border shadow">
 
                         @else
 
-                            <a href="{{ asset('storage/' . $rows->ktp_ayah) }}"
+                            <a href="{{ asset('storage/app/public/' . $rows->ktp_ayah) }}"
                                target="_blank"
                                class="btn btn-outline-primary">
 
@@ -248,12 +248,12 @@
 
                         @if(in_array(strtolower($ext), ['jpg','jpeg','png']))
 
-                            <img src="{{ asset('storage/' . $rows->ktp_ibu) }}"
+                            <img src="{{ asset('storage/app/public/' . $rows->ktp_ibu) }}"
                                  class="w-40 rounded-lg border shadow">
 
                         @else
 
-                            <a href="{{ asset('storage/' . $rows->ktp_ibu) }}"
+                            <a href="{{ asset('storage/app/public/' . $rows->ktp_ibu) }}"
                                target="_blank"
                                class="btn btn-outline-primary">
 

@@ -115,6 +115,12 @@ class MasterJadwalController extends Controller
             });
         }
 
+        if ($request->filled('mapel')) {
+            $query->whereHas('jadwal.mapel', function ($q) use ($request) {
+                $q->where('nama_mapel', 'like', '%' . $request->mapel . '%');
+            });
+}
+
         $hari = [
             1 => 'Senin',
             2 => 'Selasa',
