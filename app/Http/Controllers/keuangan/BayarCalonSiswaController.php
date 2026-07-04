@@ -59,7 +59,7 @@ class BayarCalonSiswaController extends Controller
                 'keterangan'  => $request->keterangan,
             ]);
 
-           LogModel::create([
+            LogModel::create([
                 'tanggal' => now(),
                 'tabel' => 'tb_bayar_regis',
                 'aksi' => 'update',
@@ -74,7 +74,6 @@ class BayarCalonSiswaController extends Controller
                 'title'   => 'Sukses',
                 'msg'     => 'Data telah tersimpan'
             ]);
-
         } catch (\Exception $e) {
 
             return response()->json([
@@ -83,7 +82,6 @@ class BayarCalonSiswaController extends Controller
                 'msg'     => 'Gagal mengubah data',
                 'error'   => $e->getMessage()
             ], 500);
-
         }
     }
 
@@ -93,7 +91,7 @@ class BayarCalonSiswaController extends Controller
 
             $user = auth()->user();
 
-            
+
 
             DB::beginTransaction();
 
@@ -136,7 +134,6 @@ class BayarCalonSiswaController extends Controller
                 'title'   => 'Success',
                 'msg'     => 'Proses berhasil dilakukan'
             ]);
-
         } catch (\Exception $e) {
 
             DB::rollBack();
@@ -152,15 +149,67 @@ class BayarCalonSiswaController extends Controller
 
     public function data(Request $request)
     {
-            return CalonSiswa::with([
-                'tahunAjaran:id,thn_ajaran',
-                'jurusan:id,nama_jurusan',
-                'gelombang:id,nama_gelombang',
-                'kelas:idx,nama_kelas',
-                //'templateBayar:id,keterangan'
-            ])
-            ->orderBy('nipd', 'desc')
-            ->paginate($request->size ?? 10);
+        $query = CalonSiswa::with([
+            'tahunAjaran:id,thn_ajaran',
+            'jurusan:id,nama_jurusan',
+            'gelombang:id,nama_gelombang',
+            'kelas:idx,nama_kelas',
+        ]);
+
+        if ($request->filled('tahun')) {
+            $query->whereHas('tahunAjaran', function ($q) use ($request) {
+                $q->where('thn_ajaran', $request->tahun);
+            });
+        }
+
+        if ($request->filled('jurusan')) {
+            $query->where('id_jurusan', $request->jurusan);
+        }
+
+        if ($request->filled('kelas')) {
+            $query->whereHas('kelas', function ($q) use ($request) {
+                $q->where('nama_kelas', 'like', '%' . $request->kelas . '%');
+            });
+        }
+
+        if ($request->filled('keyword')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('nama_lengkap', 'like', '%' . $request->keyword . '%');
+            });
+        }
+
+        $data = $query
+            ->orderByDesc('nipd')
+            ->get()
+            ->map(function ($item) {
+
+                return [
+                    'id' => $item->id,
+                    'id_calon_siswa' => $item->id_calon_siswa,
+                    'no_daftar' => $item->no_daftar,
+                    'nama_lengkap' => $item->nama_lengkap,
+                    'jk' => $item->jk,
+                    'no_hp' => $item->no_hp,
+
+                    'tahun_ajaran' => [
+                        'thn_ajaran' => $item->tahunAjaran?->thn_ajaran,
+                    ],
+
+                    'jurusan' => [
+                        'nama_jurusan' => $item->jurusan?->nama_jurusan,
+                    ],
+
+                    'kelas' => [
+                        'nama_kelas' => $item->kelas?->nama_kelas,
+                    ],
+
+                    'gelombang' => [
+                        'nama_gelombang' => $item->gelombang?->nama_gelombang,
+                    ],
+                ];
+            });
+
+        return response()->json($data);
     }
 
     public function detail($nipd)
@@ -231,7 +280,7 @@ class BayarCalonSiswaController extends Controller
 
                 $detailTemplate = DetTempBayar::where('id_template', $row->id_template_bayar)
                     ->whereHas('itemBayar', function ($q) {
-                        $q->whereIn('id_kategori', [1,2]);
+                        $q->whereIn('id_kategori', [1, 2]);
                     })
                     ->get();
 

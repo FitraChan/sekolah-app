@@ -151,18 +151,75 @@ class BayarController extends Controller
         }
     }
 
-    public function data(Request $request)
-    {
-        return Siswa::with([
-            'tahunAjaran:id,thn_ajaran',
-            'jurusan:id,nama_jurusan',
-            'gelombang:id,nama_gelombang',
-            'kelas:idx,nama_kelas',
-            'templateBayar:id,keterangan'
-        ])
-            ->orderBy('nipd', 'desc')
-            ->paginate($request->size ?? 10);
+   public function data(Request $request)
+{
+    $query = Siswa::with([
+        'tahunAjaran:id,thn_ajaran',
+        'jurusan:id,nama_jurusan',
+        'gelombang:id,nama_gelombang',
+        'kelas:idx,nama_kelas',
+        'templateBayar:id,keterangan'
+    ]);
+
+    if ($request->filled('tahun')) {
+        $query->whereHas('tahunAjaran', function ($q) use ($request) {
+            $q->where('thn_ajaran', $request->tahun);
+        });
     }
+
+    if ($request->filled('jurusan')) {
+        $query->where('id_jurusan', $request->jurusan);
+    }
+
+    if ($request->filled('kelas')) {
+        $query->whereHas('kelas', function ($q) use ($request) {
+            $q->where('nama_kelas', 'like', '%' . $request->kelas . '%');
+        });
+    }
+
+    if ($request->filled('keyword')) {
+        $query->where(function ($q) use ($request) {
+            $q->where('nama_lengkap', 'like', '%' . $request->keyword . '%')
+              ->orWhere('nipd', 'like', '%' . $request->keyword . '%')
+              ->orWhere('nisn', 'like', '%' . $request->keyword . '%');
+        });
+    }
+
+    $data = $query
+        ->orderByDesc('nipd')
+        ->get()
+        ->map(function ($item) {
+
+            return [
+                'id' => $item->id,
+                'nipd' => $item->nipd,
+                'nama_lengkap' => $item->nama_lengkap,
+                'nisn' => $item->nisn,
+
+                'tahun_ajaran' => [
+                    'thn_ajaran' => $item->tahunAjaran?->thn_ajaran,
+                ],
+
+                'jurusan' => [
+                    'nama_jurusan' => $item->jurusan?->nama_jurusan,
+                ],
+
+                'kelas' => [
+                    'nama_kelas' => $item->kelas?->nama_kelas,
+                ],
+
+                'gelombang' => [
+                    'nama_gelombang' => $item->gelombang?->nama_gelombang,
+                ],
+
+                'template_bayar' => [
+                    'keterangan' => $item->templateBayar?->keterangan,
+                ],
+            ];
+        });
+
+    return response()->json($data);
+}
 
     public function detail($nipd)
     {

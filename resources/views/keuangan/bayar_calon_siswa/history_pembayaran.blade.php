@@ -88,8 +88,8 @@
                                 <div class="col-span-12 md:col-span-1">
                                     <button
                                         class="btn btn-secondary w-full"
-                                        onclick="resetFilter()">
-                                        Reset
+                                        onclick="applyFilter()">
+                                        Cari
                                     </button>
                                 </div>
 

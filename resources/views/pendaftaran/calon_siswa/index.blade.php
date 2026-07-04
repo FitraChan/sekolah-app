@@ -96,11 +96,7 @@ Calon Siswa
                 width: 100
             },
 
-            {
-                title: "NISN",
-                field: "nisn",
-                width: 180
-            },
+           
 
             {
                 title: "No HP",
@@ -123,6 +119,8 @@ Calon Siswa
             {
                 title: "Action",
                 hozAlign: "center",
+                width: 150,
+
 
                 formatter: function(cell) {
                     let data = cell.getData();

@@ -72,4 +72,22 @@ class CalonSiswa extends Model
     {
         return $this->belongsTo(Pekerjaan::class, 'id_kerja_ayah');
     }
+
+    public function buktiPembayaran()
+    {
+        return $this->hasMany(
+            BuktiBayarCalon::class,
+            'id_calon_siswa',
+            'id'
+        );
+    }
+
+    public function pembayaranIpaymu()
+    {
+        return $this->hasMany(
+            IpaymuBayar::class,
+            'id',
+            'id_calon_siswa'
+        );
+    }
 }

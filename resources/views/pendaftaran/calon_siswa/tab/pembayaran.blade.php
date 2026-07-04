@@ -1,4 +1,4 @@
-<form action="{{ route('calon-siswa.update-status', $rows->id ?? 0) }}"
+<form action="{{ route('calon-siswa.pembayaran', $rows->id ?? 0) }}"
     method="POST"
     enctype="multipart/form-data">
 

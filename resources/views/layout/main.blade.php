@@ -200,7 +200,7 @@ License: You must have a valid license purchased only from themeforest(the above
                                 class="menu {{ $side == 'rekap_kelas' ? 'menu--active' : '' }}">
 
                                 <div class="menu__icon">
-                                    <i data-lucide="archive"></i>
+                                    <i data-lucide="clipboard"></i>
                                 </div>
 
                                 <div class="menu__title">
@@ -230,7 +230,7 @@ License: You must have a valid license purchased only from themeforest(the above
                                 class="menu {{ $side == 'broadcast' ? 'menu--active' : '' }}">
 
                                 <div class="menu__icon">
-                                    <i data-lucide="file-text"></i>
+                                    <i data-lucide="book-open"></i>
                                 </div>
 
                                 <div class="menu__title">
@@ -384,7 +384,7 @@ License: You must have a valid license purchased only from themeforest(the above
                                 class="menu {{ $side == 'bayar-calon-siswa' ? 'menu--active' : '' }}">
 
                                 <div class="menu__icon">
-                                    <i data-lucide="credit-card"></i>
+                                    <i data-lucide="umbrella"></i>
                                 </div>
 
                                 <div class="menu__title">
@@ -660,7 +660,7 @@ License: You must have a valid license purchased only from themeforest(the above
                                 class="side-menu {{ $side == 'rekap_kelas' ? 'side-menu--active' : '' }}">
 
                                 <div class="side-menu__icon">
-                                    <i data-lucide="archive"></i>
+                                    <i data-lucide="clipboard"></i>
                                 </div>
 
                                 <div class="side-menu__title">
@@ -691,7 +691,7 @@ License: You must have a valid license purchased only from themeforest(the above
                                 class="side-menu {{ $side == 'broadcast' ? 'side-menu--active' : '' }}">
 
                                 <div class="side-menu__icon">
-                                    <i data-lucide="file-text"></i>
+                                    <i data-lucide="book-open"></i>
                                 </div>
 
                                 <div class="side-menu__title">
@@ -780,7 +780,7 @@ License: You must have a valid license purchased only from themeforest(the above
                                 class="side-menu {{ $side == 'bayar' ? 'side-menu--active' : '' }}">
 
                                 <div class="side-menu__icon">
-                                    <i data-lucide="credit-card"></i>
+                                    <i data-lucide="dollar-sign"></i>
                                 </div>
 
                                 <div class="side-menu__title">
@@ -795,7 +795,7 @@ License: You must have a valid license purchased only from themeforest(the above
                                 class="side-menu {{ $side == 'bayar-calon-siswa' ? 'side-menu--active' : '' }}">
 
                                 <div class="side-menu__icon">
-                                    <i data-lucide="credit-card"></i>
+                                    <i data-lucide="umbrella"></i>
                                 </div>
 
                                 <div class="side-menu__title">

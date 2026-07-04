@@ -26,11 +26,11 @@
             selectableRows: 1,
 
             pagination: true,
-            paginationMode: "remote",
+            // paginationMode: "remote",
             paginationSize: 10,
 
             layout: "fitDataStretch",
-            height: "500px",
+           // height: "500px",
 
             columns: [
 
@@ -529,59 +529,29 @@
 
      function applyFilter() {
 
-        let tahun = $('#filter_tahun').val();
-        let jurusan = $('#filter_jurusan').val();
-        let kelas = $('#filter_kelas').val().toLowerCase();
-        let keyword = $('#filter_keyword').val().toLowerCase();
-
-        tableSiswa.setFilter(function(data) {
-
-            console.log(data);
-
-
-            let matchTahun = !tahun ||
-                (data.tahun_ajaran &&
-                    data.tahun_ajaran.thn_ajaran == tahun);
-
-            let matchJurusan = !jurusan ||
-                (data.jurusan &&
-                    data.jurusan.nama_jurusan == jurusan);
-
-            let matchKelas = !kelas ||
-                (data.kelas &&
-                    data.kelas.nama_kelas.toLowerCase()
-                    .includes(kelas));
-
-            let matchKeyword = !keyword ||
-                (data.nama_lengkap &&
-                    data.nama_lengkap.toLowerCase()
-                    .includes(keyword)) ||
-                (data.nipd &&
-                    data.nipd.toLowerCase()
-                    .includes(keyword));
-
-            return matchTahun &&
-                matchJurusan &&
-                matchKelas &&
-                matchKeyword;
+       tableSiswa.setData("{{ route('bayar.data') }}", {
+            tahun: document.getElementById('filter_tahun').value,
+            jurusan: document.getElementById('filter_jurusan').value,
+            kelas: document.getElementById('filter_kelas').value,
+            keyword: document.getElementById('filter_keyword').value
         });
     }
 
-    document
-        .getElementById('filter_tahun')
-        .addEventListener('change', applyFilter);
+    // document
+    //     .getElementById('filter_tahun')
+    //     .addEventListener('change', applyFilter);
 
-    document
-        .getElementById('filter_jurusan')
-        .addEventListener('change', applyFilter);
+    // document
+    //     .getElementById('filter_jurusan')
+    //     .addEventListener('change', applyFilter);
 
-    document
-        .getElementById('filter_kelas')
-        .addEventListener('keyup', applyFilter);
+    // document
+    //     .getElementById('filter_kelas')
+    //     .addEventListener('keyup', applyFilter);
 
-    document
-        .getElementById('filter_keyword')
-        .addEventListener('keyup', applyFilter);
+    // document
+    //     .getElementById('filter_keyword')
+    //     .addEventListener('keyup', applyFilter);
 
      function resetFilter() {
 

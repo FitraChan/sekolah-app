@@ -18,43 +18,45 @@ Calon Siswa
         <li id="registrasi-tab" class="nav-item flex-1" role="presentation"> <button class="nav-link w-full py-2" data-tw-toggle="pill" data-tw-target="#registrasi-tab" type="button" role="tab" aria-controls="registrasi-tab" aria-selected="false"> Asal Sekolah </button> </li>
         <li id="orang-tua-tab" class="nav-item flex-1" role="presentation"> <button class="nav-link w-full py-2" data-tw-toggle="pill" data-tw-target="#orang-tua-tab" type="button" role="tab" aria-controls="orang-tua-tab" aria-selected="false"> Orang Tua </button> </li>
         <li id="upload-tab" class="nav-item flex-1" role="presentation"> <button class="nav-link w-full py-2" data-tw-toggle="pill" data-tw-target="#upload-tab" type="button" role="tab" aria-controls="upload-tab" aria-selected="false"> Upload Dokumen </button> </li>
+        <?php if (auth()->user()->hasRole('calon')) { ?>
+            <li id="pembayaran-tab" class="nav-item flex-1" role="presentation">
+                <button
+                    class="nav-link w-full py-2"
+                    data-tw-toggle="pill"
+                    data-tw-target="#pembayaran-tab-content"
+                    type="button"
+                    role="tab"
+                    aria-controls="pembayaran-tab-content"
+                    aria-selected="false">
 
-        <li id="pembayaran-tab" class="nav-item flex-1" role="presentation">
-            <button
-                class="nav-link w-full py-2"
-                data-tw-toggle="pill"
-                data-tw-target="#pembayaran-tab-content"
-                type="button"
-                role="tab"
-                aria-controls="pembayaran-tab-content"
-                aria-selected="false">
+                    Pembayaran
 
-                Pembayaran
+                </button>
+            </li>
 
-            </button>
-        </li>
+        <?php } ?>
 
-       <?php    if (auth()->user()->hasRole('admin')) { ?> 
-        <li id="bukti-tab" class="nav-item flex-1" role="presentation"> <button class="nav-link w-full py-2" data-tw-toggle="pill" data-tw-target="#bukti-tab" type="button" role="tab" aria-controls="bukti-tab" aria-selected="false"> Bukti Registrasi </button> </li>
-<?php } ?>
+        <?php if (auth()->user()->hasRole('admin')) { ?>
+            <li id="bukti-tab" class="nav-item flex-1" role="presentation"> <button class="nav-link w-full py-2" data-tw-toggle="pill" data-tw-target="#bukti-tab" type="button" role="tab" aria-controls="bukti-tab" aria-selected="false"> Bukti Registrasi </button> </li>
+        <?php } ?>
     </ul>
     <div class="tab-content mt-5">
         <div id="siswa-tab" class="tab-pane leading-relaxed active" role="tabpanel" aria-labelledby="siswa-tab"> @include('pendaftaran.calon_siswa.tab.data_calon_siswa') </div>
         <div id="registrasi-tab" class="tab-pane leading-relaxed" role="tabpanel" aria-labelledby="registrasi-tab"> @include('pendaftaran.calon_siswa.tab.registrasi') </div>
         <div id="orang-tua-tab" class="tab-pane leading-relaxed" role="tabpanel" aria-labelledby="orang-tua-tab"> @include('pendaftaran.calon_siswa.tab.orang_tua') </div>
         <div id="upload-tab" class="tab-pane leading-relaxed" role="tabpanel" aria-labelledby="upload-tab"> @include('pendaftaran.calon_siswa.tab.upload') </div>
-             <?php    if (auth()->user()->hasRole('admin')) { ?> 
-  
-        <div id="bukti-tab" class="tab-pane leading-relaxed" role="tabpanel" aria-labelledby="bukti-tab"> @include('pendaftaran.calon_siswa.tab.bukti') </div>
-      
+        <?php if (auth()->user()->hasRole('admin')) { ?>
+
+            <div id="bukti-tab" class="tab-pane leading-relaxed" role="tabpanel" aria-labelledby="bukti-tab"> @include('pendaftaran.calon_siswa.tab.bukti') </div>
+
         <?php } ?>
+        <?php if (auth()->user()->hasRole('calon')) { ?>
+            <div id="pembayaran-tab-content" class="tab-pane leading-relaxed" role="tabpanel" aria-labelledby="pembayaran-tab">
 
-          <div id="pembayaran-tab-content" class="tab-pane leading-relaxed" role="tabpanel" aria-labelledby="pembayaran-tab">
+                @include('pendaftaran.calon_siswa.tab.pembayaran')
 
-            @include('pendaftaran.calon_siswa.tab.pembayaran')
-
-        </div>
-
+            </div>
+        <?php } ?>
 
     </div>
 </div>

@@ -1,4 +1,3 @@
-
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
@@ -13,7 +12,7 @@
         initTableSiswa();
         initTableHistory();
 
-       // initFilter();
+        // initFilter();
 
     });
 
@@ -24,13 +23,10 @@
             ajaxURL: "{{ route('bayar-calon-siswa.data') }}",
 
             selectableRows: 1,
-
             pagination: true,
-            paginationMode: "remote",
-            paginationSize: 10,
 
+            paginationSize: 10,
             layout: "fitDataStretch",
-            height: "500px",
 
             columns: [
 
@@ -55,7 +51,7 @@
                     field: "kelas.nama_kelas"
                 },
 
-                 {
+                {
                     title: "Jurusan",
                     field: "jurusan.nama_jurusan"
                 },
@@ -67,22 +63,22 @@
             ]
         });
 
-        
+
 
 
         tableSiswa.on("rowClick", function(e, row) {
 
-             const data = row.getData();
+            const data = row.getData();
 
-             console.log('data',data.no_daftar);
-             
+            console.log('data', data.no_daftar);
+
 
 
             document.getElementById('id_calon_siswa_detail').value =
                 data.no_daftar ?? '';
 
 
-                 document.getElementById('id_calon_siswa_cicilan').value =
+            document.getElementById('id_calon_siswa_cicilan').value =
                 data.no_daftar ?? '';
 
             document.getElementById('nama_siswa_detail').value =
@@ -104,7 +100,7 @@
 
         });
     }
-    
+
 
     function initTableHistory() {
 
@@ -279,11 +275,11 @@
 
         tableDetail.on("rowClick", function(e, row) {
 
-        let data = row.getData();
+            let data = row.getData();
 
-        console.log(data.id);
+            console.log(data.id);
 
-        document.getElementById('id_bayar').value = data.id;
+            document.getElementById('id_bayar').value = data.id;
         });
     }
 
@@ -294,12 +290,12 @@
         tableDetail.setData(
             "{{ url('bayar-calon-siswa/detail') }}/" + id
         );
-        
-         if (window.tableHistoryDetail) {
-             window.tableHistoryDetail.setData(
-            "{{ url('bayar-calon-siswa/detail') }}/" + id
-        );
-    }
+
+        if (window.tableHistoryDetail) {
+            window.tableHistoryDetail.setData(
+                "{{ url('bayar-calon-siswa/detail') }}/" + id
+            );
+        }
     }
 
     function openModalBayar() {
@@ -354,7 +350,7 @@
         modal.show();
     }
 
-    
+
 
     async function saveBayar() {
 
@@ -379,16 +375,16 @@
 
         const result = await response.json();
 
-                Swal.fire({
-                    icon: "success",
-                    title: result.title,
-                    text: result.msg
-                });
- const modal = tailwind.Modal.getOrCreateInstance(
-                    document.querySelector("#modal-bayar-form")
-                );
+        Swal.fire({
+            icon: "success",
+            title: result.title,
+            text: result.msg
+        });
+        const modal = tailwind.Modal.getOrCreateInstance(
+            document.querySelector("#modal-bayar-form")
+        );
 
-                modal.hide();
+        modal.hide();
         tableDetail.replaceData();
 
     }
@@ -425,7 +421,7 @@
 
             if (result.success) {
 
-                 Swal.fire({
+                Swal.fire({
                     icon: "success",
                     title: result.title,
                     text: result.msg
@@ -438,9 +434,9 @@
                 modal.hide();
 
                 // reload tabel jika ada
-               // if (typeof table !== 'undefined') {
-                    tableDetail.replaceData();
-               // }
+                // if (typeof table !== 'undefined') {
+                tableDetail.replaceData();
+                // }
 
             } else {
 
@@ -455,16 +451,16 @@
 
             console.error(error);
 
-             Swal.fire({
-                    icon: "error",
-                    title: "Error",
-                    text: "Terjadi kesalahan saat menyimpan data"
-                });
-              
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "Terjadi kesalahan saat menyimpan data"
+            });
+
         }
     }
 
-     async function saveDefBulan() {
+    async function saveDefBulan() {
 
         try {
 
@@ -533,63 +529,18 @@
         }
     }
 
-     function applyFilter() {
+    function applyFilter() {
 
-        let tahun = $('#filter_tahun').val();
-        let jurusan = $('#filter_jurusan').val();
-        let kelas = $('#filter_kelas').val().toLowerCase();
-        let keyword = $('#filter_keyword').val().toLowerCase();
-
-        tableSiswa.setFilter(function(data) {
-
-            console.log(data);
-
-
-            let matchTahun = !tahun ||
-                (data.tahun_ajaran &&
-                    data.tahun_ajaran.thn_ajaran == tahun);
-
-            let matchJurusan = !jurusan ||
-                (data.jurusan &&
-                    data.jurusan.nama_jurusan == jurusan);
-
-            let matchKelas = !kelas ||
-                (data.kelas &&
-                    data.kelas.nama_kelas.toLowerCase()
-                    .includes(kelas));
-
-            let matchKeyword = !keyword ||
-                (data.nama_lengkap &&
-                    data.nama_lengkap.toLowerCase()
-                    .includes(keyword)) ||
-                (data.id_calon_siswa &&
-                    data.id_calon_siswa.toLowerCase()
-                    .includes(keyword));
-
-            return matchTahun &&
-                matchJurusan &&
-                matchKelas &&
-                matchKeyword;
+        tableSiswa.setData("{{ route('bayar-calon-siswa.data') }}", {
+            tahun: document.getElementById('filter_tahun').value,
+            jurusan: document.getElementById('filter_jurusan').value,
+            kelas: document.getElementById('filter_kelas').value,
+            keyword: document.getElementById('filter_keyword').value
         });
     }
 
-    document
-        .getElementById('filter_tahun')
-        .addEventListener('change', applyFilter);
-
-    document
-        .getElementById('filter_jurusan')
-        .addEventListener('change', applyFilter);
-
-    document
-        .getElementById('filter_kelas')
-        .addEventListener('keyup', applyFilter);
-
-    document
-        .getElementById('filter_keyword')
-        .addEventListener('keyup', applyFilter);
-
-     function resetFilter() {
+    
+    function resetFilter() {
 
         document.getElementById('filter_tahun').value = '';
         document.getElementById('filter_jurusan').value = '';
@@ -608,6 +559,4 @@
         const cetakUrl = "{{ url('/bayar-calon-siswa/createReportPdf') }}";
         window.open(`${cetakUrl}/${selectedSiswaId}`, '_blank');
     }
-
-    
 </script>

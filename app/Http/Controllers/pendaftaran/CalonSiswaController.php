@@ -11,6 +11,10 @@ use App\Models\Agama;
 use App\Models\ItemBayar;
 use App\Models\Pekerjaan;
 use App\Models\StatusDaftar;
+use App\Models\IpaymuBayar;
+use App\Models\IpaymuDetBayar;
+
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\LogModel;
@@ -58,6 +62,9 @@ class CalonSiswaController extends Controller
 
         $gel = Gelombang::orderBy('idx', 'asc')->get();
 
+         $itemBayar = ItemBayar::where('id_kategori', 2)
+            ->get();
+
         $thn = TahunAjaran::orderBy('id', 'desc')->get();
 
         $lists = Jurusan::orderBy('nama_jurusan', 'asc')->get();
@@ -67,6 +74,10 @@ class CalonSiswaController extends Controller
 
         $sts_daftar = StatusDaftar::orderBy('keterangan', 'asc')->get();
 
+        $bukti = CalonSiswa::with('buktiPembayaran')
+            ->where('id_user', Auth::id())
+            ->get();
+
         // $petugas = User::orderBy('name', 'asc')->get();
 
         /*
@@ -74,6 +85,7 @@ class CalonSiswaController extends Controller
         | STATUS
         |--------------------------------------------------------------------------
         */
+        $dataIpaymu = '';
 
         $stsdaftar =
             'Belum Ada';
@@ -83,6 +95,7 @@ class CalonSiswaController extends Controller
             compact(
                 'side',
                 'rows',
+                'dataIpaymu',
                 'gel',
                 'thn',
                 'lists',
@@ -90,7 +103,9 @@ class CalonSiswaController extends Controller
                 'agama',
                 'sts_daftar',
                 // 'petugas',
-                'stsdaftar'
+                'stsdaftar',
+                'bukti',
+                'itemBayar'
             )
         );
     }
@@ -112,6 +127,20 @@ class CalonSiswaController extends Controller
         $jobs = Pekerjaan::orderBy('nama_pekerjaan', 'asc')->get();
         $agama = Agama::orderBy('nama_agama', 'asc')->get();
         $sts_daftar = StatusDaftar::orderBy('keterangan', 'asc')->get();
+
+        $dataIpaymu = IpaymuBayar::with([
+            'detailBayar',
+            'calonSiswa'
+        ])->where('id_calon_siswa', $id)->first();
+
+
+
+        $bukti = CalonSiswa::with('buktiPembayaran')
+            ->where('id', $id)
+            ->get();
+
+             $itemBayar = ItemBayar::where('id_kategori', 2)
+            ->get();
         /*
         |--------------------------------------------------------------------------
         | STATUS
@@ -131,7 +160,10 @@ class CalonSiswaController extends Controller
                 'jobs',
                 'agama',
                 'sts_daftar',
-                'stsdaftar'
+                'stsdaftar',
+                'bukti',
+                'itemBayar',
+                'dataIpaymu'
             )
         );
     }
@@ -149,6 +181,9 @@ class CalonSiswaController extends Controller
         $jobs = Pekerjaan::orderBy('nama_pekerjaan', 'asc')->get();
         $agama = Agama::orderBy('nama_agama', 'asc')->get();
         $sts_daftar = StatusDaftar::orderBy('keterangan', 'asc')->get();
+        $bukti = CalonSiswa::with('buktiPembayaran')
+            ->where('id_user', Auth::id())
+            ->get();
         $stsdaftar = $rows->statusDaftar->keterangan ?? 'Belum Ada';
         return view(
             'pendaftaran.calon_siswa.edit_calon_siswa',
@@ -162,7 +197,8 @@ class CalonSiswaController extends Controller
                 'agama',
                 'sts_daftar',
                 'stsdaftar',
-                'itemBayar'
+                'itemBayar',
+                'bukti'
             )
         );
     }
@@ -604,6 +640,74 @@ class CalonSiswaController extends Controller
         }
     }
 
+    public function pembayaran(Request $request, $id){
+
+           try {
+
+                DB::beginTransaction();
+
+                $data = [];
+
+                if ($request->hasFile('bukti_transfer')) {
+
+                    $file = $request->file('bukti_transfer');
+
+                    $namaFile = time() . '_bukti_transfer.' .
+                        $file->getClientOriginalExtension();
+
+                    $file->storeAs(
+                        'uploads/pembayaran',
+                        $namaFile,
+                        'public'
+                    );
+
+                    $data['bukti_transfer'] = 'uploads/pembayaran/' . $namaFile;
+                }
+
+                $data['updated_at'] = now();
+
+                DB::table('tb_bukti_bayar_calon')->insert([
+                    'id_calon_siswa' => $id,
+                    'bukti_transfer' => $data['bukti_transfer'] ?? null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                LogModel::create([
+                    'tanggal' => now(),
+                    'tabel' => 'tb_bukti_bayar_calon',
+                    'aksi' => 'insert',
+                    'user' => auth()->user()->id,
+                    'ip' => $request->ip(),
+                    'keterangan' => json_encode($data),
+                    'serial' => url('pembayaran/' . $id),
+                ]);
+
+                DB::commit();
+
+                return redirect()
+                    ->back()
+                    ->with('success', 'Upload dokumen berhasil');
+
+            } catch (\Exception $e) {
+
+                DB::rollBack();
+
+                // Simpan log error
+                Log::error('Upload bukti transfer gagal', [
+                    'message' => $e->getMessage(),
+                    'file'    => $e->getFile(),
+                    'line'    => $e->getLine(),
+                ]);
+
+                return redirect()
+                    ->back()
+                    ->withInput()
+                    ->with('error', 'Upload dokumen gagal. ' . $e->getMessage());
+            }
+
+     }
+
 
     public function updateOrangTua(Request $request, $id)
     {
@@ -962,5 +1066,15 @@ class CalonSiswaController extends Controller
         DB::commit();
 
         return response()->json(['message' => 'Notifikasi diterima'], 200);
+    }
+
+    function dataIpaymu($id){
+
+        $data = IpaymuBayar::with([
+            'detailBayar',
+            'calonSiswa'
+        ])->find($id);
+
+        return response()->json($data);
     }
 }

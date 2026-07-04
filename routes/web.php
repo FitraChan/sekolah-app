@@ -473,6 +473,12 @@ Route::middleware(['auth', 'role:admin|Akademik'])->group(function () {
         '/calon-siswa/update/orang-tua/{id}',
         [CalonSiswaController::class, 'updateOrangTua']
     )->name('calon-siswa.update.orangtua');
+
+
+    Route::get('/ipaymu/{id}', [BayarController::class, 'dataIpaymu'])
+    ->name('ipaymu.data');
+
+    
     Route::post(
         '/calon-siswa/update/registrasi/{id}',
         [CalonSiswaController::class, 'updateRegistrasi']
@@ -565,7 +571,11 @@ Route::middleware(['auth', 'role:calon'])->group(function () {
     Route::get('/calon-siswa/cancelPembayaran', [CalonSiswaController::class, 'cancelPembayaran'])
         ->name('calon-siswa.cancel-pembayaran');
 
-        
+
+    Route::post(
+        '/calon-siswa/pembayaran/{id}',
+        [CalonSiswaController::class, 'pembayaran']
+    )->name('calon-siswa.pembayaran');
 
 });
 
