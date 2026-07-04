@@ -46,7 +46,7 @@ Materi PBM
             <div>
                 <h2 class="font-semibold text-lg">
                     Kelas
-                    {{ $master->jadwal->kelas->kelas ?? '' }}
+                    {{ $master->jadwal->nkelas ?? '' }}
                     {{ $master->jadwal->kelas->nama_kelas ?? '' }}
                 </h2>
 

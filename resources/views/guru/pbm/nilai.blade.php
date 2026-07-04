@@ -67,7 +67,7 @@ Penilaian Guru
                                 type="text"
                                 id="filter_kelas_detail"
                                 class="form-control"
-                                value="<?= $mapel->kelas->kelas.' '.$mapel->kelas->nama_kelas;  ?>"
+                                value="<?= $mapel->nkelas.' '.$mapel->kelas->nama_kelas;  ?>"
                                 placeholder="kelas...">
 
                         </div>

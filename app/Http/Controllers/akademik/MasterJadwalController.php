@@ -49,9 +49,20 @@ class MasterJadwalController extends Controller
             $query->where('id_kelas', $request->id_kelas);
         }
 
+
+        if ($request->filled('smt')) {
+            $query->where('semester', $request->smt);
+        }
+
         if ($request->id_jurusan) {
             $query->whereHas('kelas', function ($q) use ($request) {
                 $q->where('id_jurusan', $request->id_jurusan);
+            });
+        }
+
+         if ($request->filled('mapel')) {
+            $query->whereHas('mapel', function ($q) use ($request) {
+                $q->where('nama_mapel', 'like', '%' . $request->mapel . '%');
             });
         }
 
@@ -119,7 +130,13 @@ class MasterJadwalController extends Controller
             $query->whereHas('jadwal.mapel', function ($q) use ($request) {
                 $q->where('nama_mapel', 'like', '%' . $request->mapel . '%');
             });
-}
+        }
+
+       if ($request->filled('smt')) {
+            $query->whereHas('jadwal', function ($q) use ($request) {
+                $q->where('semester', $request->smt);
+            });
+        }
 
         $hari = [
             1 => 'Senin',
@@ -150,13 +167,13 @@ class MasterJadwalController extends Controller
                     'jam_awal'        => $item->jam->jam_awal ?? '',
                     'jam_akhir'       => $item->jam->jam_akhir ?? '',
 
-                        'id_jam'          => $item->id_jam,
+                    'id_jam'          => $item->id_jam,
 
                     'tahun_ajaran'    => $item->jadwal->tahun->thn_ajaran ?? '',
-                    'semester'        => $item->jadwal->semester ?? '',
+                    'semester'        => $item->jadwal->semester == 1 ? 'Ganjil' : 'Genap',
                     'angkatan'        => $item->jadwal->angkatan ?? '',
 
-                    'nama_kelas'      => $item->jadwal->kelas->nama_kelas ?? '',
+                    'nama_kelas'      => $item->jadwal->nkelas . ' ' . $item->jadwal->kelas->nama_kelas ?? '',
                     'nama_mapel'      => $item->jadwal->mapel->nama_mapel ?? '',
                     'nama_gtk'        => $item->jadwal->guru->nama_gtk ?? '',
 
@@ -394,15 +411,36 @@ class MasterJadwalController extends Controller
 
         try {
 
+         $konfig = konfig();
+        $smt = $konfig['smt'];
+
             foreach ($request->data as $row) {
+
+             $penjadwalan = PenjadwalanHari::with('jadwal')->findOrFail($row['id']);
+
+                $bentrok = PenjadwalanHari::where('id', '!=', $row['id'])
+                    ->where('id_hari', $row['id_hari'])
+                    ->where('id_jam', $row['id_jam'])
+                    ->whereHas('jadwal', function ($q) use ($penjadwalan, $smt) {
+                        $q->where('id_gtk', $penjadwalan->jadwal->id_gtk);
+                        $q->where('semester', $smt);
+                    })
+                    ->exists();
+
+                if ($bentrok) {
+                    DB::rollBack();
+
+                    return response()->json([
+                        'success' => false,
+                        'msg' => 'Guru sudah memiliki jadwal pada hari dan jam tersebut.'
+                    ], 422);
+                }
 
                 PenjadwalanHari::where('id', $row['id'])
                     ->update([
                         'id_hari' => $row['id_hari'],
                         'id_jam'  => $row['id_jam'] ?? 0,
-                    ]);
-
-               
+                    ]);               
             }
 
             DB::commit();

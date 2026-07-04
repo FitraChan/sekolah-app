@@ -35,7 +35,7 @@ class UjianController extends Controller
                     'id_mapel'    => $item->id_mapel,
                     'nama_mapel'  => $item->mapel->nama_mapel,
                     'id_gtk'      => $item->id_gtk,
-                    'kelas'       => $item->kelas->kelas,
+                    'kelas'       => $item->nkelas,
                     'nama_kelas'  => $item->kelas->nama_kelas,
                 ];
             });
@@ -72,7 +72,7 @@ class UjianController extends Controller
                     'id'         => $item->id,
                     'judul'      => $item->judul,
                     'tgl_quiz'   => \Carbon\Carbon::parse($item->tgl_quiz)->format('d-m-Y'),
-                    'kelas'      => $item->masterJadwal->kelas->kelas . ' ' . $item->masterJadwal->kelas->nama_kelas,
+                    'kelas'      => $item->masterJadwal->nkelas . ' ' . $item->masterJadwal->kelas->nama_kelas,
                     'nama_mapel' => $item->masterJadwal->mapel->nama_mapel,
                     'updated_at' => $item->updated_at,
                 ];

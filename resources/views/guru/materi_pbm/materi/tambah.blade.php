@@ -24,7 +24,7 @@ Materi PBM
             </h2>
 
             <p class="text-slate-500 mt-1">
-                Kelas {{ $master->kelas->kelas }}
+                Kelas {{ $master->nkelas }}
                 {{ $master->kelas->nama_kelas }}
             </p>
 

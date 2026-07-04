@@ -13,7 +13,7 @@
     <div class="p-5 border-b flex flex-col md:flex-row md:items-center gap-3">
 
     <h2 class="font-semibold text-lg">
-        Kelas {{ $master->kelas->kelas }}
+        Kelas {{ $master->nkelas }}
         {{ $master->kelas->nama_kelas }}
     </h2>
 

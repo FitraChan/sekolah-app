@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\Casts\Attribute;
 class MasterJadwal extends Model
 {
     protected $table = 'tb_master_jadwal';
@@ -17,6 +17,24 @@ class MasterJadwal extends Model
         'id_gtk',
         'angkatan',
     ];
+
+      protected $appends = ['nkelas'];
+
+    protected function nkelas(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+
+                $selisih = $this->id_tahun - $this->angkatan;
+
+                return match ($selisih) {
+                    0 => 'X',
+                    1 => 'XI',
+                    default => 'XII',
+                };
+            }
+        );
+    }
 
     public function kelas()
     {
@@ -58,4 +76,6 @@ class MasterJadwal extends Model
     {
         return $this->belongsTo(Quiz::class, 'master_kelas_id');
     }
+
+    
 }

@@ -34,7 +34,7 @@ class SoalGuruController extends Controller
                     'id_mapel'    => $item->id_mapel,
                     'nama_mapel'  => $item->mapel->nama_mapel,
                     'id_gtk'      => $item->id_gtk,
-                    'kelas'       => $item->kelas->kelas,
+                    'kelas'       => $item->nkelas,
                     'nama_kelas'  => $item->kelas->nama_kelas,
                 ];
             });

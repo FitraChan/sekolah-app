@@ -86,6 +86,24 @@
 
                         </select>
 
+                        <select
+                                id="filter_semester_detail"
+                                class="form-select w-56">
+
+                                <option value="">
+                                    Pilih Semester
+                                </option>
+
+                                <option value="1">
+                                    Ganjil
+                                </option>
+
+                                <option value="0">
+                                    Genap
+                                </option>
+
+                            </select>
+
                          <input
                             type="text"
                             id="filter_mapel_detail"
@@ -314,6 +332,8 @@ tableDetail.on("cellEdited", function(cell){
 
 function loadDetailData()
 {
+
+console.log(document.getElementById('filter_semester_detail').value);
     tableDetail.setData(
 
         "{{ route('detail-jadwal.data') }}",
@@ -329,7 +349,11 @@ function loadDetailData()
             id_kelas:
                 document.getElementById('filter_kelas_detail').value,
 
-             mapel: document.getElementById('filter_mapel_detail').value
+             mapel: document.getElementById('filter_mapel_detail').value,
+             
+
+            smt: document.getElementById('filter_semester_detail').value
+
 
         }
 

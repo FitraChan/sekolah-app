@@ -79,8 +79,8 @@ class PenilaianGuruController extends Controller
                     'jml_jam'       => $item->jml_jam,
                     'angkatan'      => $item->angkatan,
                     'tahun_ajaran'  => $item->tahun->thn_ajaran ?? '',
-                    'nama_kelas'    => $item->kelas->nama_kelas ?? '',
-                    'kelas'         => $item->kelas->kelas ?? '',
+                    'nama_kelas'    => $item->nkelas->nama_kelas ?? '',
+                    'kelas'         => $item->nkelas ?? '',
                     'nama_mapel'    => $item->mapel->nama_mapel ?? '',
                     'nama_gtk'      => $item->guru->nama_gtk ?? '',
                 ];

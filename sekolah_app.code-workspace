@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "../gtk_back_up"
+		},
+		{
+			"path": "../cbt_back_up"
 		}
 	],
 	"settings": {}

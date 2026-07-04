@@ -119,6 +119,12 @@
                                 @endforeach
                             </select>
 
+                            <input
+                            type="text"
+                            id="filter_mapel_detail"
+                            class="form-control w-72"
+                            placeholder="🔍 Cari Nama Mata Pelajaran...">
+
                             <button
                                 class="btn btn-primary"
                                 onclick="loadData()">
@@ -299,11 +305,16 @@
     });
 
     function loadData() {
+
+    console.log(document.getElementById('filter_semester').value);
         table.setData(
             "{{ route('master-jadwal.data') }}", {
                 id_tahun: document.getElementById('filter_tahun').value,
                 id_jurusan: document.getElementById('filter_jurusan').value,
-                id_kelas: document.getElementById('filter_kelas').value
+                id_kelas: document.getElementById('filter_kelas').value,
+                smt: document.getElementById('filter_semester').value,
+                mapel: document.getElementById('filter_mapel_detail').value,
+
             }
         );
     }
