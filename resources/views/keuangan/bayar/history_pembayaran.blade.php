@@ -54,7 +54,7 @@
                                         <option value="">Semua Jurusan</option>
 
                                         @foreach($jurusan as $row)
-                                        <option value="{{ $row->nama_jurusan }}">
+                                        <option value="{{ $row->id }}">
                                             {{ $row->nama_jurusan }}
                                         </option>
                                         @endforeach

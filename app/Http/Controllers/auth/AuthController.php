@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Jurusan;
 use App\Models\User;
 use App\Models\Gtk;
+use App\Models\LogModel;
+use App\Models\BayarCalonSiswa;
+use App\Models\CalonSiswa;
+use App\Models\DetBayarCalonSiswa;
+use App\Models\DetTempBayar;
 
 
 use Illuminate\Support\Facades\DB;
@@ -181,6 +186,8 @@ class AuthController extends Controller
                 'updated_at'         => now(),
             ]);
 
+           
+
             DB::table('tb_notifikasi')->insert([
                 'judul'      => 'Daftar Online',
                 'isi'        => 'Pendaftar siswa baru online a.n '
@@ -229,6 +236,107 @@ class AuthController extends Controller
                 ->withInput()
                 ->with('error', $e->getMessage());
         }
+    }
+
+    public function setDefBulan(Request $request,$id)
+    {
+       
+   
+        $berhasil = 0;
+        $gagal = 0;
+
+        $siswa = CalonSiswa::where('id', $id)            
+            ->first();
+
+        $konfig = konfig();
+      
+
+        $id_tahun = $konfig['id_tahun']; 
+        
+        $bulan = date('m');
+
+        DB::beginTransaction();
+
+        try {
+
+           // foreach ($siswa as $row) {
+
+                $bayar = BayarCalonSiswa::create([
+                    'id_tahun' => $id_tahun,
+                    'id_bulan' => $bulan,
+                    'id_calon_siswa' => $siswa->no_daftar,
+                ]);
+
+                dd($bayar);
+
+                $detailTemplate = DetTempBayar::where('id_template', $siswa->id_template_bayar)
+                    ->whereHas('itemBayar', function ($q) {
+                        $q->whereIn('id_kategori', [1, 2]);
+                    })
+                    ->get();
+
+                foreach ($detailTemplate as $item) {
+
+                    $detail = DetBayarCalonSiswa::create([
+                        'id_bayar'        => $bayar->id,
+                        'id_item'         => $item->id_item,
+                        'kwajiban_bayar'  => $item->jml_bayar,
+                        'potongan'        => 0,
+                        'jml_bayar'       => 0,
+                    ]);
+
+                    if ($detail) {
+                        $berhasil++;
+                    } else {
+                        $gagal++;
+                    }
+                }
+
+                $this->updateTotalBayar($bayar->id);
+          //  }
+
+            LogModel::create([
+                'tanggal' => now(),
+                'tabel' => 'tb_bayar_regis',
+                'aksi' => 'create',
+                'user' => auth()->user()->id,
+                'ip' => $request->ip(),
+                'keterangan' => json_encode($bayar ?? ""),
+                'serial' => url('simpan')
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'title'   => 'Success',
+                'msg'     => "Proses berhasil dilakukan pada Bulan {$bulan}, Tahun {$id_tahun},  Berhasil {$berhasil}, Gagal {$gagal}"
+            ]);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'title'   => 'Error',
+                'msg'     => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+
+    public function updateTotalBayar($id)
+    {
+        $total = DetBayarCalonSiswa::where('id_bayar', $id)
+            ->sum('kwajiban_bayar')
+            - DetBayarCalonSiswa::where('id_bayar', $id)
+            ->sum('potongan');
+
+        BayarCalonSiswa::where('id', $id)
+            ->update([
+                'total_kwajiban' => $total
+            ]);
     }
 
     public function cekRegisterGuru(Request $request)

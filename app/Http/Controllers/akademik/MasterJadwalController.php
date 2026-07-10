@@ -170,14 +170,14 @@ class MasterJadwalController extends Controller
                     'id_jam'          => $item->id_jam,
 
                     'tahun_ajaran'    => $item->jadwal->tahun->thn_ajaran ?? '',
-                    'semester'        => $item->jadwal->semester == 1 ? 'Ganjil' : 'Genap',
+                    'semester' => $item->jadwal?->semester == 1 ? 'Ganjil' : 'Genap',
                     'angkatan'        => $item->jadwal->angkatan ?? '',
 
-                    'nama_kelas'      => $item->jadwal->nkelas . ' ' . $item->jadwal->kelas->nama_kelas ?? '',
-                    'nama_mapel'      => $item->jadwal->mapel->nama_mapel ?? '',
-                    'nama_gtk'        => $item->jadwal->guru->nama_gtk ?? '',
+                    'nama_kelas'      => $item->jadwal?->nkelas . ' ' . $item->jadwal?->kelas?->nama_kelas ?? '',
+                    'nama_mapel'      => $item->jadwal?->mapel->nama_mapel ?? '',
+                    'nama_gtk'        => $item->jadwal?->guru->nama_gtk ?? '',
 
-                    'jml_jam'         => $item->jadwal->jml_jam ?? '',
+                    'jml_jam'         => $item->jadwal?->jml_jam ?? '',
                 ];
             });
 

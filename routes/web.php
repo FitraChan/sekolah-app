@@ -6,6 +6,8 @@ use App\Http\Controllers\Home;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\KonfigController;
+use App\Http\Controllers\IpaymuController;
+
 
 // use App\Http\Controllers\GelombangController;
 
@@ -74,6 +76,13 @@ Route::get('registerSiswa', [AuthController::class, 'registerSiswa'])->name('reg
 Route::get('registerGuru', [AuthController::class, 'registerGuru'])->name('registerGuru');
 Route::post('/cekregister', [AuthController::class, 'cekregister'])->name('cekregister');
 Route::post('/cekRegisterGuru', [AuthController::class, 'cekRegisterGuru'])->name('cekRegisterGuru');
+
+ Route::get('/successPembayaranIpaymu', [IpaymuController::class, 'success'])
+        ->name('successPembayaranIpaymu');
+
+        Route::get('/cancelPembayaranIpaymu', [IpaymuController::class, 'cancel'])
+        ->name('cancelPembayaranIpaymu');
+
 
 
 
@@ -675,3 +684,9 @@ Route::middleware(['auth', 'role:guru|admin'])->group(function () {
 
 
 Route::middleware(['auth', 'role:keuangan'])->group(function () {});
+
+Route::middleware(['auth', 'role:siswa'])->group(function () {
+
+});
+
+

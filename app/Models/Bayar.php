@@ -91,4 +91,26 @@ class Bayar extends Model
             'id'
         );
     }
+
+     public static function updateBayar($id)
+    {
+        $total = DetBayar::where('id_bayar', $id)->sum('jml_bayar');
+
+        static::where('id', $id)
+            ->update([
+                'tot_bayar' => $total
+            ]);
+    }
+
+    public static function updateKewajiban($id)
+    {
+        $total = DetBayar::where('id_bayar', $id)
+            ->selectRaw('COALESCE(SUM(kwajiban_bayar),0)-COALESCE(SUM(potongan),0) total')
+            ->value('total');
+
+        static::where('id', $id)
+            ->update([
+                'total_kwajiban' => $total
+            ]);
+    }
 }
