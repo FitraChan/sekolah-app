@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/calon-siswa/notifyPembayaran', [CalonSiswaController::class, 'notifyPembayaran'])
         ->name('calon-siswa.notifyPembayaran');
+        
+        
+Route::post('/notifyPembayaranSiswa', [BayarController::class, 'notifyPembayaranSiswa'])
+        ->name('notifyPembayaranSiswa');
 
 Route::post('/login-siswa', [UserController::class, 'index']);
 Route::middleware(['auth:sanctum', 'role:siswa'])->group(function () {

@@ -874,7 +874,7 @@ class CalonSiswaController extends Controller
              * SIMPAN DATA BAYAR
              * ===================== */
             $orderId = DB::table('tb_ipaymu_bayar')->insertGetId([
-                'id_calon_siswa'   => $siswa->id,
+                'id_calon_siswa'   => $siswa->no_daftar,
                 'id_tahun'    => date('Y'),
                 'id_bulan'    => date('m'),
                 'tgl_bayar'   => $request->tgl_trans ?? now(),

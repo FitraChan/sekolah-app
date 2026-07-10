@@ -110,7 +110,7 @@ class Bayar extends Model
 
         static::where('id', $id)
             ->update([
-                'total_kwajiban' => $total
+                'tot_kwajiban' => $total
             ]);
     }
 }

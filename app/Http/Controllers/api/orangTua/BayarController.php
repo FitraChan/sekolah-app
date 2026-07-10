@@ -178,7 +178,7 @@ class BayarController extends Controller
                 Str::upper(Str::random(6));
     
             $orderId = DB::table('tb_ipaymu_bayar')->insertGetId([
-                'id_calon_siswa' => $siswa->id,
+                'id_calon_siswa' => $siswa->nipd,
                 'id_tahun'       => now()->format('Y'),
                 'id_bulan'       => now()->format('m'),
                 'tgl_bayar'      => $request->tgl_trans ?? now(),
@@ -209,9 +209,7 @@ class BayarController extends Controller
                 'qty'        => [1],
                 'price'      => [$nominal],
     
-                'notifyUrl' => url(
-                    '/api/calon-siswa/notifyPembayaran'
-                ),
+                'notifyUrl' => route('notifyPembayaranSiswa'),
     
                 // Bisa diarahkan ke halaman web milik Anda.
                 'returnUrl' => url(
@@ -223,7 +221,7 @@ class BayarController extends Controller
                 ),
             ];
     
-                        $timestamp   = now()->setTimezone('Asia/Jakarta')->format('YmdHis');
+            $timestamp   = now()->setTimezone('Asia/Jakarta')->format('YmdHis');
 
     
             $body = json_encode(
@@ -373,13 +371,13 @@ class BayarController extends Controller
             ->where('id_bayar', $trx->id_bayar)
             ->first();
 
-        $bayar = BayarCalonSiswa::create([
+        $bayar = Bayar::create([
             'id_tahun'    => date('Y'),
             'id_bulan'    => date('m'),
-            'id_calon_siswa'    => $ipaymuBayar->id_calon_siswa,
+            'id_siswa'    => $ipaymuBayar->id_calon_siswa,
             'no_kwitansi' => $request->no_kwitansi,
             'tgl_bayar'   => now(),
-            'id_kasir'    => auth()->user()->id,
+        //    'id_kasir'    => auth()->user()->id,
             'keterangan'  => $request->keterangan ?? 'Pembayaran iPaymu',
         ]);
 
