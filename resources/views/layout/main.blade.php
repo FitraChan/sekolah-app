@@ -14,7 +14,7 @@ License: You must have a valid license purchased only from themeforest(the above
 <head>
     <meta charset="utf-8">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link href="{{asset('public/dist/images/logo.png')}}" rel="shortcut icon">
+    <link href="{{asset('public/dist/images/open.png')}}" rel="shortcut icon">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Tinker admin is super flexible, powerful, clean & modern responsive tailwind admin template with unlimited possibilities.">
     <meta name="keywords" content="admin template, Tinker Admin Template, dashboard template, flat admin template, responsive admin template, web app">
@@ -95,7 +95,7 @@ License: You must have a valid license purchased only from themeforest(the above
     <div class="mobile-menu md:hidden">
         <div class="mobile-menu-bar">
             <a href="" class="flex mr-auto">
-                <img alt="Midone - HTML Admin Template" class="w-6" src="{{asset('public/dist/images/logo.png')}}">
+                <img alt="Midone - HTML Admin Template" class="w-6" src="{{asset('public/dist/images/open.png')}}">
             </a>
             <a href="javascript:;" class="mobile-menu-toggler"> <i data-lucide="bar-chart-2" class="w-8 h-8 text-white transform -rotate-90"></i> </a>
         </div>
@@ -406,13 +406,13 @@ License: You must have a valid license purchased only from themeforest(the above
                         <div class="menu__icon"> <i data-lucide="box"></i> </div>
                         <div class="menu__title">
                             Akademik
-                            <div class="menu__sub-icon {{ in_array($side, ['kelas','jurusan','mapel','master-jadwal','nilai','absensi','soal']) ? 'transform rotate-180' : '' }}">
+                            <div class="menu__sub-icon {{ in_array($side, ['kelas','jurusan','mapel','master-jadwal','nilai','absensi','soal','pengumuman']) ? 'transform rotate-180' : '' }}">
                                 <i data-lucide="chevron-down"></i>
                             </div>
                         </div>
                     </a>
                     <!-- Sub-Menu Wrapper -->
-                    <ul class="{{ in_array($side, ['kelas','jurusan','mapel','master-jadwal','nilai','absensi','soal']) ? 'menu__sub-open' : '' }}">
+                    <ul class="{{ in_array($side, ['kelas','jurusan','mapel','master-jadwal','nilai','absensi','soal','pengumuman']) ? 'menu__sub-open' : '' }}">
                         <li>
                             <!-- Sub-Menu Gelombang -->
                             <a href="{{ route('kelas.index') }}" class="menu {{ $side == 'kelas' ? 'menu--active' : '' }}">
@@ -472,6 +472,14 @@ License: You must have a valid license purchased only from themeforest(the above
                         </li>
 
 
+                        <li>
+                            <a href="{{ route('pengumuman.index') }}" class="menu {{ $side == 'pengumuman' ? 'menu--active' : '' }}">
+                                <div class="menu__icon"> <i data-lucide="clipboard"></i> </div>
+                                <div class="menu__title"> Pengumuman </div>
+                            </a>
+                        </li>
+
+
 
 
                     </ul>
@@ -500,8 +508,8 @@ License: You must have a valid license purchased only from themeforest(the above
         <nav id="sidebar" class="side-nav">
 
             <a href="" class="intro-x flex items-center pl-5 pt-4 mt-3">
-                <img alt="Midone - HTML Admin Template" class="w-6" src="{{asset('public/dist/images/logo.png')}}">
-                <span class="hidden xl:block text-white text-lg ml-3"> SIAMI </span>
+                <img alt="Midone - HTML Admin Template" class="w-6" src="{{asset('public/dist/images/open.png')}}">
+                <span class="hidden xl:block text-white text-lg ml-3"> OPEN SCHOOL </span>
 
 
             </a>
@@ -816,13 +824,13 @@ License: You must have a valid license purchased only from themeforest(the above
                         <div class="side-menu__icon"> <i data-lucide="file-text"></i> </div>
                         <div class="side-menu__title">
                             Akademik
-                            <div class="side-menu__sub-icon {{ in_array($side, ['kelas','jurusan','mapel','master-jadwal','nilai','absensi','soal']) ? 'transform rotate-180' : '' }}">
+                            <div class="side-menu__sub-icon {{ in_array($side, ['kelas','jurusan','mapel','master-jadwal','nilai','absensi','soal','pengumuman']) ? 'transform rotate-180' : '' }}">
                                 <i data-lucide="chevron-down"></i>
                             </div>
                         </div>
                     </a>
                     <!-- Sub-side-menu Wrapper -->
-                    <ul class="{{ in_array($side, ['kelas','jurusan','mapel','master-jadwal','nilai','absensi','soal']) ? 'side-menu__sub-open' : '' }}">
+                    <ul class="{{ in_array($side, ['kelas','jurusan','mapel','master-jadwal','nilai','absensi','soal','pengumuman']) ? 'side-menu__sub-open' : '' }}">
                         <li>
                             <!-- Sub-side-menu Gelombang -->
                             <a href="{{ route('kelas.index') }}" class="side-menu {{ $side == 'kelas' ? 'side-menu--active' : '' }}">
@@ -884,6 +892,16 @@ License: You must have a valid license purchased only from themeforest(the above
                         </li>
 
 
+                         <li>
+                            <!-- Sub-side-menu Gelombang -->
+                            <a href="{{ route('pengumuman.index') }}" class="side-menu {{ $side == 'pengumuman' ? 'side-menu--active' : '' }}">
+                                <div class="side-menu__icon"> <i data-lucide="clipboard"></i> </div>
+                                <div class="side-menu__title"> Pengumuman </div>
+                            </a>
+                        </li>
+
+
+
 
 
 
@@ -930,7 +948,7 @@ License: You must have a valid license purchased only from themeforest(the above
                 <!-- BEGIN: Account Menu -->
                 <div class="intro-x dropdown w-8 h-8">
                     <div class="dropdown-toggle w-8 h-8 rounded-full overflow-hidden shadow-lg image-fit zoom-in" role="button" aria-expanded="false" data-tw-toggle="dropdown">
-                        <img alt="Midone - HTML Admin Template" src="{{asset('public/dist/images/logo.png')}}">
+                        <img alt="Midone - HTML Admin Template" src="{{asset('public/dist/images/open_green.png')}}">
                     </div>
                     <div class="dropdown-menu w-56">
                         <ul class="dropdown-content bg-primary text-white">

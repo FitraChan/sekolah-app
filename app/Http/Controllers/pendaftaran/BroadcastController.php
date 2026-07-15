@@ -7,18 +7,20 @@ use Illuminate\Http\Request;
 use App\Models\Broadcast;
 use Illuminate\Support\Facades\DB;
 use App\Models\LogModel;
+use App\Jobs\KirimBroadcastEmail;
 
 class BroadcastController extends Controller
 {
     //
-      public function index()
+    public function index()
     {
         $side = 'broadcast';
 
-            $broadcast = Broadcast::orderBy('id', 'desc')->get();
+        $broadcast = Broadcast::orderBy('id', 'desc')->get();
 
         return view('pendaftaran.broadcast.index', compact(
-            'side','broadcast'
+            'side',
+            'broadcast'
         ));
     }
 
@@ -63,7 +65,7 @@ class BroadcastController extends Controller
 
         ]);
 
-      $broadcast = Broadcast::create([
+        $broadcast = Broadcast::create([
 
             'judul' => $request->judul,
 
@@ -171,41 +173,64 @@ class BroadcastController extends Controller
     }
 
     public function kirimSemua(Request $request)
-{
-    $broadcast = DB::table('tb_broadcast')
-        ->where('id', $request->id_broadcast)
-        ->first();
-
-        
-
-    if(!$broadcast)
     {
+        $broadcast = DB::table('tb_broadcast')
+            ->where('id', $request->id_broadcast)
+            ->first();
+
+
+
+        if (!$broadcast) {
+            return response()->json([
+                'message' => 'Broadcast tidak ditemukan'
+            ]);
+        }
+
+        $jumlahPenerima = DB::table('tb_tmp_siswa')
+            ->whereIn('email', [
+                'fitrachan26@gmail.com',
+                'putuj0708@gmail.com',
+            ])
+            ->whereNotNull('email')
+            ->where('email', '!=', '')
+            ->count();
+
+
+        $delayDetik = 5;
+        $urutan = 0;
+
+        DB::table('tb_tmp_siswa')
+            ->whereIn('email', [
+                'fitrachan26@gmail.com',
+                'putuj0708@gmail.com',
+            ])
+            ->whereNotNull('email')
+            ->where('email', '!=', '')
+            ->select([
+                'id',
+                'nama_lengkap',
+                'email',
+            ])
+            ->chunkById(100, function ($siswa) use (&$urutan, $delayDetik,$broadcast) {
+                foreach ($siswa as $item) {
+                    KirimBroadcastEmail::dispatch(
+                        email: $item->email,
+                        nama: $item->nama_lengkap ?? 'Siswa',
+                        judul: $broadcast->judul,
+                        isi: $broadcast->pesan
+                    )->delay(
+                        now()->addSeconds($urutan * $delayDetik)
+                    );
+
+                    $urutan++;
+                }
+            }, 'id');
+
+
         return response()->json([
-            'message' => 'Broadcast tidak ditemukan'
+            'success' => true,
+            'message' => 'Broadcast email berhasil dimasukkan ke antrean.',
+            'jumlah_penerima' => $jumlahPenerima,
         ]);
     }
-
-    $siswa = DB::table('tb_tmp_siswa')
-        ->whereIn('email',['fitrachan26@gmail.com','putuj0708@gmail.com'])
-       // ->whereNotNull('email')
-        ->get();
-
-    foreach($siswa as $row)
-    {
-        DB::table('tb_antrian_email')->insert([
-
-            'email'         => $row->email,
-            'judul'         => $broadcast->judul,
-            'pesan'         => $broadcast->pesan,
-            'status'        => 0,
-            'created_at'    => now(),
-            'updated_at'    => now()
-
-        ]);
-    }
-
-    return response()->json([
-        'message' => 'Broadcast berhasil masuk antrian'
-    ]);
-}
 }

@@ -186,9 +186,10 @@ class MasterJadwalController extends Controller
 
     public function store(Request $request)
     {
+        $konfig = konfig();
         $jadwal = MasterJadwal::create([
-            'id_tahun' => $request->id_tahun,
-            'semester' => $request->semester,
+            'id_tahun' => $konfig['id_tahun'],
+            'semester' => $konfig['smt'],
             'id_kelas' => $request->id_kelas,
             'id_mapel' => $request->id_mapel,
             'jml_jam'  => $request->jml_jam,

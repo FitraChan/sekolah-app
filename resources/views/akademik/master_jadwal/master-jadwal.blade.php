@@ -400,7 +400,7 @@
 
                 body: JSON.stringify({
 
-                    id_tahun: document.getElementById(prefix + 'id_tahun').value ?? '',
+                    angkatan: document.getElementById(prefix + 'id_tahun').value ?? '',
 
                     semester: document.getElementById(prefix + 'semester').value ?? '',
 

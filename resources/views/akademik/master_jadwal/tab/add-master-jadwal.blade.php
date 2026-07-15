@@ -15,7 +15,7 @@
                 <div class="col-span-12 sm:col-span-6">
 
                     <label class="form-label">
-                        Tahun Ajaran
+                        Angkatan
                     </label>
 
                     <select
@@ -23,7 +23,7 @@
                         class="form-select">
 
                         <option value="">
-                            Pilih Tahun Ajaran
+                            Pilih Tahun Angkatan
                         </option>
 
                         @foreach($tahun as $item)

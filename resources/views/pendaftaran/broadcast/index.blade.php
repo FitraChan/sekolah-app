@@ -44,7 +44,7 @@ Broadcast
                     <?php foreach ($broadcast as $row): ?>
 
                         <option value="<?= $row->id ?>"
-                            data-pesan="<?= htmlspecialchars($row->pesan) ?>">
+                            data-pesan='@json($row->pesan)'>
 
                             <?= $row->judul ?>
 
@@ -54,7 +54,7 @@ Broadcast
 
                 </select>
 
-               
+
 
             </div>
 
@@ -67,20 +67,21 @@ Broadcast
 
                 <textarea id="textarea-pesan"
                     class="form-control mt-3"
+                    name="isi"
                     rows="6"></textarea>
 
             </div>
 
-            
+
 
         </div>
 
-         <button class="btn btn-primary mt-4"
-        onclick="broadcastSemua()">
+        <button class="btn btn-primary mt-4"
+            onclick="broadcastSemua()">
 
-    Broadcast Semua Calon Siswa
+            Broadcast Semua Calon Siswa
 
-</button>
+        </button>
 
     </div>
 
@@ -146,43 +147,40 @@ Broadcast
 </div>
 
 <script>
-
-    function broadcastSemua()
-    {
+    function broadcastSemua() {
         let id_broadcast = document.getElementById('status').value;
 
-        if(id_broadcast == '')
-        {
+        if (id_broadcast == '') {
             alert('Pilih broadcast terlebih dahulu');
             return;
         }
 
-        fetch("{{ url('broadcast/broadcast/kirimSemua') }}", {
+        fetch("{{ url('broadcast/kirimSemua') }}", {
 
-            method: 'POST',
+                method: 'POST',
 
-            headers: {
+                headers: {
 
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
 
-            body: JSON.stringify({
+                body: JSON.stringify({
 
-                id_broadcast: id_broadcast
+                    id_broadcast: id_broadcast
+
+                })
 
             })
 
-        })
+            .then(res => res.json())
 
-        .then(res => res.json())
+            .then(res => {
 
-        .then(res => {
+                alert(res.message);
 
-            alert(res.message);
-
-        });
-    }                    
+            });
+    }
 
 
     let editorPesan;
@@ -192,6 +190,23 @@ Broadcast
         .then(editor => {
 
             editorPesan = editor;
+
+        })
+        .catch(error => {
+
+            console.error(error);
+
+        });
+
+
+
+    let editorPesanBroadcast = null;
+
+    ClassicEditor
+        .create(document.querySelector('#textarea-pesan'))
+        .then(editor => {
+
+            editorPesanBroadcast = editor;
 
         })
         .catch(error => {
@@ -215,9 +230,9 @@ Broadcast
     function saveData() {
         let id = document.getElementById('id').value;
 
-        let url = id
-                    ? "{{ url('broadcast/update') }}/" + id
-                    : "{{ url('broadcast/store') }}";
+        let url = id ?
+            "{{ url('broadcast/update') }}/" + id :
+            "{{ url('broadcast/store') }}";
 
         fetch(url, {
                 method: 'POST',
@@ -233,13 +248,9 @@ Broadcast
             })
 
             .then(res => res.json())
-
             .then(res => {
-
                 table.replaceData();
-
                 document.getElementById('id').value = '';
-
                 document.getElementById('judul').value = '';
 
                 editorPesan.setData('');
@@ -253,11 +264,22 @@ Broadcast
 </script>
 <script>
     function changeBroadcast(select) {
-        let option = select.options[select.selectedIndex];
+        const option = select.options[select.selectedIndex];
+        const rawPesan = option.getAttribute('data-pesan');
 
-        let pesan = option.getAttribute('data-pesan');
+        let pesan = '';
 
-        document.getElementById('textarea-pesan').value = pesan ?? '';
+        if (rawPesan) {
+            try {
+                pesan = JSON.parse(rawPesan);
+            } catch (error) {
+                pesan = rawPesan;
+            }
+        }
+
+        if (editorPesanBroadcast) {
+            editorPesanBroadcast.setData(pesan);
+        }
     }
     let table = new Tabulator("#table-broadcast", {
 
@@ -337,7 +359,7 @@ Broadcast
 
     function deleteData(id) {
         if (confirm('Hapus data?')) {
-                fetch("{{ url('broadcast/delete') }}/" + id, {
+            fetch("{{ url('broadcast/delete') }}/" + id, {
                     method: 'DELETE',
 
                     headers: {

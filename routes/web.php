@@ -34,6 +34,7 @@ use App\Http\Controllers\guru\PenilaianGuruController;
 use App\Http\Controllers\guru\JadwalController;
 use App\Http\Controllers\guru\UjianController;
 use App\Http\Controllers\guru\SoalGuruController;
+use App\Http\Controllers\akademik\PengumumanController;
 
 
 
@@ -437,6 +438,31 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('konfig/data', [KonfigController::class, 'data'])->name('konfig.data');
 
     Route::post('konfig/update/{id}', [KonfigController::class, 'update'])->name('konfig.update');
+    Route::get('/pengumuman', [
+    PengumumanController::class,
+    'index'
+    ])->name('pengumuman.index');
+
+    Route::get('/pengumuman/data', [
+        PengumumanController::class,
+        'data'
+    ])->name('pengumuman.data');
+
+    Route::post('/pengumuman/store', [
+        PengumumanController::class,
+        'store'
+    ])->name('pengumuman.store');
+
+    Route::put('/pengumuman/update/{id}', [
+        PengumumanController::class,
+        'update'
+    ])->name('pengumuman.update');
+
+    Route::delete('/pengumuman/delete/{id}', [
+        PengumumanController::class,
+        'destroy'
+    ])->name('pengumuman.destroy');
+
 });
 
 

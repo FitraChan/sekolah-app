@@ -12,7 +12,7 @@ License: You must have a valid license purchased only from themeforest(the above
     <!-- BEGIN: Head -->
     <head>
         <meta charset="utf-8">
-        <link href="{{asset('public/dist/images/logo.png')}}" rel="shortcut icon">
+        <link href="{{asset('public/dist/images/open.png')}}" rel="shortcut icon">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="Tinker admin is super flexible, powerful, clean & modern responsive tailwind admin template with unlimited possibilities.">
         <meta name="keywords" content="admin template, Tinker Admin Template, dashboard template, flat admin template, responsive admin template, web app">
@@ -30,8 +30,8 @@ License: You must have a valid license purchased only from themeforest(the above
                 <!-- BEGIN: Login Info -->
                 <div class="hidden xl:flex flex-col min-h-screen">
                     <a href="" class="-intro-x flex items-center pt-5">
-                        <img alt="SISTEM INFORMASI GURU" class="w-6" src="public/dist/images/logo.png">
-                        <span class="text-white text-lg ml-3"> SIAMI </span>
+                        <img alt="SISTEM INFORMASI GURU" class="w-6" src="public/dist/images/open.png">
+                        <span class="text-white text-lg ml-3"> OPEN SCHOOL </span>
                     </a>
                     <div class="my-auto">
                         <img alt="SISTEM INFORMASI GURU" class="-intro-x w-1/2 -mt-16" src="public/dist/images/login.png">
