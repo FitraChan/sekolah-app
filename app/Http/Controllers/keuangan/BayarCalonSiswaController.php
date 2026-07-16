@@ -353,7 +353,7 @@ class BayarCalonSiswaController extends Controller
         DB::beginTransaction();
 
         try {
-
+            $no_daftar =   BayarCalonSiswa::where('id',$id)->first();
             $noKwitansi = empty($request->no_kwitansi)
                 ? 'BK'
                 : $request->no_kwitansi;
@@ -378,6 +378,8 @@ class BayarCalonSiswaController extends Controller
                     'keterangan'  => $keterangan,
                     'tot_bayar'   => $totalBayar,
                 ]);
+
+             CalonSiswa::where('no_daftar', $no_daftar->id_calon_siswa)->update(['status_daftar' => 3]);   
 
             DB::commit();
 
@@ -413,6 +415,7 @@ class BayarCalonSiswaController extends Controller
         DB::beginTransaction();
 
         try {
+               
 
             $bayar = BayarCalonSiswa::create([
                 'id_tahun'    => date('Y'),
@@ -455,6 +458,18 @@ class BayarCalonSiswaController extends Controller
                         'jml_bayar'  => $item['nominal'],
                         'id_cicilan' => $request->cicilan,
                     ]);
+
+                    if($item['id_item'] == 1){
+
+                        CalonSiswa::where('no_daftar', $request->id_csiswa)->update(['status_daftar' => 0]);  
+                    }
+
+
+                     if($item['id_item'] == 2){
+
+                        CalonSiswa::where('no_daftar', $request->id_csiswa)->update(['status_daftar' => 1]);  
+                    }
+            //  
                 }
             }
 
@@ -470,6 +485,8 @@ class BayarCalonSiswaController extends Controller
                 'keterangan' => json_encode($bayar),
                 'serial' => url('simpanCicilan')
             ]);
+
+           
 
             DB::commit();
 

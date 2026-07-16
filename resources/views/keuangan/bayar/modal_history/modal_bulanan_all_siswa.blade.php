@@ -14,7 +14,7 @@
 
                 <div class="mb-3">
                     <label class="form-label">
-                        Tahun Ajaran
+                        Tahun Angkatan
                     </label>
 
                     <select
@@ -22,7 +22,7 @@
                         class="form-select">
 
                         <option value="">
-                            Pilih Tahun Ajaran
+                            Pilih Tahun Angkatan
                         </option>
 
                         @foreach($tahun as $row)
@@ -61,12 +61,17 @@
                         Tahun Pembayaran
                     </label>
 
-                    <input
-                        type="number"
-                        id="id_tahun"
-                        class="form-control"
-                        placeholder="Masukkan Tahun">
-                </div>
+                   <input
+                    type="number"
+                    id="id_tahun"
+                    name="id_tahun"
+                    class="form-control"
+                    placeholder="Masukkan Tahun"
+                    min="1000"
+                    max="9999"
+                    required
+                    oninput="if(this.value.length > 4) this.value = this.value.slice(0, 4)">
+                                </div>
 
                 <div class="mb-3">
                     <label class="form-label">

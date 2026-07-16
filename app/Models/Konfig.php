@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 class Konfig extends Model
 {
@@ -16,4 +17,15 @@ class Konfig extends Model
     ];
 
     public $timestamps = false;
+
+    protected static function booted()
+    {
+        static::saved(function () {
+            Cache::forget('konfig');
+        });
+
+        static::deleted(function () {
+            Cache::forget('konfig');
+        });
+    }
 }

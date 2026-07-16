@@ -15,6 +15,8 @@ use App\Http\Controllers\pendaftaran\GelombangController;
 use App\Http\Controllers\pendaftaran\CalonSiswaController;
 use App\Http\Controllers\pendaftaran\SetKelasController;
 use App\Http\Controllers\pendaftaran\BroadcastController;
+use App\Http\Controllers\pendaftaran\TargetController;
+
 use App\Http\Controllers\keuangan\KatItemBayarController;
 use App\Http\Controllers\keuangan\KatPeriodeBayarController;
 use App\Http\Controllers\keuangan\ItemBayarController;
@@ -568,6 +570,21 @@ Route::middleware(['auth', 'role:admin|Akademik'])->group(function () {
     ])->name('broadcast.delete');
     Route::post('broadcast/kirimSemua', [BroadcastController::class, 'kirimSemua']);
     Route::post('calon-siswa/upload/{id}', [CalonSiswaController::class, 'updateUpload'])->name('calon-siswa.update.upload');
+
+     Route::get('/target', [TargetController::class, 'index'])
+        ->name('target.index');
+
+    Route::get('target/data', [TargetController::class, 'data'])
+        ->name('target.data');
+
+    Route::post('target/store', [TargetController::class, 'store'])
+        ->name('target.store');
+
+    Route::put('target/update/{id}', [TargetController::class, 'update'])
+        ->name('target.update');
+
+    Route::delete('target/delete/{id}', [TargetController::class, 'destroy'])
+        ->name('target.destroy');
 });
 
 

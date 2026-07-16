@@ -1058,6 +1058,7 @@ class CalonSiswaController extends Controller
             'jml_bayar'  => $ipaymuDetBayar->jml_bayar,
             'id_cicilan' => $request->cicilan,
         ]);
+        CalonSiswa::where('no_daftar',$ipaymuBayar->id_calon_siswa)->update(['status_daftar' => 1]);
 
 
         BayarCalonSiswa::updateBayar($idBayar);

@@ -149,13 +149,13 @@ License: You must have a valid license purchased only from themeforest(the above
                         <div class="menu__icon"> <i data-lucide="box"></i> </div>
                         <div class="menu__title">
                             Pendaftaran
-                            <div class="menu__sub-icon {{ in_array($side, ['gelombang', 'master-lainnya']) ? 'transform rotate-180' : '' }}">
+                            <div class="menu__sub-icon {{ in_array($side, ['gelombang', 'calon-siswa','target','set-kelas','rekap_kelas','daftar-siswa']) ? 'transform rotate-180' : '' }}">
                                 <i data-lucide="chevron-down"></i>
                             </div>
                         </div>
                     </a>
                     <!-- Sub-Menu Wrapper -->
-                    <ul class="{{ in_array($side, ['gelombang', 'calon-siswa','set-kelas','rekap_kelas','daftar-siswa']) ? 'menu__sub-open' : '' }}">
+                    <ul class="{{ in_array($side, ['gelombang', 'calon-siswa','target','set-kelas','rekap_kelas','daftar-siswa']) ? 'menu__sub-open' : '' }}">
                         <li>
                             <!-- Sub-Menu Gelombang -->
                             <a href="{{ route('gelombang.index') }}" class="menu {{ $side == 'gelombang' ? 'menu--active' : '' }}">
@@ -220,6 +220,22 @@ License: You must have a valid license purchased only from themeforest(the above
 
                                 <div class="menu__title">
                                     Daftar Siswa
+                                </div>
+
+                            </a>
+                        </li>
+
+
+                        <li>
+                            <a href="{{ url('target') }}"
+                                class="menu {{ $side == 'target' ? 'menu--active' : '' }}">
+
+                                <div class="menu__icon">
+                                    <i data-lucide="user-check"></i>
+                                </div>
+
+                                <div class="menu__title">
+                                    Kuota Siswa
                                 </div>
 
                             </a>
@@ -617,13 +633,13 @@ License: You must have a valid license purchased only from themeforest(the above
                         <div class="side-menu__icon"> <i data-lucide="box"></i> </div>
                         <div class="side-menu__title">
                             Pendaftaran
-                            <div class="side-menu__sub-icon {{ in_array($side, ['gelombang', 'master-lainnya']) ? 'transform rotate-180' : '' }}">
+                            <div class="side-menu__sub-icon {{ in_array($side, ['gelombang', 'calon-siswa','set-kelas','rekap_kelas','daftar-siswa','target']) ? 'transform rotate-180' : '' }}">
                                 <i data-lucide="chevron-down"></i>
                             </div>
                         </div>
                     </a>
                     <!-- Sub-Menu Wrapper -->
-                    <ul class="{{ in_array($side, ['gelombang', 'calon-siswa','set-kelas','rekap_kelas','daftar-siswa']) ? 'side-menu__sub-open' : '' }}">
+                    <ul class="{{ in_array($side, ['gelombang', 'calon-siswa','set-kelas','rekap_kelas','daftar-siswa','target']) ? 'side-menu__sub-open' : '' }}">
                         <li>
                             <!-- Sub-Menu Gelombang -->
                             <a href="{{ route('gelombang.index') }}" class="side-menu {{ $side == 'gelombang' ? 'side-menu--active' : '' }}">
@@ -688,6 +704,22 @@ License: You must have a valid license purchased only from themeforest(the above
 
                                 <div class="side-menu__title">
                                     Daftar Siswa
+                                </div>
+
+                            </a>
+                        </li>
+
+
+                        <li>
+                            <a href="{{ url('target') }}"
+                                class="side-menu {{ $side == 'target' ? 'side-menu--active' : '' }}">
+
+                                <div class="side-menu__icon">
+                                    <i data-lucide="user-check"></i>
+                                </div>
+
+                                <div class="side-menu__title">
+                                    Kuota Siswa
                                 </div>
 
                             </a>

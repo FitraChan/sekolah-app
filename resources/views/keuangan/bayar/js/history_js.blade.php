@@ -462,6 +462,44 @@
 
         try {
 
+
+   const idThnAjaran = document
+        .getElementById('id_thn_ajaran')
+        .value
+        .trim();
+
+    const idJurusan = document
+        .getElementById('id_jurusan')
+        .value
+        .trim();
+
+    const idTahun = document
+        .getElementById('id_tahun')
+        .value
+        .trim();
+
+    const idBulan = document
+        .getElementById('id_bulan')
+        .value
+        .trim();
+
+    if (
+        idThnAjaran === '' ||
+        idJurusan === '' ||
+        idTahun === '' ||
+        idBulan === ''
+    ) {
+        alert('Semua data wajib diisi.');
+        return;
+    }
+
+    if (idTahun.length !== 4) {
+        alert('Tahun harus terdiri dari 4 digit.');
+        document.getElementById('id_tahun').focus();
+        return;
+    }
+
+
             const response = await fetch(
                 "{{ route('bayar.setDefBulan') }}", {
                     method: "POST",
