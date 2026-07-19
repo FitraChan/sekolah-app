@@ -64,17 +64,17 @@ Target Pendaftaran
 
                 <div class="border-t mt-5 pt-4">
                     <div class="flex justify-between mb-2">
-                        <span>Jumlah soal</span>
+                        <span>Jumlah soal</span> &nbsp;
                         <strong>{{ $item->soal_count }}</strong>
                     </div>
 
                     <div class="flex justify-between mb-2">
-                        <span>Durasi</span>
+                        <span>Durasi</span>  &nbsp;
                         <strong>{{ $item->durasi }} menit</strong>
                     </div>
 
                     <div class="flex justify-between">
-                        <span>Nilai minimal</span>
+                        <span>Nilai minimal</span>  &nbsp;
                         <strong>{{ $item->nilai_minimal }}</strong>
                     </div>
                 </div>
@@ -83,7 +83,7 @@ Target Pendaftaran
                     @if ($peserta?->status === 'selesai')
                         <a
                             href="{{ route(
-                                'calon-siswa.ujian.hasil',
+                                'ujianCalon.hasil',
                                 $peserta
                             ) }}"
                             class="btn btn-success w-full"
@@ -91,15 +91,10 @@ Target Pendaftaran
                             Lihat Hasil
                         </a>
                     @else
-                        <form
-                            action="{{ route(
-                                'calon-siswa.ujian.mulai',
-                                $item
-                            ) }}"
+                       <form
+                            action="{{ route('ujianCalon.mulai', ['ujian' => $item->id]) }}"
                             method="POST"
-                            onsubmit="return confirm(
-                                'Mulai ujian sekarang? Waktu akan langsung berjalan.'
-                            )"
+                            onsubmit="return confirm('Mulai ujian sekarang? Waktu akan langsung berjalan?')"
                         >
                             @csrf
 

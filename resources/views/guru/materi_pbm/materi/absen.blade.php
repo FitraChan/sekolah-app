@@ -112,12 +112,7 @@ Materi PBM
                 field: "nama_siswa",
                 minWidth: 150,
             },
-            {
-                title: "JK",
-                field: "jk",
-                width: 80,
-                // hozAlign: "center",
-            },
+            
             {
                 title: "Status",
                 field: "sts_hadir",

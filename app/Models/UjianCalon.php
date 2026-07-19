@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class UjianCalon extends Model
 {
@@ -19,6 +20,7 @@ class UjianCalon extends Model
         'acak_soal',
         'tampil_hasil',
         'status',
+        'id_gelombang'
     ];
 
     protected $casts = [
@@ -38,5 +40,11 @@ class UjianCalon extends Model
     public function peserta(): HasMany
     {
         return $this->hasMany(UjianPesertaCalon::class, 'id_ujian');
+    }
+
+
+    public function gelombang(): BelongsTo
+    {
+        return $this->belongsTo(Gelombang::class, 'id_gelombang', 'id');
     }
 }

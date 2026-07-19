@@ -4,6 +4,8 @@ namespace App\Http\Controllers\pendaftaran;
 
 use App\Http\Controllers\Controller;
 use App\Models\UjianCalon;
+use App\Models\CalonSiswa;
+
 use App\Models\UjianJawabanCalon;
 use App\Models\UjianPesertaCalon;
 use Illuminate\Http\RedirectResponse;
@@ -19,36 +21,52 @@ class UjianCalonController extends Controller
          * Sesuaikan dengan sistem login Anda.
          *
          * Contoh jika ID calon siswa berada langsung pada user:
-         * return auth()->user()->calon_siswa_id;
+         * return auth()->user()->id_calon_siswa;
          *
          * Contoh jika user memiliki relasi calonSiswa:
          * return auth()->user()->calonSiswa->id;auth()->user()->id
          */
+
+        $id = CalonSiswa::where('id_user',auth()->user()->id)->first();
 
         return auth()->user()->id;
     }
 
     public function index(): View
     {
+
+   
         $calonSiswaId = $this->calonSiswaId();
 
+        $calonSiswa = CalonSiswa::query()
+        ->select('id', 'id_gelombang')
+        ->where('id_user',$calonSiswaId)->first();
+
+
         $data = UjianCalon::query()
-            ->where('status', true)
+            ->where('status', 1)
+             ->where('id_gelombang', $calonSiswa->id_gelombang)
             ->withCount([
                 'soal' => fn ($query) => $query->where('status', true),
             ])
             ->with([
                 'peserta' => fn ($query) =>
-                    $query->where('calon_siswa_id', $calonSiswaId),
+                    $query->where('id_calon_siswa', $calonSiswaId),
+            ])
+             ->with([
+                'gelombang',
+                'peserta' => fn ($query) =>
+                    $query->where('id_calon_siswa', $calonSiswaId),
             ])
             ->latest()
-            ->get();
+            ->paginate(10);
 
-        return view('pendaftaran.ujian.index', compact('data'));
+        return view('pendaftaran.ujian.daftar-ujian', compact('data'), ['side'  => 'ujian']);
     }
 
     public function mulai(UjianCalon $ujian): RedirectResponse
     {
+//dd(auth()->user()->toArray());
         abort_unless($ujian->status, 404);
 
         $sekarang = now();
@@ -79,7 +97,7 @@ class UjianCalonController extends Controller
         $peserta = UjianPesertaCalon::firstOrCreate(
             [
                 'id_ujian' => $ujian->id,
-                'calon_siswa_id' => $this->calonSiswaId(),
+                'id_calon_siswa' => $this->calonSiswaId(),
             ],
             [
                 'status' => 'belum',
@@ -102,21 +120,22 @@ class UjianCalonController extends Controller
         }
 
         return redirect()->route(
-            'calon-siswa.ujian.kerjakan',
+            'ujianCalon.kerjakan',
             $peserta
         );
     }
 
     public function kerjakan(UjianPesertaCalon $peserta): View|RedirectResponse
     {
+  
         abort_if(
-            $peserta->calon_siswa_id !== $this->calonSiswaId(),
+            (int) $peserta->id_calon_siswa !== (int) $this->calonSiswaId(),
             403
         );
 
         if ($peserta->status === 'selesai') {
             return redirect()->route(
-                'calon-siswa.ujian.hasil',
+                'ujianCalon.hasil',
                 $peserta
             );
         }
@@ -124,8 +143,8 @@ class UjianCalonController extends Controller
         $peserta->load('ujian');
 
         $batasWaktu = $peserta->waktu_mulai
-            ->copy()
-            ->addMinutes($peserta->ujian->durasi);
+        ->copy()
+        ->addMinutes((int) $peserta->ujian->durasi);
 
         if (now()->greaterThanOrEqualTo($batasWaktu)) {
             return $this->prosesPenilaian($peserta, []);
@@ -140,7 +159,7 @@ class UjianCalonController extends Controller
             : $query->orderBy('id')->get();
 
         return view(
-            'calon-siswa.ujian.kerjakan',
+            'pendaftaran.ujian.pengerjaan-ujian',
             compact('peserta', 'soal', 'batasWaktu')
         );
     }
@@ -149,8 +168,8 @@ class UjianCalonController extends Controller
         Request $request,
         UjianPesertaCalon $peserta
     ): RedirectResponse {
-        abort_if(
-            $peserta->calon_siswa_id !== $this->calonSiswaId(),
+         abort_if(
+            (int) $peserta->id_calon_siswa !== (int) $this->calonSiswaId(),
             403
         );
 
@@ -202,8 +221,8 @@ class UjianCalonController extends Controller
 
                 UjianJawabanCalon::updateOrCreate(
                     [
-                        'peserta_id' => $peserta->id,
-                        'soal_id' => $item->id,
+                        'id_peserta' => $peserta->id,
+                        'id_soal' => $item->id,
                     ],
                     [
                         'jawaban' => $jawabanPeserta,
@@ -233,15 +252,15 @@ class UjianCalonController extends Controller
         });
 
         return redirect()->route(
-            'calon-siswa.ujian.hasil',
+            'ujianCalon.hasil',
             $peserta
         );
     }
 
     public function hasil(UjianPesertaCalon $peserta): View
     {
-        abort_if(
-            $peserta->calon_siswa_id !== $this->calonSiswaId(),
+         abort_if(
+            (int) $peserta->id_calon_siswa !== (int) $this->calonSiswaId(),
             403
         );
 
@@ -250,8 +269,10 @@ class UjianCalonController extends Controller
         $peserta->load('ujian');
 
         return view(
-            'calon-siswa.ujian.hasil',
+            'pendaftaran.ujian.hasil',
             compact('peserta')
         );
     }
+
+   
 }

@@ -12,7 +12,7 @@ class UjianPesertaCalon extends Model
 
     protected $fillable = [
         'id_ujian',
-        'calon_siswa_id',
+        'id_calon_siswa',
         'waktu_mulai',
         'waktu_selesai',
         'nilai',
@@ -36,14 +36,15 @@ class UjianPesertaCalon extends Model
 
     public function jawaban(): HasMany
     {
-        return $this->hasMany(UjianJawabanCalon::class, 'peserta_id');
+        return $this->hasMany(UjianJawabanCalon::class, 'id_peserta');
     }
 
     public function calonSiswa(): BelongsTo
     {
         return $this->belongsTo(
             CalonSiswa::class,
-            'calon_siswa_id'
+            'id_calon_siswa',
+            'id_user'
         );
     }
 }

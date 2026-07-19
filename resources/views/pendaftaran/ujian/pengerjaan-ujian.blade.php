@@ -32,7 +32,7 @@ Target Pendaftaran
 
 <form
     id="form-ujian"
-    action="{{ route('calon-siswa.ujian.submit', $peserta) }}"
+    action="{{ route('ujianCalon.submit', $peserta) }}"
     method="POST"
 >
     @csrf

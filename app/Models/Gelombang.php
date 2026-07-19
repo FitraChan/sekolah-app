@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Gelombang extends Model
 {
@@ -29,5 +30,10 @@ class Gelombang extends Model
     public function calonSiswas()
     {
         return $this->hasMany(CalonSiswa::class, 'id_gelombang');
+    }
+
+    public function ujianCalon(): HasMany
+    {
+        return $this->hasMany(UjianCalon::class, 'id_gelombang', 'id');
     }
 }

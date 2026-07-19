@@ -471,17 +471,27 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::resource('ujianCalonAdmin', UjianCalonAdminController::class);
 
-    // Route::get(
-    //     'soalCalon',
-    //     [UjianSoalCalonController::class, 'index']
-    // )->name('soalCalon.index');
+    Route::get(
+    'ujianCalonAdmin/{ujianCalonAdmin}/peserta',
+    [UjianCalonAdminController::class, 'peserta']
+)->name('ujianCalonAdmin.peserta');
 
+Route::get(
+    'ujianCalonAdmin/{ujianCalonAdmin}/peserta/{peserta}/jawaban',
+    [UjianCalonAdminController::class, 'jawabanPeserta']
+)->name('ujianCalonAdmin.jawaban-peserta');
+
+
+Route::get(
+    'ujianCalonAdmin/{ujianCalonAdmin}/peserta',
+    [UjianCalonAdminController::class, 'peserta']
+)->name('ujianCalonAdmin.peserta');
+
+ 
     Route::get(
         'soalCalon/{id}',
         [UjianSoalCalonController::class, 'index']
     )->name('soalCalon.index');
-
-
 
     Route::get(
         'ujian/{ujian}/soalCalon/create',
@@ -504,13 +514,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     )->name('soalCalon.edit');
 
     
-
-  
-
     Route::delete(
     'soalCalon/{soal}',
     [UjianSoalCalonController::class, 'destroy']
-)->name('soalCalon.destroy');
+    )->name('soalCalon.destroy');
 
     // role admin
 });
@@ -522,6 +529,9 @@ Route::middleware(['auth', 'role:admin|calon'])->group(function () {
         '/calon-siswa/update/updateRegistrasiSiswa/{id?}',
         [CalonSiswaController::class, 'updateRegistrasiSiswa']
     )->name('calon-siswa.update.updateRegistrasiSiswa');
+
+
+    
 });
 
 
@@ -806,3 +816,10 @@ Route::middleware(['auth', 'role:guru|admin'])->group(function () {
 Route::middleware(['auth', 'role:keuangan'])->group(function () {});
 
 Route::middleware(['auth', 'role:siswa'])->group(function () {});
+
+
+Route::get(
+    'kartu-ujian/{calonSiswa}/download',
+    [BayarCalonSiswaController::class, 'download']
+)   ->middleware('signed')
+    ->name('kartuUjian.download');

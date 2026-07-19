@@ -11,12 +11,17 @@ use App\Models\BayarCalonSiswa;
 use App\Models\CalonSiswa;
 use App\Models\DetBayarCalonSiswa;
 use App\Models\Gelombang;
+use App\Models\UjianCalon;
+
 use App\Models\ItemBayar;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
 use App\Models\DetTempBayar;
 use App\Models\Kelas;
 use App\Models\LogModel;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Mail\KartuUjianMail;
+use Illuminate\Support\Facades\Mail;
 
 class BayarCalonSiswaController extends Controller
 {
@@ -461,7 +466,39 @@ class BayarCalonSiswaController extends Controller
 
                     if($item['id_item'] == 1){
 
+                        $calonSiswa = CalonSiswa::where(
+                                        'no_daftar',
+                                        $request->id_csiswa
+                                    )->firstOrFail();
+
                         CalonSiswa::where('no_daftar', $request->id_csiswa)->update(['status_daftar' => 0]);  
+
+
+                         CalonSiswa::where(
+                            'no_daftar',
+                            $request->id_csiswa
+                        )->update([                            
+                            'kartu_ujian_terbit'  => 1,
+                            'tanggal_kartu_ujian' => now(),
+                        ]);
+
+
+                         $linkKartuUjian = URL::temporarySignedRoute(
+                                'kartuUjian.download',
+                                now()->addDays(7),
+                                [
+                                    'calonSiswa' => $calonSiswa->id,
+                                ]
+                            );
+
+                            if (!empty($calonSiswa->email)) {
+                                Mail::to($calonSiswa->email)->send(
+                                    new KartuUjianMail(
+                                        $calonSiswa,
+                                        $linkKartuUjian
+                                    )
+                                );
+                            }
                     }
 
 
@@ -469,7 +506,7 @@ class BayarCalonSiswaController extends Controller
 
                         CalonSiswa::where('no_daftar', $request->id_csiswa)->update(['status_daftar' => 1]);  
                     }
-            //  
+      
                 }
             }
 
@@ -575,5 +612,35 @@ class BayarCalonSiswaController extends Controller
         )->setPaper('A4', 'landscape');
 
         return $pdf->stream('laporan-kewajiban-' . $atas->nipd . '.pdf');
+    }
+
+    public function download(CalonSiswa $calonSiswa)
+    {
+        abort_unless(
+            (bool) $calonSiswa->kartu_ujian_terbit,
+            403,
+            'Kartu ujian belum diterbitkan.'
+        );
+
+        $ujian = UjianCalon::query()
+            ->where('id_gelombang', $calonSiswa->id_gelombang)
+            ->where('status', 1)
+            ->orderBy('tanggal_mulai')
+            ->first();
+
+        abort_if(
+            !$ujian,
+            404,
+            'Jadwal ujian untuk gelombang calon siswa belum tersedia.'
+        );
+
+        $pdf = Pdf::loadView(
+            'pendaftaran.ujian.kartu-ujian',
+            compact('calonSiswa', 'ujian')
+        )->setPaper('a4', 'portrait');
+
+        return $pdf->download(
+            'kartu-ujian-' . $calonSiswa->no_daftar . '.pdf'
+        );
     }
 }

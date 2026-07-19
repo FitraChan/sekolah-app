@@ -31,15 +31,12 @@ Target Pendaftaran
         </div>
 
         <div class="mt-4">
-            @if ($peserta->hasil === 'lulus')
+           
                 <span class="px-4 py-2 rounded-full bg-success text-white">
-                    LULUS
+                Hasil ujian akan diumumkan oleh pihak sekolah.
+
                 </span>
-            @else
-                <span class="px-4 py-2 rounded-full bg-danger text-white">
-                    TIDAK LULUS
-                </span>
-            @endif
+           
         </div>
 
         <div class="grid grid-cols-12 gap-4 mt-8">
@@ -87,7 +84,7 @@ Target Pendaftaran
     @endif
 
     <a
-        href="{{ route('calon-siswa.ujian.index') }}"
+        href="{{ route('ujianCalon.index') }}"
         class="btn btn-primary mt-8"
     >
         Kembali ke Daftar Ujian

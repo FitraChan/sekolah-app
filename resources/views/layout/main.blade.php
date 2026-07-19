@@ -263,7 +263,7 @@ License: You must have a valid license purchased only from themeforest(the above
                                 class="menu {{ $side == 'ujian-calon-siswa' ? 'menu--active' : '' }}">
 
                                 <div class="menu__icon">
-                                    <i data-lucide="book-open"></i>
+                                    <i data-lucide="clipboard"></i>
                                 </div>
 
                                 <div class="menu__title">
@@ -531,6 +531,15 @@ License: You must have a valid license purchased only from themeforest(the above
                     </a>
                 </li>
 
+
+                 <li>
+                    <a href="{{  route('ujianCalon.index') }}" class="menu {{$side == 'ujian'? 'menu--active':''}}">
+                        <div class="menu__icon"> <i data-lucide="clipboard"></i> </div>
+                        <div class="menu__title"> Ujian</div>
+                    </a>
+                </li>
+
+
                 @endif
             </ul>
         </div>
@@ -767,7 +776,7 @@ License: You must have a valid license purchased only from themeforest(the above
                                 class="side-menu {{ $side == 'ujian-calon-siswa' ? 'side-menu--active' : '' }}">
 
                                 <div class="side-menu__icon">
-                                    <i data-lucide="book-open"></i>
+                                    <i data-lucide="clipboard"></i>
                                 </div>
 
                                 <div class="side-menu__title">
@@ -984,6 +993,14 @@ License: You must have a valid license purchased only from themeforest(the above
                     <a href="{{  route('calon-siswa.profil') }}" class="side-menu {{$side == 'calon-siswa'? 'side-menu--active':''}}">
                         <div class="side-menu__icon"> <i data-lucide="home"></i> </div>
                         <div class="side-menu__title"> Calon Siswa</div>
+                    </a>
+                </li>
+
+
+                 <li>
+                    <a href="{{  route('ujianCalon.index') }}" class="side-menu {{$side == 'ujian'? 'side-menu--active':''}}">
+                        <div class="side-menu__icon"> <i data-lucide="clipboard"></i> </div>
+                        <div class="side-menu__title"> Ujian</div>
                     </a>
                 </li>
 

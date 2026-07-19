@@ -90,13 +90,18 @@ Target Pendaftaran
                                 Soal
                             </a>
 
-                            <a href="{{ route('soalCalon.edit', $item) }}"
+                            <a href="{{ route('ujianCalonAdmin.edit', $item) }}"
                                class="btn btn-sm btn-warning">
                                 Edit
                             </a>
 
+                              <a href="{{ route('ujianCalonAdmin.peserta', $item) }}"
+                                class="btn btn-sm btn-success">
+                                    Hasil Ujian
+                                </a>
+
                             <form
-                                action="{{ route('soalCalon.destroy', $item) }}"
+                                action="{{ route('ujianCalonAdmin.destroy', $item) }}"
                                 method="POST"
                                 onsubmit="return confirm('Hapus ujian ini?')"
                             >
@@ -125,7 +130,7 @@ Target Pendaftaran
 
     <div class="mt-5">
 
-     <!-- $data->links() -->
+     {{ $data->links()  }}
        
     </div>
 </div>

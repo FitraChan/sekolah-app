@@ -10,8 +10,8 @@ class UjianJawabanCalon extends Model
     protected $table = 'tb_ujian_jawaban_calon';
 
     protected $fillable = [
-        'peserta_id',
-        'soal_id',
+        'id_peserta',
+        'id_soal',
         'jawaban',
         'benar',
         'nilai',
@@ -24,11 +24,11 @@ class UjianJawabanCalon extends Model
 
     public function peserta(): BelongsTo
     {
-        return $this->belongsTo(UjianPesertaCalon::class, 'peserta_id');
+        return $this->belongsTo(UjianPesertaCalon::class, 'id_peserta');
     }
 
     public function soal(): BelongsTo
     {
-        return $this->belongsTo(UjianSoalCalon::class, 'soal_id');
+        return $this->belongsTo(UjianSoalCalon::class, 'id_soal');
     }
 }
