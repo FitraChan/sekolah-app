@@ -540,6 +540,14 @@ License: You must have a valid license purchased only from themeforest(the above
                 </li>
 
 
+                <li>
+                    <a href="{{  route('pengumumanCalon.index') }}" class="menu {{$side == 'pengumumanCalon'? 'menu--active':''}}">
+                        <div class="menu__icon"> <i data-lucide="shield"></i> </div>
+                        <div class="menu__title"> Pengumuman</div>
+                    </a>
+                </li>
+
+
                 @endif
             </ul>
         </div>
@@ -1001,6 +1009,14 @@ License: You must have a valid license purchased only from themeforest(the above
                     <a href="{{  route('ujianCalon.index') }}" class="side-menu {{$side == 'ujian'? 'side-menu--active':''}}">
                         <div class="side-menu__icon"> <i data-lucide="clipboard"></i> </div>
                         <div class="side-menu__title"> Ujian</div>
+                    </a>
+                </li>
+
+
+                <li>
+                    <a href="{{  route('pengumumanCalon.index') }}" class="side-menu {{$side == 'pengumumanCalon'? 'side-menu--active':''}}">
+                        <div class="side-menu__icon"> <i data-lucide="shield"></i> </div>
+                        <div class="side-menu__title"> Pengumuman</div>
                     </a>
                 </li>
 

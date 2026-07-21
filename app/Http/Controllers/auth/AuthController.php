@@ -186,18 +186,28 @@ class AuthController extends Controller
                 'updated_at'         => now(),
             ]);
 
+
+            $calonSiswa = CalonSiswa::findOrFail($id);
+
+            $this->generateTagihanCalonSiswa(
+                    siswa: $calonSiswa,
+                    idTahun: $thn_ajaran->id,
+                    idUser: $userId,
+                    ip: $request->ip(),
+            );
+
            
 
-            DB::table('tb_notifikasi')->insert([
-                'judul'      => 'Daftar Online',
-                'isi'        => 'Pendaftar siswa baru online a.n '
-                    . $nama .
-                    '<br> No. Telp ' . $telp,
-                'tujuan'     => 'PSB',
-                'dari'       => 'Laravel',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            // DB::table('tb_notifikasi')->insert([
+            //     'judul'      => 'Daftar Online',
+            //     'isi'        => 'Pendaftar siswa baru online a.n '
+            //         . $nama .
+            //         '<br> No. Telp ' . $telp,
+            //     'tujuan'     => 'PSB',
+            //     'dari'       => 'Laravel',
+            //     'created_at' => now(),
+            //     'updated_at' => now(),
+            // ]);
 
             Session::put('ppdb_in', [
                 'id'            => $id,       // id tb_tmp_siswa
@@ -238,92 +248,90 @@ class AuthController extends Controller
         }
     }
 
-    public function setDefBulan(Request $request,$id)
-    {
-       
-   
+    private function generateTagihanCalonSiswa(
+    CalonSiswa $siswa,
+    int $idTahun,
+    ?int $idUser = null,
+    ?string $ip = null
+    ): array {
         $berhasil = 0;
         $gagal = 0;
 
-        $siswa = CalonSiswa::where('id', $id)            
-            ->first();
+        // Hindari tagihan ganda
+        $sudahAda = BayarCalonSiswa::where('id_tahun', $idTahun)
+            ->where('id_calon_siswa', $siswa->no_daftar)
+            ->exists();
 
-        $konfig = konfig();
-      
-
-        $id_tahun = $konfig['id_tahun']; 
-        
-        $bulan = date('m');
-
-        DB::beginTransaction();
-
-        try {
-
-           // foreach ($siswa as $row) {
-
-                $bayar = BayarCalonSiswa::create([
-                    'id_tahun' => $id_tahun,
-                    'id_bulan' => $bulan,
-                    'id_calon_siswa' => $siswa->no_daftar,
-                ]);
-
-                dd($bayar);
-
-                $detailTemplate = DetTempBayar::where('id_template', $siswa->id_template_bayar)
-                    ->whereHas('itemBayar', function ($q) {
-                        $q->whereIn('id_kategori', [1, 2]);
-                    })
-                    ->get();
-
-                foreach ($detailTemplate as $item) {
-
-                    $detail = DetBayarCalonSiswa::create([
-                        'id_bayar'        => $bayar->id,
-                        'id_item'         => $item->id_item,
-                        'kwajiban_bayar'  => $item->jml_bayar,
-                        'potongan'        => 0,
-                        'jml_bayar'       => 0,
-                    ]);
-
-                    if ($detail) {
-                        $berhasil++;
-                    } else {
-                        $gagal++;
-                    }
-                }
-
-                $this->updateTotalBayar($bayar->id);
-          //  }
-
-            LogModel::create([
-                'tanggal' => now(),
-                'tabel' => 'tb_bayar_regis',
-                'aksi' => 'create',
-                'user' => auth()->user()->id,
-                'ip' => $request->ip(),
-                'keterangan' => json_encode($bayar ?? ""),
-                'serial' => url('simpan')
-            ]);
-
-            DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'title'   => 'Success',
-                'msg'     => "Proses berhasil dilakukan pada Bulan {$bulan}, Tahun {$id_tahun},  Berhasil {$berhasil}, Gagal {$gagal}"
-            ]);
-        } catch (\Exception $e) {
-
-            DB::rollBack();
-
-            return response()->json([
-                'success' => false,
-                'title'   => 'Error',
-                'msg'     => $e->getMessage()
-            ], 500);
+        if ($sudahAda) {
+            return [
+                'success'   => true,
+                'generated' => false,
+                'berhasil'  => 0,
+                'gagal'     => 0,
+                'message'   => 'Tagihan calon siswa sudah tersedia.',
+            ];
         }
+
+        $bulan = (int) now()->format('m');
+
+        $bayar = BayarCalonSiswa::create([
+            'id_tahun'        => $idTahun,
+            'id_bulan'        => $bulan,
+            'id_calon_siswa'  => $siswa->no_daftar,
+        ]);
+
+        $detailTemplate = DetTempBayar::query()
+            ->where('id_template', $siswa->id_template_bayar)
+            ->whereHas('itemBayar', function ($query) {
+                $query->whereIn('id_kategori', [1, 2]);
+            })
+            ->get();
+
+        if ($detailTemplate->isEmpty()) {
+            throw new \Exception(
+                'Detail template pembayaran belum tersedia.'
+            );
+        }
+
+        foreach ($detailTemplate as $item) {
+            DetBayarCalonSiswa::create([
+                'id_bayar'        => $bayar->id,
+                'id_item'         => $item->id_item,
+                'kwajiban_bayar'  => $item->jml_bayar,
+                'potongan'        => 0,
+                'jml_bayar'       => 0,
+            ]);
+
+            $berhasil++;
+        }
+
+        $this->updateTotalBayar($bayar->id);
+
+        LogModel::create([
+            'tanggal'   => now(),
+            'tabel'     => 'tb_bayar_regis',
+            'aksi'      => 'create',
+            'user'      => $idUser,
+            'ip'        => $ip,
+            'keterangan'=> json_encode([
+                'id_bayar'       => $bayar->id,
+                'no_daftar'      => $siswa->no_daftar,
+                'jumlah_detail'  => $berhasil,
+            ]),
+            'serial'    => url('pendaftaran/online'),
+        ]);
+
+        return [
+            'success'   => true,
+            'generated' => true,
+            'berhasil'  => $berhasil,
+            'gagal'     => $gagal,
+            'id_bayar'  => $bayar->id,
+            'message'   => 'Tagihan berhasil dibuat.',
+        ];
     }
 
+   
 
 
     public function updateTotalBayar($id)

@@ -41,6 +41,7 @@ use App\Http\Controllers\akademik\PengumumanController;
 use App\Http\Controllers\pendaftaran\UjianCalonAdminController;
 use App\Http\Controllers\pendaftaran\UjianSoalCalonController;
 use App\Http\Controllers\pendaftaran\UjianCalonController as CalonSiswaUjianController;
+use App\Http\Controllers\pendaftaran\PengumumanCalonController;
 
 
 
@@ -472,22 +473,22 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('ujianCalonAdmin', UjianCalonAdminController::class);
 
     Route::get(
-    'ujianCalonAdmin/{ujianCalonAdmin}/peserta',
-    [UjianCalonAdminController::class, 'peserta']
-)->name('ujianCalonAdmin.peserta');
+        'ujianCalonAdmin/{ujianCalonAdmin}/peserta',
+        [UjianCalonAdminController::class, 'peserta']
+    )->name('ujianCalonAdmin.peserta');
 
-Route::get(
-    'ujianCalonAdmin/{ujianCalonAdmin}/peserta/{peserta}/jawaban',
-    [UjianCalonAdminController::class, 'jawabanPeserta']
-)->name('ujianCalonAdmin.jawaban-peserta');
+    Route::get(
+        'ujianCalonAdmin/{ujianCalonAdmin}/peserta/{peserta}/jawaban',
+        [UjianCalonAdminController::class, 'jawabanPeserta']
+    )->name('ujianCalonAdmin.jawaban-peserta');
 
 
-Route::get(
-    'ujianCalonAdmin/{ujianCalonAdmin}/peserta',
-    [UjianCalonAdminController::class, 'peserta']
-)->name('ujianCalonAdmin.peserta');
+    Route::get(
+        'ujianCalonAdmin/{ujianCalonAdmin}/peserta',
+        [UjianCalonAdminController::class, 'peserta']
+    )->name('ujianCalonAdmin.peserta');
 
- 
+
     Route::get(
         'soalCalon/{id}',
         [UjianSoalCalonController::class, 'index']
@@ -503,7 +504,7 @@ Route::get(
         [UjianSoalCalonController::class, 'store']
     )->name('soalCalon.store');
 
-      Route::put(
+    Route::put(
         'soalCalon/{soal}',
         [UjianSoalCalonController::class, 'update']
     )->name('soalCalon.update');
@@ -513,10 +514,10 @@ Route::get(
         [UjianSoalCalonController::class, 'edit']
     )->name('soalCalon.edit');
 
-    
+
     Route::delete(
-    'soalCalon/{soal}',
-    [UjianSoalCalonController::class, 'destroy']
+        'soalCalon/{soal}',
+        [UjianSoalCalonController::class, 'destroy']
     )->name('soalCalon.destroy');
 
     // role admin
@@ -529,9 +530,6 @@ Route::middleware(['auth', 'role:admin|calon'])->group(function () {
         '/calon-siswa/update/updateRegistrasiSiswa/{id?}',
         [CalonSiswaController::class, 'updateRegistrasiSiswa']
     )->name('calon-siswa.update.updateRegistrasiSiswa');
-
-
-    
 });
 
 
@@ -669,16 +667,16 @@ Route::middleware(['auth', 'role:calon'])->group(function () {
 
     Route::post('/calon-siswa/upload/{id}', [CalonSiswaController::class, 'updateUpload'])->name('calon-siswa.update.upload');
 
-    Route::post('/calon-siswa/ipaymu', [CalonSiswaController::class, 'ipaymu'])
+    Route::post('/calon-siswa/ipaymu', [BayarCalonSiswaController::class, 'ipaymu'])
         ->name('calon-siswa.ipaymu');
 
     // Route::post('/ipaymu/callback', [CalonSiswaController::class, 'callback'])
     // ->name('ipaymu.callback');
 
-    Route::get('/calon-siswa/successPembayaran', [CalonSiswaController::class, 'successPembayaran'])
+    Route::get('/calon-siswa/successPembayaran', [BayarCalonSiswaController::class, 'successPembayaran'])
         ->name('calon-siswa.success-pembayaran');
 
-    Route::get('/calon-siswa/cancelPembayaran', [CalonSiswaController::class, 'cancelPembayaran'])
+    Route::get('/calon-siswa/cancelPembayaran', [BayarCalonSiswaController::class, 'cancelPembayaran'])
         ->name('calon-siswa.cancel-pembayaran');
 
 
@@ -688,34 +686,41 @@ Route::middleware(['auth', 'role:calon'])->group(function () {
     )->name('calon-siswa.pembayaran');
 
 
-     Route::get(
-                'ujianCalon',
-                [CalonSiswaUjianController::class, 'index']
-            )->name('ujianCalon.index');
+    Route::get(
+        'ujianCalon',
+        [CalonSiswaUjianController::class, 'index']
+    )->name('ujianCalon.index');
 
-            Route::post(
-                'ujianCalon/{ujian}/mulai',
-                [CalonSiswaUjianController::class, 'mulai']
-            )->name('ujianCalon.mulai');
+    Route::post(
+        'ujianCalon/{ujian}/mulai',
+        [CalonSiswaUjianController::class, 'mulai']
+    )->name('ujianCalon.mulai');
 
-            Route::get(
-                'ujianCalon/peserta/{peserta}/kerjakan',
-                [CalonSiswaUjianController::class, 'kerjakan']
-            )->name('ujianCalon.kerjakan');
+    Route::get(
+        'ujianCalon/peserta/{peserta}/kerjakan',
+        [CalonSiswaUjianController::class, 'kerjakan']
+    )->name('ujianCalon.kerjakan');
 
-            Route::post(
-                'ujianCalon/peserta/{peserta}/submit',
-                [CalonSiswaUjianController::class, 'submit']
-            )->name('ujianCalon.submit');
+    Route::post(
+        'ujianCalon/peserta/{peserta}/submit',
+        [CalonSiswaUjianController::class, 'submit']
+    )->name('ujianCalon.submit');
 
-            Route::get(
-                'ujianCalon/peserta/{peserta}/hasil',
-                [CalonSiswaUjianController::class, 'hasil']
-            )->name('ujianCalon.hasil');
-
-
+    Route::get(
+        'ujianCalon/peserta/{peserta}/hasil',
+        [CalonSiswaUjianController::class, 'hasil']
+    )->name('ujianCalon.hasil');
 
 
+    Route::get(
+        'pengumumanCalon',
+        [PengumumanCalonController::class, 'index']
+    )->name('pengumumanCalon.index');
+
+    Route::get(
+        'pengumumanCalon/{id}',
+        [PengumumanCalonController::class, 'show']
+    )->name('pengumumanCalon.show');
 });
 
 Route::middleware(['auth', 'role:guru'])->group(function () {
@@ -821,5 +826,5 @@ Route::middleware(['auth', 'role:siswa'])->group(function () {});
 Route::get(
     'kartu-ujian/{calonSiswa}/download',
     [BayarCalonSiswaController::class, 'download']
-)   ->middleware('signed')
+)->middleware('signed')
     ->name('kartuUjian.download');

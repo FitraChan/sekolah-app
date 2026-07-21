@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\pendaftaran;
 
 use App\Http\Controllers\Controller;
+use App\Models\Bayar;
 use App\Models\UjianCalon;
 use App\Models\CalonSiswa;
-
+use App\Models\BayarCalonSiswa;
 use App\Models\UjianJawabanCalon;
 use App\Models\UjianPesertaCalon;
 use Illuminate\Http\RedirectResponse;
@@ -33,15 +34,13 @@ class UjianCalonController extends Controller
     }
 
     public function index(): View
-    {
-
-   
+    {   
         $calonSiswaId = $this->calonSiswaId();
-
         $calonSiswa = CalonSiswa::query()
         ->select('id', 'id_gelombang')
         ->where('id_user',$calonSiswaId)->first();
 
+        BayarCalonSiswa::where('id_calon_siswa',$calonSiswa->no_daftar)->first();
 
         $data = UjianCalon::query()
             ->where('status', 1)

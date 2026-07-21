@@ -12,6 +12,8 @@ use App\Models\ItemBayar;
 use App\Models\Pekerjaan;
 use App\Models\StatusDaftar;
 use App\Models\IpaymuBayar;
+use App\Models\User;
+
 use App\Models\IpaymuDetBayar;
 
 
@@ -824,258 +826,51 @@ class CalonSiswaController extends Controller
 
     public function destroy($id)
     {
-        $calonSiswa = CalonSiswa::findOrFail($id);
-        $calonSiswa->delete();
-
-        LogModel::create([
-            'tanggal' => now(),
-            'tabel' => 'tb_calon_siswa',
-            'aksi' => 'delete',
-            'user' => auth()->user()->id,
-            'ip' => request()->ip(),
-            'keterangan' => json_encode($calonSiswa),
-            'serial' => url('hapus/' . $id)
-        ]);
-
-        return response()->json([
-            'success' => true
-        ]);
-    }
-
-    public function callback(Request $request)
-    {
-        Log::info('Callback iPaymu', $request->all());
-
-        return response()->json([
-            'success' => true
-        ]);
-    }
-
-    public function ipaymu(Request $request)
-    {
-        // Ambil data calon siswa
-
-
-        $siswa = CalonSiswa::where('id_user', auth()->user()->id)->first();
-
-        $apiKey = 'SANDBOX18AEF286-79CD-44C6-8764-2C89B94C7872';
-        $va      = '0000007864357063';
+        DB::beginTransaction();
 
         try {
 
-            $referenceId = 'INV-' . time();
-            $userId      = auth()->id();
+            $calonSiswa = CalonSiswa::findOrFail($id);
 
-            $nominal = (int) preg_replace('/[^0-9]/', '', $request->nominal);
+            $user = User::find($calonSiswa->id_user);
 
-            DB::beginTransaction();
+            if ($user) {
 
-            /** =====================
-             * SIMPAN DATA BAYAR
-             * ===================== */
-            $orderId = DB::table('tb_ipaymu_bayar')->insertGetId([
-                'id_calon_siswa'   => $siswa->no_daftar,
-                'id_tahun'    => date('Y'),
-                'id_bulan'    => date('m'),
-                'tgl_bayar'   => $request->tgl_trans ?? now(),
-                'id_kasir'    => $userId,
-                'via'         => 4,
-                'sts_bayar'   => 2, // pending
-                'no_kwitansi' => $request->no_kwitansi,
-                'keterangan'  => $request->comments,
-                'created_at'  => now(),
-                'updated_at'  => now(),
-            ]);
+                // Hapus semua role user
+                $user->syncRoles([]);
 
-            $itemBayar = ItemBayar::find($request->item);
-
-            DB::table('tb_ipaymu_det_bayar')->insert([
-                'id_bayar' => $orderId,
-                'nama_item' => $itemBayar->nama_item,
-                'id_item' =>   $itemBayar->id,
-                'jml_bayar' => $nominal,
-                'id_user'  => $userId,
-            ]);
-
-            /** =====================
-             * AMBIL DATA MAHASISWA
-             * ===================== */
-
-
-            /** =====================
-             * DATA IPAYMU
-             * ===================== */
-            $data = [
-                'buyerName'  => $siswa->nama_lengkap,
-                'buyerPhone' => $siswa->no_hp,
-                'buyerEmail' => $siswa->email,
-                'amount'    => (int) $nominal,
-                'referenceId' => $referenceId,
-                'product'   => [$itemBayar->nama_item],
-                'qty'       => [1],
-                'price'     => [(int) $nominal],
-                'notifyUrl' => url('api/calon-siswa/notifyPembayaran'),
-                'returnUrl' => route('calon-siswa.success-pembayaran'),
-                'cancelUrl' => route('calon-siswa.cancel-pembayaran'),
-            ];
-
-            $timestamp   = now()->setTimezone('Asia/Jakarta')->format('YmdHis');
-            $body        = json_encode($data, JSON_UNESCAPED_SLASHES);
-            $bodyHash    = strtolower(hash('sha256', $body));
-            $stringToSign = "POST:{$va}:{$bodyHash}:{$apiKey}";
-            $signature   = hash_hmac('sha256', $stringToSign, $apiKey);
-
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'signature'    => $signature,
-                'va'           => $va,
-                'timestamp'    => $timestamp,
-            ])->post('https://sandbox.ipaymu.com/api/v2/payment', $data);
-
-            /** =====================
-             * CEK RESPONSE IPAYMU
-             * ===================== */
-            if (!$response->successful() || !isset($response['Data']['Url'])) {
-                DB::rollBack();
-                return back()->with('error', 'Gagal membuat transaksi iPaymu');
+                // Hapus user
+                $user->delete();
             }
 
-            DB::table('tb_ipaymu_transaction')->insert([
-                'id_bayar'        => $orderId,
-                'ipaymu_ref'      => $referenceId,
-                'amount'          => (int) $nominal,
-                'payment_url'     => $response['Data']['Url'],
-                'session_id'      => $response['Data']['SessionID'] ?? null,
-                'ipaymu_response' => json_encode($response['Data']),
-                'status'          => 'pending',
-                'signature'       => $signature,
-                'created_at'      => now(),
+            $calonSiswa->delete();
+
+            LogModel::create([
+                'tanggal'     => now(),
+                'tabel'       => 'tb_calon_siswa',
+                'aksi'        => 'delete',
+                'user'        => auth()->id(),
+                'ip'          => request()->ip(),
+                'keterangan'  => json_encode($calonSiswa),
+                'serial'      => url('hapus/' . $id)
             ]);
-
-
 
             DB::commit();
 
-            return redirect($response['Data']['Url']);
+            return response()->json([
+                'success' => true
+            ]);
+
         } catch (\Throwable $e) {
+
             DB::rollBack();
-            return back()->with('error', $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 
-    function successPembayaran()
-    {
-
-        return redirect()->route('calon-siswa.profil')->with('success', 'pembayaran Berhasil');
-    }
-
-    function cancelPembayaran()
-    {
-
-        return redirect()->route('calon-siswa.profil');
-    }
-
-    public function notifyPembayaran(Request $request)
-    {
-        // =========================
-        // AMBIL DATA WAJIB
-        // =========================
-        $referenceId = $request->input('reference_id');
-
-
-        if (!$referenceId) {
-            return response()->json(['message' => 'Invalid payload'], 400);
-        }
-
-        DB::beginTransaction();
-
-        // =========================
-        // CARI TRANSAKSI (LOCK)
-        // =========================
-        $trx = DB::table('tb_ipaymu_transaction')
-            ->where('ipaymu_ref', $referenceId)
-            ->lockForUpdate()
-            ->first();
-
-        if (!$trx) {
-            DB::rollBack();
-            return response()->json(['message' => 'Pembayaran tidak ditemukan'], 404);
-        }
-
-        // =========================
-        // IDEMPOTENCY CHECK
-        // =========================
-        if ($trx->status === 'success') {
-            DB::commit();
-            return response()->json(['message' => 'Already processed'], 200);
-        }
-
-        // =========================
-        // VALIDASI SETTLED
-        // =========================
-        // if ($statusCode !== 1 || $settlement !== 'settled') {
-        //     DB::commit();
-        //     return response()->json(['message' => 'Payment not settled'], 200);
-        // }
-
-        // =========================
-        // UPDATE TRANSAKSI
-        // =========================
-        DB::table('tb_ipaymu_transaction')
-            ->where('id', $trx->id)
-            ->update([
-                'status'          => 'success',
-                'payment_method' => $request->input('via'),      // contoh: va
-                'payment_channel' => $request->input('channel'),  // contoh: danamon
-                'paid_at'        => $request->input('paid_at') ?? now(),
-                'ipaymu_response' => json_encode($request->all()),
-                'updated_at'     => now(),
-            ]);
-
-        $ipaymuBayar = DB::table('tb_ipaymu_bayar')
-            ->where('id', $trx->id_bayar)
-            ->first();
-
-        $ipaymuDetBayar = DB::table('tb_ipaymu_det_bayar')
-            ->where('id_bayar', $trx->id_bayar)
-            ->first();
-
-        $bayar = BayarCalonSiswa::create([
-            'id_tahun'    => date('Y'),
-            'id_bulan'    => date('m'),
-            'id_calon_siswa'    => $ipaymuBayar->id_calon_siswa,
-            'no_kwitansi' => $request->no_kwitansi,
-            'tgl_bayar'   => now(),
-            'id_kasir'    => auth()->user()->id,
-            'keterangan'  => $request->keterangan ?? 'Pembayaran iPaymu',
-        ]);
-
-        $idBayar = $bayar->id;
-
-        DetBayarCalonSiswa::create([
-            'id_bayar'   => $idBayar,
-            'id_item'    => $ipaymuDetBayar->id_item,
-            'jml_bayar'  => $ipaymuDetBayar->jml_bayar,
-            'id_cicilan' => $request->cicilan,
-        ]);
-        CalonSiswa::where('no_daftar',$ipaymuBayar->id_calon_siswa)->update(['status_daftar' => 1]);
-
-
-        BayarCalonSiswa::updateBayar($idBayar);
-        BayarCalonSiswa::updateKewajiban($idBayar);
-
-        DB::commit();
-
-        return response()->json(['message' => 'Notifikasi diterima'], 200);
-    }
-
-    function dataIpaymu($id){
-
-        $data = IpaymuBayar::with([
-            'detailBayar',
-            'calonSiswa'
-        ])->find($id);
-
-        return response()->json($data);
-    }
+   
 }

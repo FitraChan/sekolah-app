@@ -51,12 +51,37 @@ Broadcast
                         </option>
 
                     <?php endforeach; ?>
-
                 </select>
-
-
-
             </div>
+
+             <!-- DROPDOWN GELOMBANG -->
+    <div class="col-span-12 md:col-span-4">
+
+        <label class="form-label">
+            Pilih Gelombang
+        </label>
+
+        <select id="id_gelombang"
+            class="form-select">
+
+            <option value="">
+                -- Pilih Gelombang --
+            </option>
+
+             <option value="all">
+                -- Semua Gelombang --
+            </option>
+
+
+            @foreach ($gelombang as $item)
+                <option value="{{ $item->id }}">
+                    {{ $item->nama_gelombang }}
+                </option>
+            @endforeach
+
+        </select>
+
+    </div>
 
             <!-- TEXTAREA -->
             <div class="col-span-12 md:col-span-8">
@@ -149,7 +174,7 @@ Broadcast
 <script>
     function broadcastSemua() {
         let id_broadcast = document.getElementById('status').value;
-
+        const idGelombang = document.getElementById('id_gelombang').value;               
         if (id_broadcast == '') {
             alert('Pilih broadcast terlebih dahulu');
             return;
@@ -167,7 +192,9 @@ Broadcast
 
                 body: JSON.stringify({
 
-                    id_broadcast: id_broadcast
+                    id_broadcast: id_broadcast,
+                    id_gelombang: idGelombang
+
 
                 })
 

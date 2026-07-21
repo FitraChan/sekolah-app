@@ -17,17 +17,8 @@ use App\Models\Nilai;
 use App\Models\JawabanPeserta;
 use App\Models\DetailJawabanPeserta;
 
-
-
-
-
-
-
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
-
-
-
 
 
 class PenilaianGuruController extends Controller

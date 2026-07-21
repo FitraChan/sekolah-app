@@ -5,12 +5,14 @@ use App\Http\Controllers\api\orangTua\UserController;
 use App\Http\Controllers\api\orangTua\AbsenController;
 use App\Http\Controllers\api\orangTua\BayarController;
 use App\Http\Controllers\api\orangTua\PengumumanController;
+use App\Http\Controllers\keuangan\BayarCalonSiswaController;
+
 
 
 use Illuminate\Support\Facades\Route;
 
 
-Route::post('/calon-siswa/notifyPembayaran', [CalonSiswaController::class, 'notifyPembayaran'])
+Route::post('/calon-siswa/notifyPembayaran', [BayarCalonSiswaController::class, 'notifyPembayaran'])
         ->name('calon-siswa.notifyPembayaran');
         
         

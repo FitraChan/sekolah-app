@@ -23,6 +23,7 @@ class BayarController extends Controller
 {
     public function index()
     {
+        
         $side = 'bayar';
         $tahun = TahunAjaran::orderBy('id', 'desc')->get();
         $jurusan = Jurusan::orderBy('nama_jurusan')->get();
