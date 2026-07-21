@@ -32,6 +32,8 @@ use App\Http\Controllers\akademik\MasterJadwalController;
 use App\Http\Controllers\akademik\NilaiController;
 use App\Http\Controllers\akademik\AbsensiController;
 use App\Http\Controllers\akademik\SoalController;
+use App\Http\Controllers\akademik\TahunAjaranController;
+
 use App\Http\Controllers\guru\PenilaianGuruController;
 use App\Http\Controllers\guru\JadwalController;
 use App\Http\Controllers\guru\UjianController;
@@ -94,9 +96,22 @@ Route::get('/cancelPembayaranIpaymu', [IpaymuController::class, 'cancel'])
 
 
 
-
-
 Route::middleware(['auth', 'role:admin'])->group(function () {
+
+    Route::get('/tahunAjaran', [TahunAjaranController::class, 'index'])
+        ->name('tahunAjaran.index');
+
+    Route::get('tahunAjaran/data', [TahunAjaranController::class, 'data'])
+        ->name('tahunAjaran.data');
+
+    Route::post('tahunAjaran/store', [TahunAjaranController::class, 'store'])
+        ->name('tahunAjaran.store');
+
+    Route::post('tahunAjaran/update/{id}', [TahunAjaranController::class, 'update'])
+        ->name('tahunAjaran.update');
+
+    Route::delete('tahunAjaran/delete/{id}', [TahunAjaranController::class, 'destroy'])
+        ->name('tahunAjaran.destroy');
 
     Route::get('/role', [RoleController::class, 'index'])
         ->name('role.index');

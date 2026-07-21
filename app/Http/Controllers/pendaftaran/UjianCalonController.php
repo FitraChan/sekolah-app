@@ -37,10 +37,18 @@ class UjianCalonController extends Controller
     {   
         $calonSiswaId = $this->calonSiswaId();
         $calonSiswa = CalonSiswa::query()
-        ->select('id', 'id_gelombang')
+        ->select('id', 'id_gelombang','no_daftar')
         ->where('id_user',$calonSiswaId)->first();
 
-        BayarCalonSiswa::where('id_calon_siswa',$calonSiswa->no_daftar)->first();
+        $bayar = BayarCalonSiswa::query()
+        ->where('id_calon_siswa', $calonSiswa->no_daftar)
+                ->whereRaw('tot_bayar != 0')
+
+        ->whereHas('detail', function ($query) {
+            $query->where('id_item', 1);
+        })->first();
+
+        $nominal = $bayar?->detail->first()?->jml_bayar ?? 0;
 
         $data = UjianCalon::query()
             ->where('status', 1)
@@ -60,7 +68,7 @@ class UjianCalonController extends Controller
             ->latest()
             ->paginate(10);
 
-        return view('pendaftaran.ujian.daftar-ujian', compact('data'), ['side'  => 'ujian']);
+        return view('pendaftaran.ujian.daftar-ujian', compact('data','nominal'), ['side'  => 'ujian']);
     }
 
     public function mulai(UjianCalon $ujian): RedirectResponse

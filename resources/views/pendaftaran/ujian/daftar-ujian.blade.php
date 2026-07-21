@@ -23,100 +23,119 @@ Target Pendaftaran
     </div>
 @endif
 
-<div class="grid grid-cols-12 gap-6 mt-5">
-    @forelse ($data as $item)
-        @php
-            $peserta = $item->peserta->first();
-        @endphp
+@if (($nominal ?? 0) <= 0)
+    <div class="box p-8 mt-5 text-center">
+        <i
+            data-lucide="credit-card"
+            class="w-14 h-14 text-danger mx-auto"
+        ></i>
 
-        <div class="col-span-12 md:col-span-6 xl:col-span-4 intro-y">
-            <div class="box p-5">
-                <div class="flex items-start">
-                    <i
-                        data-lucide="clipboard-list"
-                        class="w-10 h-10 text-primary"
-                    ></i>
+        <div class="text-lg font-medium mt-4">
+            Pembayaran Pendaftaran Belum Dilakukan
+        </div>
 
-                    <div class="ml-auto">
+        <div class="text-slate-500 mt-2">
+            Harap lakukan pembayaran pendaftaran terlebih dahulu
+            sebelum mengikuti ujian calon siswa.
+        </div>
+    </div>
+@else
+    <div class="grid grid-cols-12 gap-6 mt-5">
+        @forelse ($data as $item)
+            @php
+                $peserta = $item->peserta->first();
+            @endphp
+
+            <div class="col-span-12 md:col-span-6 xl:col-span-4 intro-y">
+                <div class="box p-5">
+                    <div class="flex items-start">
+                        <i
+                            data-lucide="clipboard-list"
+                            class="w-10 h-10 text-primary"
+                        ></i>
+
+                        <div class="ml-auto">
+                            @if ($peserta?->status === 'selesai')
+                                <span class="px-2 py-1 rounded bg-success text-white">
+                                    Selesai
+                                </span>
+                            @elseif ($peserta?->status === 'sedang')
+                                <span class="px-2 py-1 rounded bg-warning text-white">
+                                    Sedang dikerjakan
+                                </span>
+                            @else
+                                <span class="px-2 py-1 rounded bg-primary text-white">
+                                    Tersedia
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="text-xl font-medium mt-5">
+                        {{ $item->nama_ujian }}
+                    </div>
+
+                    <div class="text-slate-500 mt-2">
+                        {{ $item->deskripsi }}
+                    </div>
+
+                    <div class="border-t mt-5 pt-4">
+                        <div class="flex justify-between mb-2">
+                            <span>Jumlah soal</span>
+                            <strong>{{ $item->soal_count }}</strong>
+                        </div>
+
+                        <div class="flex justify-between mb-2">
+                            <span>Durasi</span>
+                            <strong>{{ $item->durasi }} menit</strong>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span>Nilai minimal</span>
+                            <strong>{{ $item->nilai_minimal }}</strong>
+                        </div>
+                    </div>
+
+                    <div class="mt-5">
                         @if ($peserta?->status === 'selesai')
-                            <span class="px-2 py-1 rounded bg-success text-white">
-                                Selesai
-                            </span>
-                        @elseif ($peserta?->status === 'sedang')
-                            <span class="px-2 py-1 rounded bg-warning text-white">
-                                Sedang dikerjakan
-                            </span>
+                            <a
+                                href="{{ route('ujianCalon.hasil', $peserta) }}"
+                                class="btn btn-success w-full"
+                            >
+                                Lihat Hasil
+                            </a>
                         @else
-                            <span class="px-2 py-1 rounded bg-primary text-white">
-                                Tersedia
-                            </span>
+                            <form
+                                action="{{ route('ujianCalon.mulai', ['ujian' => $item->id]) }}"
+                                method="POST"
+                                onsubmit="return confirm('Mulai ujian sekarang? Waktu akan langsung berjalan.')"
+                            >
+                                @csrf
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary w-full"
+                                >
+                                    {{ $peserta?->status === 'sedang'
+                                        ? 'Lanjutkan Ujian'
+                                        : 'Mulai Ujian' }}
+                                </button>
+                            </form>
                         @endif
                     </div>
                 </div>
-
-                <div class="text-xl font-medium mt-5">
-                    {{ $item->nama_ujian }}
-                </div>
-
-                <div class="text-slate-500 mt-2">
-                    {{ $item->deskripsi }}
-                </div>
-
-                <div class="border-t mt-5 pt-4">
-                    <div class="flex justify-between mb-2">
-                        <span>Jumlah soal</span> &nbsp;
-                        <strong>{{ $item->soal_count }}</strong>
-                    </div>
-
-                    <div class="flex justify-between mb-2">
-                        <span>Durasi</span>  &nbsp;
-                        <strong>{{ $item->durasi }} menit</strong>
-                    </div>
-
-                    <div class="flex justify-between">
-                        <span>Nilai minimal</span>  &nbsp;
-                        <strong>{{ $item->nilai_minimal }}</strong>
-                    </div>
-                </div>
-
-                <div class="mt-5">
-                    @if ($peserta?->status === 'selesai')
-                        <a
-                            href="{{ route(
-                                'ujianCalon.hasil',
-                                $peserta
-                            ) }}"
-                            class="btn btn-success w-full"
-                        >
-                            Lihat Hasil
-                        </a>
-                    @else
-                       <form
-                            action="{{ route('ujianCalon.mulai', ['ujian' => $item->id]) }}"
-                            method="POST"
-                            onsubmit="return confirm('Mulai ujian sekarang? Waktu akan langsung berjalan?')"
-                        >
-                            @csrf
-
-                            <button
-                                type="submit"
-                                class="btn btn-primary w-full"
-                            >
-                                {{ $peserta?->status === 'sedang'
-                                    ? 'Lanjutkan Ujian'
-                                    : 'Mulai Ujian' }}
-                            </button>
-                        </form>
-                    @endif
+            </div>
+        @empty
+            <div class="col-span-12">
+                <div class="box p-8 text-center text-slate-500">
+                    Belum ada ujian yang tersedia.
                 </div>
             </div>
-        </div>
-    @empty
-        <div class="col-span-12">
-            <div class="box p-8 text-center text-slate-500">
-                Belum ada ujian yang tersedia.
-            </div>
-        </div>
-    @endforelse
-</div>
+        @endforelse
+    </div>
+
+    <div class="mt-5">
+        {{ $data->links() }}
+    </div>
+@endif
 @endsection

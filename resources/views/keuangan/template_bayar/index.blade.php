@@ -326,61 +326,82 @@ Template Bayar
     }
 
     function saveData() {
-        let id = document.getElementById('id').value;
+    const id = document.getElementById('id').value;
+    const isEdit = id !== '';
 
-        let isEdit = id != '';
+    const tipeJurusan = document
+        .getElementById('tipe_jurusan')
+        .value;
 
-        let url = isEdit ?
-            "{{ url('template-bayar/update') }}/" + id :
-            "{{ url('template-bayar/store') }}";
+    const idJurusan = tipeJurusan === 'semua'
+        ? null
+        : document.getElementById('id_jurusan').value;
 
-        fetch(url, {
+    const url = isEdit
+        ? "{{ url('template-bayar/update') }}/" + id
+        : "{{ url('template-bayar/store') }}";
 
-                method: 'POST',
+    fetch(url, {
+        method: 'POST',
 
-                headers: {
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
 
-                    'Content-Type': 'application/json',
+        body: JSON.stringify({
+            id_tahun: document.getElementById('id_tahun').value,
 
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
+            tipe_jurusan: tipeJurusan,
 
-                body: JSON.stringify({
+            id_jurusan: idJurusan,
 
-                    id_tahun: document.getElementById('id_tahun').value,
+            id_gelombang: document
+                .getElementById('id_gelombang')
+                .value,
 
-                    id_jurusan: document.getElementById('id_jurusan').value,
+            jns_kelas: document
+                .getElementById('jns_kelas')
+                .value,
 
-                    id_gelombang: document.getElementById('id_gelombang').value,
+            keterangan: document
+                .getElementById('keterangan')
+                .value,
 
-                    jns_kelas: document.getElementById('jns_kelas').value,
+            sts: document
+                .getElementById('sts')
+                .value
+        })
+    })
+    .then(async response => {
+        const result = await response.json();
 
-                    keterangan: document.getElementById('keterangan').value,
+        if (!response.ok) {
+            throw new Error(
+                result.message ?? 'Data gagal disimpan.'
+            );
+        }
 
-                    sts: document.getElementById('sts').value
+        return result;
+    })
+    .then(result => {
+        const modal = tailwind.Modal.getOrCreateInstance(
+            document.querySelector("#modal-form")
+        );
 
-                })
+        modal.hide();
 
-            })
-            .then(res => res.json())
-            .then(res => {
+        table.replaceData();
 
-                const modal =
-                    tailwind.Modal.getOrCreateInstance(
-                        document.querySelector("#modal-form")
-                    );
+        alert(result.message ?? 'Data berhasil disimpan.');
+    })
+    .catch(error => {
+        console.error(error);
 
-                modal.hide();
-
-                table.replaceData();
-
-            })
-            .catch(err => {
-
-                console.log(err);
-
-            });
-    }
+        alert(error.message);
+    });
+}
 
     function editTemplateBayar(data) {
         document.getElementById('id').value =
