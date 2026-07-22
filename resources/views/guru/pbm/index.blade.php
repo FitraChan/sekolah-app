@@ -60,7 +60,7 @@ let table = new Tabulator("#table-jadwal", {
 
     ajaxURL: "{{ route('pbm.data') }}",
 
-            layout: "fitDataStretch",
+    layout: "fitColumns",
 
 
     pagination: true,
@@ -86,26 +86,26 @@ let table = new Tabulator("#table-jadwal", {
         {
             title: "Kelas",
             field: "nama_kelas",
-             width: 100,
+            // width: 100,
             formatter: function(cell){
                 let data = cell.getData();
                 return data.kelas + " " + data.nama_kelas;
             }
         },
 
-        {
-            title: "Jml Jam",
-            field: "jml_jam",
-            hozAlign: "center",
-            width: 100
-        },
+        // {
+        //     title: "Jml Jam",
+        //     field: "jml_jam",
+        //     //hozAlign: "center",
+        //   //  width: 100
+        // },
 
        
 
         {
             title: "Action",
            // hozAlign: "center",
-            width: 260,
+         //   width: 260,
 
             formatter: function(cell) {
 

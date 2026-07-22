@@ -130,6 +130,9 @@ let table = new Tabulator("#table-konfig", {
 
 function editKonfig(data)
 {
+
+console.log(data);
+
     document.getElementById('edit_id').value =
         data.id ?? '';
 
@@ -149,6 +152,8 @@ function editKonfig(data)
 
 function saveData()
 {
+    console.log('masuk cuy');
+    
     let id = document.getElementById('edit_id').value;
 
     let isEdit = id !== '';

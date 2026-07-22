@@ -121,7 +121,7 @@
 
                             <input
                             type="text"
-                            id="filter_mapel_detail"
+                            id="filter_mapel"
                             class="form-control w-72"
                             placeholder="🔍 Cari Nama Mata Pelajaran...">
 
@@ -313,7 +313,7 @@
                 id_jurusan: document.getElementById('filter_jurusan').value,
                 id_kelas: document.getElementById('filter_kelas').value,
                 smt: document.getElementById('filter_semester').value,
-                mapel: document.getElementById('filter_mapel_detail').value,
+                mapel: document.getElementById('filter_mapel').value,
 
             }
         );

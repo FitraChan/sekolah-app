@@ -5,6 +5,9 @@ namespace App\Http\Controllers\akademik;
 use App\Http\Controllers\Controller;
 
 use App\Models\TahunAjaran;
+use App\Models\Konfig;
+use Illuminate\Support\Facades\DB;
+
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -81,27 +84,36 @@ class TahunAjaranController extends Controller
     }
 
     public function update(Request $request, int $id): JsonResponse
-    {
-        $tahunAjaran = TahunAjaran::findOrFail($id);
+{
+    $tahunAjaran = TahunAjaran::findOrFail($id);
 
-        $validated = $request->validate([
-            'thn_ajaran' => [
-                'required',
-                'string',
-                'max:20',
-                'unique:tb_thn_ajaran,thn_ajaran,' . $tahunAjaran->id,
-            ],
-            'isaktiv' => [
-                'required',
-                'boolean',
-            ],
-        ], [
-            'thn_ajaran.required' => 'Tahun ajaran wajib diisi.',
-            'thn_ajaran.unique'   => 'Tahun ajaran sudah tersedia.',
-            'isaktiv.required'    => 'Status tahun ajaran wajib dipilih.',
-        ]);
+    $validated = $request->validate([
+        'thn_ajaran' => [
+            'required',
+            'string',
+            'max:20',
+            'unique:tb_thn_ajaran,thn_ajaran,' . $tahunAjaran->id,
+        ],
+        'isaktiv' => [
+            'required',
+            'boolean',
+        ],
+        'smt' => [
+            'nullable',
+            'in:1,2',
+        ],
+    ], [
+        'thn_ajaran.required' => 'Tahun ajaran wajib diisi.',
+        'thn_ajaran.unique'   => 'Tahun ajaran sudah tersedia.',
+        'isaktiv.required'    => 'Status tahun ajaran wajib dipilih.',
+        'smt.in'              => 'Semester harus Ganjil atau Genap.',
+    ]);
 
-        if ((int) $validated['isaktiv'] === 1) {
+    DB::transaction(function () use ($validated, $tahunAjaran) {
+        $isAktif = (int) $validated['isaktiv'];
+
+        if ($isAktif === 1) {
+            // Nonaktifkan semua tahun ajaran lainnya
             TahunAjaran::query()
                 ->where('id', '!=', $tahunAjaran->id)
                 ->update([
@@ -109,17 +121,35 @@ class TahunAjaranController extends Controller
                 ]);
         }
 
+        // Update tahun ajaran yang dipilih
         $tahunAjaran->update([
             'thn_ajaran' => $validated['thn_ajaran'],
-            'isaktiv'    => $validated['isaktiv'],
+            'isaktiv'    => $isAktif,
         ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Tahun ajaran berhasil diperbarui.',
-            'data'    => $tahunAjaran,
-        ]);
-    }
+        // Jika tahun ajaran dijadikan aktif,
+        // update konfigurasi tahun aktif
+        if ($isAktif === 1) {
+            $konfig = Konfig::query()->firstOrFail();
+
+            $konfig->update([
+                'id_tahun' => $tahunAjaran->id,
+                'smt'      => $validated['smt'] ?? $konfig->smt,
+
+                // Jika PPDB mengikuti tahun ajaran aktif:
+                // 'id_thn_ppdb' => $tahunAjaran->id,
+            ]);
+        }
+    });
+
+    // Jika helper konfig() memakai Cache::rememberForever('konfig')
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Tahun ajaran berhasil diperbarui.',
+        'data'    => $tahunAjaran->fresh(),
+    ]);
+}
 
     public function destroy(int $id): JsonResponse
     {

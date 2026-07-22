@@ -29,7 +29,7 @@ class KonfigController extends Controller
 
         $konfig->update([
             'id_tahun'     => $request->id_tahun,
-            'id_gelombang' => $request->id_gelombang,
+           // 'id_gelombang' => $request->id_gelombang,
             'smt'          => $request->smt,
             'id_thn_ppdb'  => $request->id_thn_ppdb,
         ]);

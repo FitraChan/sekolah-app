@@ -14,35 +14,21 @@ Tahun Ajaran
 
 <div class="max-w-7xl mx-auto p-6">
 
-    <div class="flex gap-2 mb-3">
-        <button
-            type="button"
-            class="btn btn-primary"
-            data-tw-toggle="modal"
-            data-tw-target="#modal-add-tahun-ajaran"
-        >
-            + Tambah Tahun Ajaran
-        </button>
-    </div>
-
-    <div
-        id="alert-message"
-        class="hidden alert mt-5"
-    ></div>
-
     <div class="grid grid-cols-12 gap-6 mt-5">
+        <!-- tahun ajara -->
+        <div class="intro-y col-span-12 lg:col-span-6">
 
-        <div class="intro-y col-span-12">
+
+
+            <div
+                id="alert-message"
+                class="hidden alert mt-5"></div>
+
+            <!-- <div class="grid grid-cols-12 gap-6 mt-5"> -->
 
             <div class="intro-y box">
 
-                <div
-                    class="flex flex-col sm:flex-row items-center p-5 border-b border-slate-200/60"
-                >
-                    <h2 class="font-medium text-base mr-auto">
-                        Daftar Tahun Ajaran
-                    </h2>
-                </div>
+           <div class="flex flex-col sm:flex-row sm:items-center gap-3 p-5 border-b border-slate-200/60"> <h2 class="font-medium text-base mr-auto"> Daftar Tahun Ajaran </h2> <button type="button" class="btn btn-primary" data-tw-toggle="modal" data-tw-target="#modal-add-tahun-ajaran"> + Tambah Tahun Ajaran </button> </div>
 
                 <div class="p-5">
 
@@ -54,14 +40,44 @@ Tahun Ajaran
 
             </div>
 
+
+
+            <!-- </div> -->
         </div>
 
-    </div>
 
+        <div class="intro-y col-span-12 lg:col-span-6">
+
+            <div class="intro-y box">
+
+                <div
+                    class="flex flex-col sm:flex-row items-center p-5 border-b border-slate-200/60">
+                    <h2 class="font-medium text-base mr-auto">
+                        Setting
+                    </h2>
+                </div>
+
+                <div class="p-5">
+
+                    <div class="overflow-x-auto">
+                        <div id="table-konfig"></div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
 </div>
 
 @include('akademik.tahun-ajaran.add')
 @include('akademik.tahun-ajaran.edit')
+
+@include('konfig.edit-konfig')
+
 
 <script>
     const csrfToken = '{{ csrf_token() }}';
@@ -77,8 +93,7 @@ Tahun Ajaran
 
         placeholder: "Belum ada data tahun ajaran.",
 
-        columns: [
-            {
+        columns: [{
                 title: "No",
                 formatter: "rownum",
                 hozAlign: "center",
@@ -91,7 +106,7 @@ Tahun Ajaran
             {
                 title: "Status",
                 field: "isaktiv",
-                hozAlign: "center",
+               
                 formatter: function(cell) {
                     const aktif = Number(cell.getValue()) === 1;
 
@@ -112,7 +127,7 @@ Tahun Ajaran
             },
             {
                 title: "Action",
-                hozAlign: "center",
+               
                 width: 220,
                 headerSort: false,
 
@@ -148,13 +163,12 @@ Tahun Ajaran
     });
 
 
-    function editTahunAjaran(encodedData)
-    {
+    function editTahunAjaran(encodedData) {
         const data = JSON.parse(
             decodeURIComponent(encodedData)
         );
 
-        document.getElementById('edit_id').value =
+        document.getElementById('edit_id_thn').value =
             data.id ?? '';
 
         document.getElementById('edit_thn_ajaran').value =
@@ -167,24 +181,23 @@ Tahun Ajaran
     }
 
 
-    async function saveData(type)
-    {
+    async function saveData(type) {
         const isEdit = type === 'edit';
 
         const prefix = isEdit ? 'edit_' : 'add_';
 
-        const id = isEdit
-            ? document.getElementById('edit_id').value
-            : null;
+        const id = isEdit ?
+            document.getElementById('edit_id_thn').value :
+            null;
 
-        const url = isEdit
-            ? "{{ url('tahunAjaran/update') }}/" + id
-            : "{{ route('tahunAjaran.store') }}";
+        const url = isEdit ?
+            "{{ url('tahunAjaran/update') }}/" + id :
+            "{{ route('tahunAjaran.store') }}";
 
         const button = document.getElementById(
-            isEdit
-                ? 'btn-save-edit'
-                : 'btn-save-add'
+            isEdit ?
+            'btn-save-edit' :
+            'btn-save-add'
         );
 
         clearValidationErrors();
@@ -226,9 +239,9 @@ Tahun Ajaran
                 );
             }
 
-            const modalSelector = isEdit
-                ? "#modal-edit-tahun-ajaran"
-                : "#modal-add-tahun-ajaran";
+            const modalSelector = isEdit ?
+                "#modal-edit-tahun-ajaran" :
+                "#modal-add-tahun-ajaran";
 
             const modal = tailwind.Modal.getOrCreateInstance(
                 document.querySelector(modalSelector)
@@ -241,6 +254,8 @@ Tahun Ajaran
             }
 
             await table.replaceData();
+            await tableKonfig.replaceData();
+
 
             showAlert(
                 result.message ?? 'Data berhasil disimpan.',
@@ -257,8 +272,7 @@ Tahun Ajaran
     }
 
 
-    async function deleteTahunAjaran(id)
-    {
+    async function deleteTahunAjaran(id) {
         const confirmation = confirm(
             'Hapus tahun ajaran ini?'
         );
@@ -269,8 +283,7 @@ Tahun Ajaran
 
         try {
             const response = await fetch(
-                "{{ url('tahunAjaran/delete') }}/" + id,
-                {
+                "{{ url('tahunAjaran/delete') }}/" + id, {
                     method: 'DELETE',
 
                     headers: {
@@ -301,8 +314,7 @@ Tahun Ajaran
     }
 
 
-    function showValidationErrors(errors, prefix)
-    {
+    function showValidationErrors(errors, prefix) {
         Object.keys(errors ?? {}).forEach(function(field) {
             const errorElement = document.getElementById(
                 prefix + field + '_error'
@@ -316,8 +328,7 @@ Tahun Ajaran
     }
 
 
-    function clearValidationErrors()
-    {
+    function clearValidationErrors() {
         document
             .querySelectorAll('.validation-error')
             .forEach(function(element) {
@@ -327,8 +338,7 @@ Tahun Ajaran
     }
 
 
-    function resetAddForm()
-    {
+    function resetAddForm() {
         document.getElementById('add_thn_ajaran').value = '';
         document.getElementById('add_isaktiv').value = '0';
 
@@ -336,16 +346,15 @@ Tahun Ajaran
     }
 
 
-    function showAlert(message, type = 'success')
-    {
+    function showAlert(message, type = 'success') {
         const alertElement = document.getElementById(
             'alert-message'
         );
 
         alertElement.className =
-            type === 'success'
-                ? 'alert alert-success mt-5'
-                : 'alert alert-danger mt-5';
+            type === 'success' ?
+            'alert alert-success mt-5' :
+            'alert alert-danger mt-5';
 
         alertElement.innerText = message;
         alertElement.classList.remove('hidden');
@@ -358,6 +367,200 @@ Tahun Ajaran
         setTimeout(function() {
             alertElement.classList.add('hidden');
         }, 4000);
+    }
+
+
+    // ============== config
+
+
+    let tableKonfig = new Tabulator("#table-konfig", {
+
+        ajaxURL: "{{ route('konfig.data') }}",
+
+        layout: "fitDataStretch",
+
+        pagination: true,
+
+        paginationSize: 10,
+
+        responsiveLayout: "collapse",
+
+        columns: [
+
+            {
+                title: "No",
+                formatter: "rownum",
+                hozAlign: "center",
+                width: 60
+            },
+
+            {
+                title: "ID Tahun",
+                field: "id_tahun",
+
+            },
+           
+
+            {
+                 title: "Semester",
+                field: "smt",
+                hozAlign: "center",
+                formatter: function(cell) {
+                    return cell.getValue() == 1 ? "Ganjil" : "Genap";
+                }
+            },
+
+            {
+                title: "ID Tahun PPDB",
+                field: "id_thn_ppdb",
+
+            },
+
+            {
+                title: "Action",
+              //  hozAlign: "center",
+                width: 220,
+
+                formatter: function(cell) {
+
+                    let data = cell.getData();
+
+                    return `
+                    <button
+                        class="btn btn-primary btn-sm mr-1"
+                        data-tw-toggle="modal"
+                        data-tw-target="#modal-edit-konfig"
+                        onclick='editKonfig(${JSON.stringify(data)})'>
+
+                        Edit
+
+                    </button>
+
+                   
+                `;
+                }
+            }
+        ]
+    });
+
+
+    function editKonfig(data) {
+        document.getElementById('edit_id').value =
+            data.id ?? '';
+
+        document.getElementById('edit_id_tahun').value =
+            data.id_tahun ?? '';
+
+        // document.getElementById('edit_id_gelombang').value =
+        //     data.id_gelombang ?? '';
+
+        document.getElementById('edit_smt').value =
+            data.smt ?? 1;
+
+        document.getElementById('edit_id_thn_ppdb').value =
+            data.id_thn_ppdb ?? '';
+    }
+
+
+    function saveDataKonfig() {
+
+    
+        let id = document.getElementById('edit_id').value;
+
+        let isEdit = id !== '';
+
+        let prefix = isEdit ? 'edit_' : 'add_';
+
+        let url = isEdit ?
+            "{{ url('konfig/update') }}/" + id :
+            "{{ url('konfig/store') }}";
+
+        fetch(url, {
+
+                method: 'POST',
+
+                headers: {
+
+                    'Content-Type': 'application/json',
+
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+
+                },
+
+                body: JSON.stringify({
+
+                    id_tahun: document.getElementById(prefix + 'id_tahun').value,
+
+                    smt: document.getElementById(prefix + 'smt').value,
+
+                    id_thn_ppdb: document.getElementById(prefix + 'id_thn_ppdb').value
+
+                })
+
+            })
+            .then(res => res.json())
+            .then(res => {
+
+                if (res.success) {
+                    const modal = isEdit ?
+                        tailwind.Modal.getOrCreateInstance(
+                            document.querySelector("#modal-edit-konfig")
+                        ) :
+                        tailwind.Modal.getOrCreateInstance(
+                            document.querySelector("#modal-add-konfig")
+                        );
+
+                    modal.hide();
+
+                    tableKonfig.replaceData();
+
+                    alert('Data berhasil disimpan');
+                } else {
+                    alert('Gagal menyimpan data');
+                }
+
+            })
+            .catch(err => {
+
+                console.error(err);
+
+                alert('Terjadi kesalahan');
+
+            });
+    }
+
+
+    function deleteKonfig(id) {
+        if (confirm('Yakin ingin menghapus data ini ?')) {
+            fetch("{{ url('konfig/delete') }}/" + id, {
+
+                    method: 'DELETE',
+
+                    headers: {
+
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+
+                    }
+
+                })
+                .then(res => res.json())
+                .then(res => {
+
+                    if (res.success) {
+                        table.replaceData();
+
+                        alert('Data berhasil dihapus');
+                    }
+
+                })
+                .catch(err => {
+
+                    console.error(err);
+
+                    alert('Gagal menghapus data');
+
+                });
+        }
     }
 </script>
 

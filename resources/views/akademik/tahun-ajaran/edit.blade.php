@@ -18,7 +18,7 @@
 
                 <input
                     type="hidden"
-                    id="edit_id"
+                    id="edit_id_thn"
                 >
 
                 <div class="col-span-12">

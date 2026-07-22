@@ -29,7 +29,7 @@
 
             </div>
 
-            <div class="col-span-12 sm:col-span-6">
+            <!-- <div class="col-span-12 sm:col-span-6">
 
                 <label class="form-label">
                     ID Gelombang
@@ -40,7 +40,7 @@
                     id="edit_id_gelombang"
                     class="form-control">
 
-            </div>
+            </div> -->
 
             <div class="col-span-12 sm:col-span-6">
 
@@ -52,8 +52,8 @@
                     id="edit_smt"
                     class="form-select">
 
-                    <option value="1">Semester 1</option>
-                    <option value="2">Semester 2</option>
+                    <option value="1">Ganjil</option>
+                    <option value="2">Genap</option>
 
                 </select>
 
@@ -87,7 +87,7 @@
 
             <button
                 type="button"
-                onclick="saveData()"
+                onclick="saveDataKonfig()"
                 class="btn btn-primary w-24">
 
                 Update
