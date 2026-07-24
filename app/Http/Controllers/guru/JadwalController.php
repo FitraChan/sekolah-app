@@ -29,7 +29,8 @@ class JadwalController extends Controller
 
         $idGtk = Gtk::where('user_id',auth()->user()->id)->first();
 
-        $query = PenjadwalanHari::with(['jadwal','jam'])->whereHas('jadwal', function ($q) use ($id_tahun, $smt,$idGtk) {
+        $query = PenjadwalanHari::with(['jadwal','jam'])
+                ->whereHas('jadwal', function ($q) use ($id_tahun, $smt,$idGtk) {
                 $q->where('id_tahun', $id_tahun)
                 ->where('semester', $smt)
                 ->where('id_gtk',$idGtk->id);

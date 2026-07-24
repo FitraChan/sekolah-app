@@ -245,7 +245,7 @@ class PenilaianGuruController extends Controller
                     'public'
                 );
 
-                $data['url_materi_1'] =  'uploads/materi/' . $fileName;
+                $data['url_materi_1'] =  'storage/app/public/uploads/materi/' . $fileName;
             }
 
             // Materi 2
@@ -265,7 +265,7 @@ class PenilaianGuruController extends Controller
                     'public'
                 );
 
-                $data['url_materi_2'] =  'uploads/materi/' . $fileName;
+                $data['url_materi_2'] =  'storage/app/public/uploads/materi/' . $fileName;
             }
 
             // Materi 3
@@ -283,7 +283,7 @@ class PenilaianGuruController extends Controller
                     'public'
                 );
 
-                $data['url_materi_3'] =  'uploads/materi/' . $fileName;
+                $data['url_materi_3'] =  'storage/app/public/uploads/materi/' . $fileName;
             }
 
             // Tugas
@@ -302,7 +302,7 @@ class PenilaianGuruController extends Controller
                     'public'
                 );
 
-                $data['url_tugas'] =  'uploads/materi/' . $fileName;
+                $data['url_tugas'] =  'storage/app/public/uploads/materi/' . $fileName;
             }
 
             // Insert tb_trans_ajar
@@ -436,7 +436,7 @@ class PenilaianGuruController extends Controller
                     'public'
                 );
 
-                $data['url_materi_1'] = 'uploads/materi/' . $fileName;
+                $data['url_materi_1'] = 'storage/app/public/uploads/materi/' . $fileName;
             }
 
             // =====================
@@ -456,7 +456,7 @@ class PenilaianGuruController extends Controller
                     'public'
                 );
 
-                $data['url_materi_2'] = 'uploads/materi/' . $fileName;
+                $data['url_materi_2'] = 'storage/app/public/uploads/materi/' . $fileName;
             }
 
             // =====================
@@ -476,7 +476,7 @@ class PenilaianGuruController extends Controller
                     'public'
                 );
 
-                $data['url_materi_3'] = 'uploads/materi/' . $fileName;
+                $data['url_materi_3'] = 'storage/app/public/uploads/materi/' . $fileName;
             }
 
             // =====================
@@ -496,7 +496,7 @@ class PenilaianGuruController extends Controller
                     'public'
                 );
 
-                $data['url_tugas'] = 'uploads/materi/' . $fileName;
+                $data['url_tugas'] = 'storage/app/public/uploads/materi/' . $fileName;
             }
 
             DB::table('tb_trans_ajar')

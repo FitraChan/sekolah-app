@@ -33,7 +33,7 @@ License: You must have a valid license purchased only from themeforest(the above
             <div class="hidden xl:flex flex-col min-h-screen">
                 <a href="" class="-intro-x flex items-center pt-5">
                     <img alt="SISTEM INFORMASI GURU" class="w-6" src="public/dist/images/open.png">
-                    <span class="text-white text-lg ml-3"> SIAMI </span>
+                    <span class="text-white text-lg ml-3"> Open School </span>
                 </a>
                 <div class="my-auto">
                     <img alt="SISTEM INFORMASI GURU" class="-intro-x w-1/2 -mt-16" src="public/dist/images/login.png">

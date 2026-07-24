@@ -186,7 +186,7 @@ Materi PBM
 
                         @if(!empty($materi?->url_materi_1))
                         <div class="mt-2">
-                            <a href="{{ asset('public/storage/'.$materi->url_materi_1) }}"
+                            <a href="{{ asset($materi->url_materi_1) }}"
                                 target="_blank"
                                 class="text-primary">
                                 Lihat Lampiran 1
@@ -207,7 +207,7 @@ Materi PBM
 
                         @if(!empty($materi?->url_materi_2))
                         <div class="mt-2">
-                            <a href="{{ asset('public/storage/'.$materi->url_materi_2) }}"
+                            <a href="{{ asset($materi->url_materi_2) }}"
                                 target="_blank"
                                 class="text-primary">
                                 Lihat Lampiran 2
@@ -228,7 +228,7 @@ Materi PBM
 
                         @if(!empty($materi?->url_materi_3))
                         <div class="mt-2">
-                            <a href="{{ asset('public/storage/'.$materi->url_materi_3) }}"
+                            <a href="{{ asset($materi->url_materi_3) }}"
                                 target="_blank"
                                 class="text-primary">
                                 Lihat Lampiran 3
@@ -293,7 +293,7 @@ Materi PBM
 
                         @if(!empty($materi?->url_tugas))
                         <div class="mt-2">
-                            <a href="{{ asset('public/storage/'.$materi->url_tugas) }}"
+                            <a href="{{ asset($materi->url_tugas) }}"
                                 target="_blank"
                                 class="text-primary">
                                 Lihat Lampiran Tugas

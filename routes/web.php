@@ -45,22 +45,7 @@ use App\Http\Controllers\pendaftaran\UjianSoalCalonController;
 use App\Http\Controllers\pendaftaran\UjianCalonController as CalonSiswaUjianController;
 use App\Http\Controllers\pendaftaran\PengumumanCalonController;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+use App\Http\Controllers\siswa\SiswaController;
 
 
 /*
@@ -534,6 +519,34 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         'soalCalon/{soal}',
         [UjianSoalCalonController::class, 'destroy']
     )->name('soalCalon.destroy');
+
+
+Route::prefix('siswa')
+    ->name('siswa.')
+    ->controller(SiswaController::class)
+    ->group(function () {
+
+        Route::get('/', 'index')
+            ->name('index');
+
+        Route::get('/data', 'data')
+            ->name('data');
+
+        Route::get('/create', 'create')
+            ->name('create');
+
+        Route::post('/store', 'store')
+            ->name('store');
+
+        Route::get('/edit/{id}', 'edit')
+            ->name('edit');
+
+        Route::post('/update/{id}', 'update')
+            ->name('update');
+
+        Route::delete('/delete/{id}', 'destroy')
+            ->name('destroy');
+    });
 
     // role admin
 });

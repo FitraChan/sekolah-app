@@ -13,6 +13,8 @@ use App\Models\BayarCalonSiswa;
 use App\Models\CalonSiswa;
 use App\Models\DetBayarCalonSiswa;
 use App\Models\DetTempBayar;
+use App\Models\Konfig;
+
 
 
 use Illuminate\Support\Facades\DB;
@@ -23,6 +25,16 @@ use Illuminate\Support\Facades\Session;
 
 class AuthController extends Controller
 {
+     var $tahun, $smt;
+  
+    public function __construct()
+    {
+        $konfig = Konfig::first();
+        $this->tahun = $konfig->id_tahun;
+        $this->smt = $konfig->smt;
+
+      
+    }
     public function FormLogin()
     {
         return view('auth.login');
@@ -112,7 +124,7 @@ class AuthController extends Controller
             $thn_ajaran = DB::table('tb_thn_ajaran')->where('isaktiv', 1)->first();
 
 
-            $thn = $thn_ajaran->id;
+            $thn = $this->tahun;
 
             $cek = DB::table('tb_tmp_siswa')
                 ->where('email', $email)

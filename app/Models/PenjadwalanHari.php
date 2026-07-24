@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PenjadwalanHari extends Model
 {
@@ -10,7 +11,6 @@ class PenjadwalanHari extends Model
 
     protected $primaryKey = 'id';
 
-   // public $timestamps = false;
 
     protected $fillable = [
         'idpenjadwalan',
@@ -23,6 +23,15 @@ class PenjadwalanHari extends Model
         return $this->belongsTo(
             MasterJadwal::class,
             'idpenjadwalan',
+            'id'
+        );
+    }
+
+     public function hari(): BelongsTo
+    {
+        return $this->belongsTo(
+            Hari::class,
+            'id_hari',
             'id'
         );
     }

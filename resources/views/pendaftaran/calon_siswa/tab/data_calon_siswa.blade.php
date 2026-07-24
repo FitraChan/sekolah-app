@@ -68,7 +68,7 @@
                             </label>
 
                             <select name="id_gelombang"
-                                class="form-select rounded-xl">
+                                class="form-select rounded-xl" readonly>
 
                                 <option value="">
                                     -- Pilih Gelombang --
@@ -97,7 +97,7 @@
                             </label>
 
                             <select name="id_thn_ajaran"
-                                class="form-select rounded-xl">
+                                class="form-select rounded-xl" readonly>
 
                                 <option value="">
                                     -- Pilih Tahun Ajaran --
@@ -127,7 +127,7 @@
                             <input type="text"
                                 name="no_daftar"
                                 class="form-control rounded-xl"
-                                value="{{ old('no_daftar', $rows->no_daftar ?? '') }}">
+                                value="{{ old('no_daftar', $rows->no_daftar ?? '') }}" readonly>
                         </div>
 
                         <!-- TGL -->
@@ -140,9 +140,9 @@
                             <input type="date"
                                 name="tgl_daftar"
                                 class="form-control rounded-xl"
-                                value="{{ old('tgl_daftar', $rows->tgl_daftar ?? '') }}">
+                                value="{{ old('tgl_daftar', $rows->tgl_daftar ?? '') }}" readonly>
                         </div>
-
+ @if(Auth::user()->hasRole('admin'))
                         <!-- STATUS -->
                         <div class="col-span-12 md:col-span-4">
 
@@ -164,6 +164,7 @@
                             </select>
 
                         </div>
+                @endif
 
                         <!-- JURUSAN -->
                         <div class="col-span-12 md:col-span-6">
@@ -173,7 +174,7 @@
                             </label>
 
                             <select name="id_jurusan"
-                                class="form-select rounded-xl">
+                                class="form-select rounded-xl" readonly>
 
                                 <option value="">
                                     -- Pilih Jurusan --
@@ -204,7 +205,7 @@
                             <input type="text"
                                 name="tmp_daftar"
                                 class="form-control rounded-xl"
-                                value="{{ old('tmp_daftar', $rows->tmp_daftar ?? '') }}">
+                                value="{{ old('tmp_daftar', $rows->tmp_daftar ?? '') }}" readonly>
 
                         </div>
 

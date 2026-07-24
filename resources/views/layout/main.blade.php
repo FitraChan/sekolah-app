@@ -124,19 +124,7 @@ License: You must have a valid license purchased only from themeforest(the above
                 </li>
 
 
-                <li>
-                    <a href="{{ route('konfig.index') }}" class="menu {{ $side == 'konfig' ? 'menu--active' : '' }}">
-
-                        <div class="menu__icon">
-                            <i data-lucide="file-text"></i>
-                        </div>
-
-                        <div class="menu__title">
-                            Konfig
-                        </div>
-
-                    </a>
-                </li>
+              
 
                 @endif
 
@@ -598,19 +586,7 @@ License: You must have a valid license purchased only from themeforest(the above
                 </li>
 
 
-                <li>
-                    <a href="{{ route('konfig.index') }}" class="side-menu {{ $side == 'konfig' ? 'side-menu--active' : '' }}">
-
-                        <div class="side-menu__icon">
-                            <i data-lucide="file-text"></i>
-                        </div>
-
-                        <div class="side-menu__title">
-                            Konfig
-                        </div>
-
-                    </a>
-                </li>
+             
 
                 @endif
 

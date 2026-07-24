@@ -63,6 +63,15 @@ class MasterJadwal extends Model
         );
     }
 
+    public function transAjar(){
+
+    return $this->hasMany(
+        TransAjar::class,
+        'idjadwal', // foreign key di tb_trans_ajar
+        'id'        // primary key di tb_master_jadwal
+    );
+    }
+
     public function tahun()
     {
         return $this->belongsTo(
@@ -75,6 +84,15 @@ class MasterJadwal extends Model
     public function quiz()
     {
         return $this->belongsTo(Quiz::class, 'master_kelas_id');
+    }
+
+    public function penjadwalanHari()
+    {
+        return $this->hasMany(
+            PenjadwalanHari::class,
+            'idpenjadwalan',
+            'id'
+        );
     }
 
     
