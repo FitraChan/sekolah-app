@@ -6,7 +6,7 @@ Calon Siswa
 
 @section('top-nav')
 <ol class="breadcrumb">
-    <li class="breadcrumb-item">Calon Siswa</li>
+    <li class="breadcrumb-item">Siswa Baru</li>
 </ol>
 @endsection
 
@@ -14,16 +14,7 @@ Calon Siswa
 
 <div class="max-w-7xl mx-auto p-6">
     <!-- Bagian Tombol Aksi -->
-    <div class="flex gap-2 mb-3">
-        <a href="{{ route('calon-siswa.create') }}"
-            class="btn btn-primary">
-
-            + Tambah Calon Siswa
-
-        </a>
-
-        
-    </div>
+   
 
     <!-- Sistem Grid untuk membagi tabel menjadi sebelah-menyebelah -->
     <!-- md:grid-cols-3 artinya membagi halaman menjadi 3 kolom saat layar komputer/tablet -->
@@ -33,7 +24,7 @@ Calon Siswa
             <div class="intro-y box">
                 <div class="flex flex-col sm:flex-row items-center p-5 border-b border-slate-200/60">
 
-                    <h2 class="font-medium text-base mr-auto"> Daftar Calon Siswa</h2>
+                    <h2 class="font-medium text-base mr-auto"> Daftar Siswa Baru</h2>
 
                 </div>
 
@@ -53,14 +44,82 @@ Calon Siswa
 </div>
 
 
-@include('pendaftaran.calon_siswa.modal_daftar_ulang.modal-daftar-ulang')
+<div id="modal-set-nipd" class="modal" tabindex="-1" aria-hidden="true">
+
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h2 class="font-medium text-base mr-auto">
+                    Set NIPD Siswa
+                </h2>
+
+            </div>
+
+            <div class="modal-body grid grid-cols-12 gap-4 gap-y-3">
+
+                <input
+                    type="hidden"
+                    id="siswa-id">
+
+                <div class="col-span-12">
+
+                    <label class="form-label">
+                        NIPD
+                    </label>
+
+                    <input
+                        type="text"
+                        id="nipd"
+                        class="form-control"
+                        placeholder="Masukkan NIPD siswa">
+
+                    <div
+                        id="error_set_nipd"
+                        class="text-danger text-sm mt-2 hidden">
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    data-tw-dismiss="modal"
+                    class="btn btn-outline-secondary w-24 mr-1">
+
+                    Batal
+
+                </button>
+
+                <button
+                    type="button"
+                    id="btn-simpan-nipd"
+                    onclick="saveNIPD()"
+                    class="btn btn-primary w-24">
+
+                    Simpan
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 
 
 
 <script>
     let table = new Tabulator("#table-calon-siswa", {
 
-        ajaxURL: "{{ route('calon-siswa.data') }}",
+        ajaxURL: "{{ route('dataSiswaBaru') }}",
 
 
         layout: "fitDataStretch",
@@ -102,8 +161,8 @@ Calon Siswa
            
 
             {
-                title: "No HP",
-                field: "no_hp",
+                title: "Tahun",
+                field: "tahun",
                 width: 180
             },
 
@@ -149,14 +208,14 @@ Calon Siswa
 
                         </button>
 
-                         @if(isset($side) && $side === 'daftar-ulang')
+                         
                             <button
                                 type="button"
                                 class="btn btn-success btn-sm"
-                                onclick='openDaftarUlang(${JSON.stringify(data)})'>
-                                Daftar Ulang
+                                onclick='setNIPD(${JSON.stringify(data)})'>
+                                Set NIPD
                             </button>
-                        @endif
+                      
                
                     </div>
 
@@ -176,54 +235,17 @@ Calon Siswa
             return;
         }
 
+        //const data = get.getData();
+
         document.getElementById("id_cawa").value = data.id ?? "";
         document.getElementById("no_daftar").value = data.no_daftar ?? "";
         document.getElementById("nama").value = data.nama_lengkap ?? "";
         document.getElementById("id_jurusan").value = data.id_jurusan ?? "";
 
-        generateNipd();
-
         const modalElement = document.querySelector("#modal-daftar-ulang");
         const modal = tailwind.Modal.getOrCreateInstance(modalElement);
 
         modal.show();
-    }
-
-      async function generateNipd() {
-        const inputNipd = document.getElementById('nipd');
-
-        inputNipd.value = 'Memuat...';
-        inputNipd.disabled = true;
-
-        try {
-            const response = await fetch(
-                "{{ route('calon-siswa.generate-nipd') }}",
-                {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                }
-            );
-
-            const result = await response.json();
-
-            if (!response.ok || !result.success) {
-                throw new Error(
-                    result.message ?? 'Gagal membuat NIPD.'
-                );
-            }
-
-            inputNipd.value = result.nipd;
-
-        } catch (error) {
-            inputNipd.value = '';
-
-            alert(error.message);
-        } finally {
-            inputNipd.disabled = false;
-        }
     }
 
 
@@ -332,7 +354,7 @@ Calon Siswa
             const formData = new FormData(form);
 
             const response = await fetch(
-                "{{ route('calon-siswa.save-daftar-siswa') }}",
+                "{{ route('calon-siswa.save-daftar-ulang') }}",
                 {
                     method: "POST",
                     headers: {
@@ -381,6 +403,21 @@ Calon Siswa
         }
 
     }
+
+
+   function setNIPD(data) {
+    document.getElementById('siswa-id').value = data.id;
+    document.getElementById('nipd').value = data.nipd ?? '';
+
+    const modalElement = document.querySelector('#modal-set-nipd');
+    const modal = tailwind.Modal.getOrCreateInstance(modalElement);
+
+    modal.show();
+
+    setTimeout(() => {
+        document.getElementById('nipd').focus();
+    }, 300);
+}
 </script>
 
 @endsection

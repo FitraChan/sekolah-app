@@ -323,6 +323,46 @@ License: You must have a valid license purchased only from themeforest(the above
                 <li>
                     <!-- Indikator 'menu--active' dipasang di menu utama jika salah satu sub-menunya sedang aktif -->
                     <a href="javascript:;" class="menu">
+                        <div class="menu__icon"> <i data-lucide="sun"></i> </div>
+                        <div class="menu__title">
+                            Siswa
+                            <div class="menu__sub-icon {{ in_array($side, ['siswa','daftar-ulang','siswa-baru']) ? 'transform rotate-180' : '' }}">
+                                <i data-lucide="chevron-down"></i>
+                            </div>
+                        </div>
+                    </a>
+                    <!-- Sub-Menu Wrapper -->
+                    <ul class="{{ in_array($side, ['siswa','daftar-ulang','siswa-baru']) ? 'menu__sub-open' : '' }}">
+                        <li>
+                            <!-- Sub-Menu Gelombang -->
+                            <a href="{{ route('siswa.index') }}" class="menu {{ $side == 'siswa' ? 'menu--active' : '' }}">
+                                <div class="menu__icon"> <i data-lucide="coffee"></i> </div>
+                                <div class="menu__title"> Siswa </div>
+                            </a>
+                        </li>
+
+                         <li>
+                            <!-- Sub-Menu Gelombang -->
+                            <a href="{{ route('daftarCalonSiswa') }}" class="menu {{ $side == 'daftar-ulang' ? 'menu--active' : '' }}">
+                                <div class="menu__icon"> <i data-lucide="coffee"></i> </div>
+                                <div class="menu__title"> Calon Siswa </div>
+                            </a>
+                        </li>
+
+
+                        <li>
+                            <!-- Sub-Menu Gelombang -->
+                            <a href="{{ route('siswaBaru') }}" class="menu {{ $side == 'siswa-baru' ? 'menu--active' : '' }}">
+                                <div class="menu__icon"> <i data-lucide="coffee"></i> </div>
+                                <div class="menu__title"> Siswa Baru </div>
+                            </a>
+                        </li>
+                    </ul>
+                <li>        
+
+                <li>
+                    <!-- Indikator 'menu--active' dipasang di menu utama jika salah satu sub-menunya sedang aktif -->
+                    <a href="javascript:;" class="menu">
                         <div class="menu__icon"> <i data-lucide="gift"></i> </div>
                         <div class="menu__title">
                             Keuangan
@@ -784,6 +824,62 @@ License: You must have a valid license purchased only from themeforest(the above
                 @endif
 
                 @if(Auth::user()->hasRole('admin'))
+
+                   <li>
+                    <!-- Indikator 'side-menu--active' dipasang di menu utama jika salah satu sub-menunya sedang aktif -->
+                    <a href="javascript:;" class="side-menu">
+                        <div class="side-menu__icon"> <i data-lucide="sun"></i> </div>
+                        <div class="side-menu__title">
+                            Siswa
+                            <div class="side-menu__sub-icon {{ in_array($side, ['siswa','daftar-ulang','siswa-baru']) ? 'transform rotate-180' : '' }}">
+                                <i data-lucide="chevron-down"></i>
+                            </div>
+                        </div>
+                    </a>
+                    <!-- Sub-Menu Wrapper -->
+                    <ul class="{{ in_array($side, ['siswa','daftar-ulang','siswa-baru']) ? 'side-menu__sub-open' : '' }}">
+                        <li>
+                            <!-- Sub-Menu Gelombang -->
+                            <a href="{{ route('siswa.index') }}" class="side-menu {{ $side == 'siswa' ? 'side-menu--active' : '' }}">
+                                <div class="side-menu__icon"> <i data-lucide="coffee"></i> </div>
+                                <div class="side-menu__title"> Siswa </div>
+                            </a>
+                        </li>
+                        <li>
+                                <a href="{{ route('daftarCalonSiswa') }}"
+                                    class="side-menu {{ $side == 'daftar-ulang' ? 'side-menu--active' : '' }}">
+
+                                    <div class="side-menu__icon">
+                                        <i data-lucide="users"></i>
+                                    </div>
+
+                                    <div class="side-menu__title">
+                                        Calon Siswa
+                                    </div>
+
+                                </a>
+                        </li>
+
+                        <li>
+                                <a href="{{ route('siswaBaru') }}"
+                                    class="side-menu {{ $side == 'siswa-baru' ? 'side-menu--active' : '' }}">
+
+                                    <div class="side-menu__icon">
+                                        <i data-lucide="users"></i>
+                                    </div>
+
+                                    <div class="side-menu__title">
+                                        Siswa Baru
+                                    </div>
+
+                                </a>
+                        </li>
+
+
+                
+
+                    </ul>   
+                   </li>
 
                 <li>
                     <!-- Indikator 'side-menu--active' dipasang di menu utama jika salah satu sub-menunya sedang aktif -->

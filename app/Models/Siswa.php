@@ -9,7 +9,7 @@ use Laravel\Sanctum\HasApiTokens; // <-- 1. Pastikan ini ada
 
 class Siswa extends Authenticatable
 {
-    use HasFactory,HasApiTokens;
+    use HasFactory, HasApiTokens;
 
     protected $table = 'tb_siswa';
     protected $primaryKey = 'id';
@@ -21,7 +21,7 @@ class Siswa extends Authenticatable
             1 => 'Reguler',
             2 => 'Laptop',
             default => '-'
-        };    
+        };
     }
     public $timestamps = true;
 
@@ -49,8 +49,17 @@ class Siswa extends Authenticatable
         'no_hp',
         'email',
         'nama_ayah',
+        'id_kerja_ayah',
+        'alamat_ayah',
+        'hp_ayah',
         'nama_ibu',
+        'id_kerja_ibu',
+        'alamat_ibu',
+        'hp_ibu',
         'nama_wali',
+        'id_kerja_wali',
+        'alamat_wali',
+        'hp_wali',
         'tgl_masuk',
         'id_jurusan',
         'nama_sekolah_asal',
@@ -68,6 +77,13 @@ class Siswa extends Authenticatable
         'id_user',
         'id_thn_ajaran',
         'is_aktif',
+        'foto_siswa',
+        'kk',
+        'akta_kelahiran',
+        'ijazah',
+        'raport',
+        'ktp_ayah',
+        'ktp_ibu',
     ];
 
     protected $hidden = [
@@ -112,7 +128,7 @@ class Siswa extends Authenticatable
 
     public function kelas()
     {
-        return $this->belongsTo(Kelas::class, 'id_kelas','idx');
+        return $this->belongsTo(Kelas::class, 'id_kelas', 'idx');
     }
 
     public function agama()

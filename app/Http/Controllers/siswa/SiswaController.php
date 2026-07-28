@@ -3,496 +3,555 @@
 namespace App\Http\Controllers\siswa;
 
 use App\Http\Controllers\Controller;
+use App\Models\Siswa;
+use App\Models\CalonSiswa;
+use App\Models\User;
 use App\Models\Agama;
+use App\Models\Pekerjaan;
 use App\Models\Jurusan;
 use App\Models\Kelas;
-use App\Models\LogModel;
-use App\Models\Siswa;
+use App\Models\Gelombang;
+
 use App\Models\TahunAjaran;
+use App\Models\LogModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class SiswaController extends Controller
 {
+    /**
+     * Halaman daftar siswa.
+     */
     public function index()
     {
-        $side = 'siswa';
+        $jurusan = Jurusan::orderBy('nama_jurusan')->get();
+        $kelas = Kelas::orderBy('nama_kelas')->get();
+        $tahunAjaran = TahunAjaran::orderByDesc('id')->get();
+        $status_siswa = DB::table('tb_sts_siswa')->orderBy('id', 'asc')->get();
 
-        $jurusan = Jurusan::orderBy('nama_jurusan', 'asc')
-            ->get();
 
-        $kelas = Kelas::orderBy('idx', 'asc')
-            ->get();
-
-        $tahunAjaran = TahunAjaran::orderBy('id', 'desc')
-            ->get();
-
-        return view(
-            'akademik.siswa.index',
-            compact(
-                'side',
-                'jurusan',
-                'kelas',
-                'tahunAjaran'
-            )
-        );
-    }
-
-    public function create()
-    {
-        $side = 'siswa';
-
-        $rows = new Siswa();
-
-        $jurusan = Jurusan::orderBy('nama_jurusan', 'asc')
-            ->get();
-
-        $kelas = Kelas::orderBy('idx', 'asc')
-            ->get();
-
-        $agama = Agama::orderBy('nama_agama', 'asc')
-            ->get();
-
-        $tahunAjaran = TahunAjaran::orderBy('id', 'desc')
-            ->get();
-
-        return view(
-            'akademik.siswa.edit_siswa',
-            compact(
-                'side',
-                'rows',
-                'jurusan',
-                'kelas',
-                'agama',
-                'tahunAjaran'
-            )
-        );
-    }
-
-    public function edit($id)
-    {
-        $side = 'siswa';
-
-        $rows = Siswa::findOrFail($id);
-
-        $jurusan = Jurusan::orderBy('nama_jurusan', 'asc')
-            ->get();
-
-        $kelas = Kelas::orderBy('idx', 'asc')
-            ->get();
-
-        $agama = Agama::orderBy('nama_agama', 'asc')
-            ->get();
-
-        $tahunAjaran = TahunAjaran::orderBy('id', 'desc')
-            ->get();
-
-        return view(
-            'akademik.siswa.edit_siswa',
-            compact(
-                'side',
-                'rows',
-                'jurusan',
-                'kelas',
-                'agama',
-                'tahunAjaran'
-            )
-        );
-    }
-
-    public function data(Request $request)
-    {
-        $query = Siswa::with([
+        return view('siswa.index', compact(
             'jurusan',
             'kelas',
-            'agama',
             'tahunAjaran',
+            'status_siswa'
+        ), [
+            'side' => 'siswa',
         ]);
+    }
 
-        if ($request->filled('id_jurusan')) {
-            $query->where(
-                'id_jurusan',
-                $request->id_jurusan
-            );
-        }
+    public function siswaBaru()
+    {
+        $side = 'siswa-baru';
 
-        if ($request->filled('id_kelas')) {
-            $query->where(
-                'id_kelas',
-                $request->id_kelas
-            );
-        }
+        $gelombang = Gelombang::all();
 
-        if ($request->filled('id_thn_ajaran')) {
-            $query->where(
-                'id_thn_ajaran',
-                $request->id_thn_ajaran
-            );
-        }
+        $jurusan = Jurusan::all();
 
-        if ($request->has('is_aktif') &&
-            $request->is_aktif !== '') {
-            $query->where(
-                'is_aktif',
-                $request->is_aktif
-            );
-        }
+        return view('siswa.siswa-baru', compact(
+            'side',
+            'gelombang',
+            'jurusan'
+        ), ['side'  => 'calon-siswa']);
+    }
 
-        $data = $query
+    public function dataSiswaBaru()
+    {
+        $data = CalonSiswa::with([
+            'gelombang',
+            'jurusan',
+            'tahunAjaran'
+        ])
+            ->whereHas('tahunAjaran', function ($q) {
+                $q->where('isaktiv', 1);
+            })
+            ->where('status_daftar',1)
             ->latest('id')
             ->get()
             ->map(function ($item) {
                 return [
                     'id' => $item->id,
-
-                    'nipd' => $item->nipd,
-
-                    'nama_lengkap' =>
-                    $item->nama_lengkap,
-
-                    'nama_panggilan' =>
-                    $item->nama_panggilan,
-
+                    'nama_lengkap' => $item->nama_lengkap,
                     'jk' => $item->jk,
-
-                    'jenis_kelamin' =>
-                    $item->jk === 'L'
-                        ? 'Laki-laki'
-                        : ($item->jk === 'P'
-                            ? 'Perempuan'
-                            : '-'),
-
+                    'tahun' => $item->id_thn_ajaran,
                     'nisn' => $item->nisn,
-                    'nik' => $item->nik,
                     'no_hp' => $item->no_hp,
-                    'email' => $item->email,
-
-                    'tmp_lahir' =>
-                    $item->tmp_lahir,
-
-                    'tgl_lahir' =>
-                    $item->tgl_lahir
-                        ? $item->tgl_lahir
-                            ->format('Y-m-d')
-                        : null,
-
-                    'id_agama' =>
-                    $item->id_agama,
-
-                    'nama_agama' =>
-                    $item->agama?->nama_agama ?? '-',
-
-                    'id_jurusan' =>
-                    $item->id_jurusan,
-
-                    'nama_jurusan' =>
-                    $item->jurusan?->nama_jurusan ?? '-',
-
-                    'id_kelas' =>
-                    $item->id_kelas,
-
-                    'nama_kelas' =>
-                    $item->kelas?->nama_kelas ?? '-',
-
-                    'id_thn_ajaran' =>
-                    $item->id_thn_ajaran,
-
-                    'tahun_ajaran' =>
-                    $item->tahunAjaran?->thn_ajaran ?? '-',
-
-                    'jns_kelas' =>
-                    $item->jns_kelas,
-
-                    'jenis_kelas' =>
-                    $item->jenis_kelas,
-
-                    'nama_ayah' =>
-                    $item->nama_ayah,
-
-                    'nama_ibu' =>
-                    $item->nama_ibu,
-
-                    'nama_wali' =>
-                    $item->nama_wali,
-
-                    'alamat' =>
-                    $item->alamat,
-
-                    'is_aktif' =>
-                    $item->is_aktif,
-
-                    'sts_siswa' =>
-                    $item->sts_siswa,
+                    'no_daftar' => $item->no_daftar,
+                    'nama_jurusan' => $item->jurusan->nama_jurusan ?? '-',
+                    'nama_gelombang' =>
+                    $item->gelombang->nama_gelombang ?? '-',
+                    'id_jurusan' => $item->id_jurusan,
+                    'id_gelombang' => $item->id_gelombang,
                 ];
             });
 
         return response()->json($data);
     }
 
+    public function setNipd(Request $request, Siswa $siswa)
+    {
+        $validated = $request->validate([
+            'nipd' => [
+                'required',
+                'string',
+                'max:50',
+                Rule::unique('tb_siswa', 'nipd')->ignore($siswa->id),
+            ],
+        ]);
+
+        $siswa->update([
+            'nipd' => $validated['nipd'],
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'NIPD berhasil disimpan.',
+            'data' => $siswa,
+        ]);
+    }
+
+    /**
+     * Data siswa untuk AJAX/Tabulator.
+     */
+    public function data(Request $request)
+    {
+        $query = Siswa::query()
+            ->with([
+                'kelas',
+                'jurusan',
+                'tahunAjaran',
+                'agama',
+            ])
+            ->latest('id');
+
+            if ($request->filled('tahun')) {
+                $query->where('id_thn_ajaran', $request->tahun);
+            }
+
+            if ($request->filled('jurusan')) {
+                $query->where('id_jurusan', $request->jurusan);
+            }
+
+            if ($request->filled('kelas')) {
+                $query->where('id_kelas', $request->kelas);
+            }
+
+            if ($request->filled('search')) {
+                $search = $request->search;
+
+                $query->where(function ($q) use ($search) {
+                    $q->where('nipd', 'like', "%{$search}%")
+                        ->orWhere('nama_lengkap', 'like', "%{$search}%");
+                });
+            }
+
+        $data = $query->get()->map(function ($item) {
+            return [
+                'id'             => $item->id,
+                'nipd'           => $item->nipd,
+                'nisn'           => $item->nisn,
+                'nama_lengkap'   => $item->nama_lengkap,
+                'jk'             => $item->jk,
+                'no_hp'          => $item->no_hp,
+                'email'          => $item->email,
+
+                'nama_kelas'     => $item->kelas->nama_kelas ?? '-',
+                'nama_jurusan'   => $item->jurusan->nama_jurusan ?? '-',
+                'tahun_ajaran'   => $item->tahunAjaran->thn_ajaran ?? '-',
+                'agama'          => $item->agama->nama_agama ?? '-',
+
+                'id_kelas'       => $item->id_kelas,
+                'id_jurusan'     => $item->id_jurusan,
+                'id_thn_ajaran'  => $item->id_thn_ajaran,
+                'status'         => $item->status,
+            ];
+        });
+
+        return response()->json($data);
+    }
+
+    /**
+     * Form tambah siswa.
+     */
+    public function create()
+    {
+        $rows = new Siswa();
+
+        $masterData = $this->masterData();
+
+        return view('siswa.siswa', array_merge(
+            $masterData,
+            compact('rows'),
+            [
+                'side' => 'siswa',
+                'mode' => 'create',
+            ]
+        ));
+    }
+
+    /**
+     * Form edit siswa.
+     */
+    public function edit($id)
+    {
+        $rows = Siswa::findOrFail($id);
+
+        $tahunAjaran = TahunAjaran::orderByDesc('id')->get();
+
+        $jurusan = Jurusan::orderBy(
+            'nama_jurusan',
+            'asc'
+        )->get();
+
+        $kelas = Kelas::orderBy(
+            'nama_kelas',
+            'asc'
+        )->get();
+
+        $agama = Agama::orderBy(
+            'nama_agama',
+            'asc'
+        )->get();
+
+
+          $status_siswa = DB::table('tb_sts_siswa')->orderBy('id', 'asc')->get();
+             $jobs = Pekerjaan::orderBy('nama_pekerjaan', 'asc')->get();
+
+        return view('siswa.siswa', compact(
+            'rows',
+            'tahunAjaran',
+            'jurusan',
+            'kelas',
+            'agama',
+            'status_siswa',
+            'jobs'
+        ), [
+            'side' => 'siswa',
+        ]);
+    }
+
+    /**
+     * Simpan siswa baru.
+     */
     public function store(Request $request)
     {
-        $request->validate([
-            'nama_lengkap' =>
-            'required|string|max:255',
-
-            'nipd' =>
-            'required|string|max:50|unique:tb_siswa,nipd',
-
-            'nisn' =>
-            'nullable|string|max:30|unique:tb_siswa,nisn',
-
-            'email' =>
-            'nullable|email|max:255|unique:tb_siswa,email',
-
-            'jk' =>
-            'required|in:L,P',
-
-            'id_jurusan' =>
-            'required',
-
-            'id_kelas' =>
-            'required',
-
-            'id_thn_ajaran' =>
-            'required',
-
-            'password' =>
-            'nullable|string|min:6',
-        ]);
+        $validated = $this->validateSiswa($request);
 
         DB::beginTransaction();
 
         try {
-            $data = $request->only([
-                'id_cawa',
-                'no_daftar',
-                'nipd',
-                'no_registrasi_ulang',
-                'no_kwitansi',
-                'tmp_daftar',
-                'nama_lengkap',
-                'nama_panggilan',
-                'jk',
-                'nisn',
-                'nik',
-                'tmp_lahir',
-                'tgl_lahir',
-                'id_agama',
-                'alamat',
-                'desa',
-                'kecamatan',
-                'kota',
-                'provinsi',
-                'no_hp',
-                'email',
-                'nama_ayah',
-                'nama_ibu',
-                'nama_wali',
-                'tgl_masuk',
-                'id_jurusan',
-                'nama_sekolah_asal',
-                'tgl_registrasi',
-                'id_template_bayar',
-                'id_kelas',
-                'kelas_id',
-                'id_gelombang',
-                'jns_kelas',
-                'image',
-                'id_periode',
-                'sts_siswa',
-                'id_user',
-                'id_thn_ajaran',
-                'is_aktif',
-            ]);
 
-            if ($request->filled('password')) {
-                $data['password'] = Hash::make(
-                    $request->password
-                );
-            } else {
-                /*
-                 * Password awal menggunakan NIPD.
-                 */
-                $data['password'] = Hash::make(
-                    $request->nipd
-                );
-            }
+            $validated['sts_siswa'] = 1;
+            $siswa = Siswa::create($validated);
 
-            $data['id_petugas'] = auth()->id();
-
-            $data['is_aktif'] =
-                $request->has('is_aktif')
-                    ? $request->is_aktif
-                    : 1;
-
-            $data['sts_siswa'] =
-                $request->sts_siswa ?? 1;
-
-            $siswa = Siswa::create($data);
-
-            LogModel::create([
-                'tanggal' => now(),
-                'tabel' => 'tb_siswa',
-                'aksi' => 'create',
-                'user' => auth()->id(),
-                'ip' => $request->ip(),
-                'keterangan' =>
-                json_encode($siswa),
-                'serial' => url('siswa/store'),
-            ]);
+            $this->simpanLog(
+                request: $request,
+                aksi: 'create',
+                siswa: $siswa
+            );
 
             DB::commit();
 
             return redirect()
                 ->route('siswa.index')
-                ->with(
-                    'success',
-                    'Data siswa berhasil ditambahkan.'
-                );
+                ->with('success', 'Data siswa berhasil ditambahkan.');
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            return redirect()
-                ->back()
+            return back()
                 ->withInput()
-                ->with(
-                    'error',
-                    $e->getMessage()
-                );
+                ->with('error', 'Data siswa gagal ditambahkan: ' . $e->getMessage());
         }
     }
 
-    public function update(
-        Request $request,
-        $id
-    ) {
+    /**
+     * Update data siswa.
+     */
+    public function update(Request $request, $id)
+    {
         $siswa = Siswa::findOrFail($id);
 
-        $request->validate([
-            'nama_lengkap' =>
-            'required|string|max:255',
+        $validated = $this->validateSiswa($request, $siswa->id);
 
-            'nipd' =>
-            'required|string|max:50|unique:tb_siswa,nipd,' .
-                $siswa->id,
+        DB::beginTransaction();
 
-            'nisn' =>
-            'nullable|string|max:30|unique:tb_siswa,nisn,' .
-                $siswa->id,
+        try {
+            $siswa->update($validated);
 
-            'email' =>
-            'nullable|email|max:255|unique:tb_siswa,email,' .
-                $siswa->id,
+            $this->simpanLog(
+                request: $request,
+                aksi: 'update',
+                siswa: $siswa
+            );
 
-            'jk' =>
-            'required|in:L,P',
+            DB::commit();
 
-            'id_jurusan' =>
-            'required',
+            return redirect()
+                ->route('siswa.index')
+                ->with('success', 'Data siswa berhasil diperbarui.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
 
-            'id_kelas' =>
-            'required',
+            return back()
+                ->withInput()
+                ->with('error', 'Data siswa gagal diperbarui: ' . $e->getMessage());
+        }
+    }
 
-            'id_thn_ajaran' =>
-            'required',
+    /**
+     * Update biodata siswa saja.
+     */
+    public function updateBiodata(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'nama_lengkap' => 'required|string|max:255',
+            'nisn'         => 'nullable|string|max:30',
+            'nik'          => 'nullable|string|max:30',
+            'jk'           => 'nullable|in:L,P',
+            'id_agama'     => 'nullable|integer',
+            'tmp_lahir'    => 'nullable|string|max:100',
+            'tgl_lahir'    => 'nullable|date',
+            'alamat'       => 'nullable|string',
+            'dusun'        => 'nullable|string|max:100',
+            'desa'         => 'nullable|string|max:100',
+            'kecamatan'    => 'nullable|string|max:100',
+            'kota'         => 'nullable|string|max:100',
+            'provinsi'     => 'nullable|string|max:100',
+            'no_hp'        => 'nullable|string|max:20',
+            'email'        => 'nullable|email|max:255',
+        ]);
 
-            'password' =>
-            'nullable|string|min:6',
+        try {
+            $siswa = Siswa::findOrFail($id);
+            $siswa->update($validated);
+
+            $this->simpanLog(
+                request: $request,
+                aksi: 'update-biodata',
+                siswa: $siswa
+            );
+
+            return back()->with(
+                'success',
+                'Biodata siswa berhasil diperbarui.'
+            );
+        } catch (\Throwable $e) {
+            return back()
+                ->withInput()
+                ->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Update data akademik siswa.
+     */
+   public function updateAkademik(Request $request, $id = null)
+{
+    $validated = $request->validate([
+        'nipd'          => 'required|string|max:50',
+        'id_thn_ajaran' => 'required|integer',
+        'id_jurusan'    => 'nullable|integer',
+        'id_kelas'      => 'required|integer',
+
+        'sts_siswa'     => 'nullable|integer',
+        'nama_lengkap'  => 'required|string|max:255',
+        'nisn'          => 'nullable|string|max:30',
+        'nik'           => 'nullable|string|max:30',
+        'jk'            => 'nullable|in:L,P',
+        'id_agama'      => 'nullable|integer',
+        'tmp_lahir'     => 'nullable|string|max:100',
+        'tgl_lahir'     => 'nullable|date',
+        'alamat'        => 'nullable|string',
+        'dusun'         => 'nullable|string|max:100',
+        'desa'          => 'nullable|string|max:100',
+        'kecamatan'     => 'nullable|string|max:100',
+        'kota'          => 'nullable|string|max:100',
+        'provinsi'      => 'nullable|string|max:100',
+        'no_hp'         => 'nullable|string|max:20',
+        'email'         => 'nullable|email|max:255',
+    ]);
+
+    try {
+        if (!empty($id)) {
+            // Update data
+            $siswa = Siswa::findOrFail($id);
+            $siswa->update($validated);
+
+            $aksi = 'update-akademik';
+            $pesan = 'Data akademik siswa berhasil diperbarui.';
+        } else {
+            // Tambah data
+            $validated['sts_siswa'] = $validated['sts_siswa'] ?? 1;
+
+            $siswa = Siswa::create($validated);
+
+            $aksi = 'tambah-akademik';
+            $pesan = 'Data akademik siswa berhasil ditambahkan.';
+        }
+
+        $this->simpanLog(
+            request: $request,
+            aksi: $aksi,
+            siswa: $siswa
+        );
+
+        return back()->with('success', $pesan);
+
+    } catch (\Throwable $e) {
+        return back()
+            ->withInput()
+            ->with('error', $e->getMessage());
+    }
+}
+
+    /**
+     * Update data orang tua.
+     */
+    public function updateOrangTua(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'nama_ayah'      => 'nullable|string|max:255',
+            'id_kerja_ayah'  => 'nullable|integer',
+            'alamat_ayah'    => 'nullable|string',
+            'hp_ayah'        => 'nullable|string|max:20',
+
+            'nama_ibu'       => 'nullable|string|max:255',
+            'id_kerja_ibu'   => 'nullable|integer',
+            'alamat_ibu'     => 'nullable|string',
+            'hp_ibu'         => 'nullable|string|max:20',
+
+            'nama_wali'      => 'nullable|string|max:255',
+            'id_kerja_wali'  => 'nullable|integer',
+            'alamat_wali'    => 'nullable|string',
+            'hp_wali'        => 'nullable|string|max:20',
+        ]);
+
+        try {
+            $siswa = Siswa::findOrFail($id);
+            $siswa->update($validated);
+
+            $this->simpanLog(
+                request: $request,
+                aksi: 'update-orang-tua',
+                siswa: $siswa
+            );
+
+            return back()->with(
+                'success',
+                'Data orang tua berhasil diperbarui.'
+            );
+        } catch (\Throwable $e) {
+            return back()
+                ->withInput()
+                ->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Upload foto dan dokumen siswa.
+     */
+    public function updateUpload(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'foto_siswa'     => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'kk'              => 'nullable|mimes:jpg,jpeg,png,pdf|max:2048',
+            'akta_kelahiran'  => 'nullable|mimes:jpg,jpeg,png,pdf|max:2048',
+            'ijazah'          => 'nullable|mimes:jpg,jpeg,png,pdf|max:4096',
+            'raport'          => 'nullable|mimes:pdf|max:4096',
+            'ktp_ayah'        => 'nullable|mimes:jpg,jpeg,png,pdf|max:2048',
+            'ktp_ibu'         => 'nullable|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
 
         DB::beginTransaction();
 
         try {
-            $dataLama = $siswa->toArray();
+            $siswa = Siswa::findOrFail($id);
 
-            $data = $request->only([
-                'id_cawa',
-                'no_daftar',
-                'nipd',
-                'no_registrasi_ulang',
-                'no_kwitansi',
-                'tmp_daftar',
-                'nama_lengkap',
-                'nama_panggilan',
-                'jk',
-                'nisn',
-                'nik',
-                'tmp_lahir',
-                'tgl_lahir',
-                'id_agama',
-                'alamat',
-                'desa',
-                'kecamatan',
-                'kota',
-                'provinsi',
-                'no_hp',
-                'email',
-                'nama_ayah',
-                'nama_ibu',
-                'nama_wali',
-                'tgl_masuk',
-                'id_jurusan',
-                'nama_sekolah_asal',
-                'tgl_registrasi',
-                'id_template_bayar',
-                'id_kelas',
-                'kelas_id',
-                'id_gelombang',
-                'jns_kelas',
-                'image',
-                'id_periode',
-                'sts_siswa',
-                'id_user',
-                'id_thn_ajaran',
-                'is_aktif',
-            ]);
+            $fields = [
+                'foto_siswa',
+                'kk',
+                'akta_kelahiran',
+                'ijazah',
+                'raport',
+                'ktp_ayah',
+                'ktp_ibu',
+            ];
 
-            if ($request->filled('password')) {
-                $data['password'] = Hash::make(
-                    $request->password
+            $data = [];
+
+            foreach ($fields as $field) {
+                if (!$request->hasFile($field)) {
+                    continue;
+                }
+
+                /*
+                 * Hapus file lama jika tersedia.
+                 */
+                if (
+                    !empty($siswa->{$field}) &&
+                    Storage::disk('public')->exists($siswa->{$field})
+                ) {
+                    Storage::disk('public')->delete($siswa->{$field});
+                }
+
+                $file = $request->file($field);
+
+                $namaFile = $field . '_' .
+                    $siswa->id . '_' .
+                    time() . '.' .
+                    $file->getClientOriginalExtension();
+
+                $path = $file->storeAs(
+                    'uploads/siswa/' . $field,
+                    $namaFile,
+                    'public'
+                );
+
+                $data[$field] = $path;
+            }
+
+            if (empty($data)) {
+                return back()->with(
+                    'error',
+                    'Tidak ada dokumen yang dipilih.'
                 );
             }
 
             $siswa->update($data);
 
-            LogModel::create([
-                'tanggal' => now(),
-                'tabel' => 'tb_siswa',
-                'aksi' => 'update',
-                'user' => auth()->id(),
-                'ip' => $request->ip(),
-                'keterangan' => json_encode([
-                    'sebelum' => $dataLama,
-                    'sesudah' => $siswa
-                        ->fresh()
-                        ->toArray(),
-                ]),
-                'serial' =>
-                url('siswa/update/' . $id),
-            ]);
+            $this->simpanLog(
+                request: $request,
+                aksi: 'update-upload',
+                siswa: $siswa,
+                keterangan: $data
+            );
 
             DB::commit();
 
-            return redirect()
-                ->route('siswa.index')
-                ->with(
-                    'success',
-                    'Data siswa berhasil diperbarui.'
-                );
+            return back()->with(
+                'success',
+                'Dokumen siswa berhasil diunggah.'
+            );
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            return redirect()
-                ->back()
+            return back()
                 ->withInput()
-                ->with(
-                    'error',
-                    $e->getMessage()
-                );
+                ->with('error', 'Upload gagal: ' . $e->getMessage());
         }
     }
 
+    /**
+     * Update status aktif siswa.
+     */
+
+
+    /**
+     * Hapus siswa dan akun user terkait.
+     */
     public function destroy($id)
     {
         DB::beginTransaction();
@@ -500,28 +559,56 @@ class SiswaController extends Controller
         try {
             $siswa = Siswa::findOrFail($id);
 
-            $dataSiswa = $siswa->toArray();
+            /*
+             * Simpan salinan data sebelum dihapus.
+             */
+            $dataLama = $siswa->toArray();
+
+            if (!empty($siswa->id_user)) {
+                $user = User::find($siswa->id_user);
+
+                if ($user) {
+                    $user->syncRoles([]);
+                    $user->delete();
+                }
+            }
+
+            $fieldsDokumen = [
+                'foto_siswa',
+                'kk',
+                'akta_kelahiran',
+                'ijazah',
+                'raport',
+                'ktp_ayah',
+                'ktp_ibu',
+            ];
+
+            foreach ($fieldsDokumen as $field) {
+                if (
+                    !empty($siswa->{$field}) &&
+                    Storage::disk('public')->exists($siswa->{$field})
+                ) {
+                    Storage::disk('public')->delete($siswa->{$field});
+                }
+            }
 
             $siswa->delete();
 
             LogModel::create([
-                'tanggal' => now(),
-                'tabel' => 'tb_siswa',
-                'aksi' => 'delete',
-                'user' => auth()->id(),
-                'ip' => request()->ip(),
-                'keterangan' =>
-                json_encode($dataSiswa),
-                'serial' =>
-                url('siswa/delete/' . $id),
+                'tanggal'    => now(),
+                'tabel'      => 'tb_siswa',
+                'aksi'       => 'delete',
+                'user'       => Auth::id(),
+                'ip'         => request()->ip(),
+                'keterangan' => json_encode($dataLama),
+                'serial'     => url('siswa/' . $id),
             ]);
 
             DB::commit();
 
             return response()->json([
                 'success' => true,
-                'message' =>
-                'Data siswa berhasil dihapus.',
+                'message' => 'Data siswa berhasil dihapus.',
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -531,5 +618,102 @@ class SiswaController extends Controller
                 'message' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    /**
+     * Validasi data utama siswa.
+     */
+    private function validateSiswa(
+        Request $request,
+        ?int $id = null
+    ): array {
+        return $request->validate([
+            'id_user' => [
+                'nullable',
+                'integer',
+                Rule::unique('tb_siswa', 'id_user')->ignore($id),
+            ],
+
+            'nipd' => [
+                'required',
+                'string',
+                'max:50',
+                Rule::unique('tb_siswa', 'nipd')->ignore($id),
+            ],
+
+            'nisn' => [
+                'nullable',
+                'string',
+                'max:30',
+                Rule::unique('tb_siswa', 'nisn')->ignore($id),
+            ],
+
+            'nama_lengkap'   => 'required|string|max:255',
+            'jk'             => 'nullable|in:L,P',
+            'id_agama'       => 'nullable|integer',
+            'tmp_lahir'      => 'nullable|string|max:100',
+            'tgl_lahir'      => 'nullable|date',
+            'alamat'         => 'nullable|string',
+            'no_hp'          => 'nullable|string|max:20',
+            'email'          => 'nullable|email|max:255',
+
+            'id_thn_ajaran'  => 'required|integer',
+            'id_jurusan'     => 'nullable|integer',
+            'id_kelas'       => 'required|integer',
+            'angkatan'       => 'nullable|string|max:20',
+            'semester'       => 'nullable|integer|min:1|max:6',
+            'status'         => 'required|boolean',
+        ]);
+    }
+
+    /**
+     * Ambil master data untuk form siswa.
+     */
+    private function masterData(): array
+    {
+        return [
+            'agama' => Agama::orderBy('nama_agama')->get(),
+
+            'pekerjaan' => Pekerjaan::orderBy(
+                'nama_pekerjaan'
+            )->get(),
+
+            'jurusan' => Jurusan::orderBy(
+                'nama_jurusan'
+            )->get(),
+
+            'kelas' => Kelas::orderBy(
+                'nama_kelas'
+            )->get(),
+
+            'tahunAjaran' => TahunAjaran::orderByDesc(
+                'id'
+            )->get(),
+            'status_siswa' => DB::table('tb_sts_siswa')->orderBy('id', 'asc')->get(),
+             'jobs' => Pekerjaan::orderBy('nama_pekerjaan', 'asc')->get()
+
+        ];
+    }
+
+    /**
+     * Simpan aktivitas ke tabel log.
+     */
+    private function simpanLog(
+        Request $request,
+        string $aksi,
+        Siswa $siswa,
+        ?array $keterangan = null
+    ): void {
+        LogModel::create([
+            'tanggal'    => now(),
+            'tabel'      => 'tb_siswa',
+            'aksi'       => $aksi,
+            'user'       => Auth::id(),
+            'ip'         => $request->ip(),
+            'keterangan' => json_encode(
+                $keterangan ?? $siswa->toArray()
+            ),
+            'serial'     => url('siswa/' . $siswa->id),
+        ]);
     }
 }

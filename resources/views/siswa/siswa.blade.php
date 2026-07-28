@@ -6,6 +6,7 @@ Data Siswa
 
 @section('top-nav')
 <ol class="breadcrumb">
+
     <li class="breadcrumb-item">
         <a href="{{ route('siswa.index') }}">
             Data Siswa
@@ -15,6 +16,7 @@ Data Siswa
     <li class="breadcrumb-item active">
         {{ $rows->exists ? 'Edit Siswa' : 'Tambah Siswa' }}
     </li>
+
 </ol>
 @endsection
 
@@ -39,6 +41,7 @@ Data Siswa
     {{-- Error validasi --}}
     @if ($errors->any())
         <div class="alert alert-danger mb-5">
+
             <div class="font-medium mb-2">
                 Data belum dapat disimpan:
             </div>
@@ -50,11 +53,14 @@ Data Siswa
                     </li>
                 @endforeach
             </ul>
+
         </div>
     @endif
 
+    {{-- NAV TAB --}}
     <ul class="nav nav-boxed-tabs" role="tablist">
 
+        {{-- DATA SISWA --}}
         <li
             id="data-siswa-tab"
             class="nav-item flex-1"
@@ -69,30 +75,16 @@ Data Siswa
                 aria-controls="data-siswa-content"
                 aria-selected="true">
 
+                <i data-lucide="user"
+                    class="w-4 h-4 mr-2"></i>
+
                 Data Siswa
 
             </button>
+
         </li>
 
-        <li
-            id="akademik-siswa-tab"
-            class="nav-item flex-1"
-            role="presentation">
-
-            <button
-                class="nav-link w-full py-2"
-                data-tw-toggle="pill"
-                data-tw-target="#akademik-siswa-content"
-                type="button"
-                role="tab"
-                aria-controls="akademik-siswa-content"
-                aria-selected="false">
-
-                Data Akademik
-
-            </button>
-        </li>
-
+        {{-- ORANG TUA --}}
         <li
             id="orang-tua-siswa-tab"
             class="nav-item flex-1"
@@ -107,35 +99,45 @@ Data Siswa
                 aria-controls="orang-tua-siswa-content"
                 aria-selected="false">
 
+                <i data-lucide="users"
+                    class="w-4 h-4 mr-2"></i>
+
                 Orang Tua
 
             </button>
+
         </li>
 
+        {{-- UPLOAD DOKUMEN --}}
         <li
-            id="akun-siswa-tab"
+            id="upload-siswa-tab"
             class="nav-item flex-1"
             role="presentation">
 
             <button
                 class="nav-link w-full py-2"
                 data-tw-toggle="pill"
-                data-tw-target="#akun-siswa-content"
+                data-tw-target="#upload-siswa-content"
                 type="button"
                 role="tab"
-                aria-controls="akun-siswa-content"
+                aria-controls="upload-siswa-content"
                 aria-selected="false">
 
-                Akun
+                <i data-lucide="upload-cloud"
+                    class="w-4 h-4 mr-2"></i>
+
+                Upload Dokumen
 
             </button>
+
         </li>
 
     </ul>
 
+    {{-- TAB CONTENT --}}
     <div class="tab-content mt-5">
 
-        {{-- Tab data siswa --}}
+        {{-- TAB DATA SISWA --}}
         <div
             id="data-siswa-content"
             class="tab-pane leading-relaxed active"
@@ -146,18 +148,7 @@ Data Siswa
 
         </div>
 
-        {{-- Tab data akademik --}}
-        <div
-            id="akademik-siswa-content"
-            class="tab-pane leading-relaxed"
-            role="tabpanel"
-            aria-labelledby="akademik-siswa-tab">
-
-            @include('siswa.tab.akademik')
-
-        </div>
-
-        {{-- Tab orang tua --}}
+        {{-- TAB ORANG TUA --}}
         <div
             id="orang-tua-siswa-content"
             class="tab-pane leading-relaxed"
@@ -168,14 +159,14 @@ Data Siswa
 
         </div>
 
-        {{-- Tab akun --}}
+        {{-- TAB UPLOAD DOKUMEN --}}
         <div
-            id="akun-siswa-content"
+            id="upload-siswa-content"
             class="tab-pane leading-relaxed"
             role="tabpanel"
-            aria-labelledby="akun-siswa-tab">
+            aria-labelledby="upload-siswa-tab">
 
-            @include('siswa.tab.akun')
+            @include('siswa.tab.upload')
 
         </div>
 

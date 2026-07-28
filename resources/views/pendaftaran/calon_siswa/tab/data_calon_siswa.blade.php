@@ -68,7 +68,7 @@
                             </label>
 
                             <select name="id_gelombang"
-                                class="form-select rounded-xl" readonly>
+                                class="form-select rounded-xl"  {{ !Auth::user()->hasAnyRole(['admin', 'Akademik']) ? 'disabled' : '' }}>
 
                                 <option value="">
                                     -- Pilih Gelombang --
@@ -97,7 +97,7 @@
                             </label>
 
                             <select name="id_thn_ajaran"
-                                class="form-select rounded-xl" readonly>
+                                class="form-select rounded-xl" {{ !Auth::user()->hasAnyRole(['admin', 'Akademik']) ? 'disabled' : '' }}>
 
                                 <option value="">
                                     -- Pilih Tahun Ajaran --
@@ -140,9 +140,9 @@
                             <input type="date"
                                 name="tgl_daftar"
                                 class="form-control rounded-xl"
-                                value="{{ old('tgl_daftar', $rows->tgl_daftar ?? '') }}" readonly>
+                                value="{{ old('tgl_daftar', $rows->tgl_daftar ?? '') }}" {{ !Auth::user()->hasAnyRole(['admin', 'Akademik']) ? 'readonly' : '' }}>
                         </div>
- @if(Auth::user()->hasRole('admin'))
+                        @if(Auth::user()->hasRole('admin'))
                         <!-- STATUS -->
                         <div class="col-span-12 md:col-span-4">
 
@@ -164,7 +164,7 @@
                             </select>
 
                         </div>
-                @endif
+                        @endif
 
                         <!-- JURUSAN -->
                         <div class="col-span-12 md:col-span-6">
@@ -174,7 +174,7 @@
                             </label>
 
                             <select name="id_jurusan"
-                                class="form-select rounded-xl" readonly>
+                                class="form-select rounded-xl" {{ !Auth::user()->hasAnyRole(['admin', 'Akademik']) ? 'disabled' : '' }}>
 
                                 <option value="">
                                     -- Pilih Jurusan --

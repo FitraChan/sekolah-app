@@ -189,6 +189,8 @@ class UjianCalonController extends Controller
 
         $jawaban = $request->input('jawaban', []);
 
+        CalonSiswa::where('id_user',$peserta->id_calon_siswa)->update('status_daftar',3);
+
         return $this->prosesPenilaian($peserta, $jawaban);
     }
 

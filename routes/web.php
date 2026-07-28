@@ -521,32 +521,64 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     )->name('soalCalon.destroy');
 
 
-Route::prefix('siswa')
-    ->name('siswa.')
-    ->controller(SiswaController::class)
-    ->group(function () {
+    Route::prefix('siswa')
+        ->name('siswa.')
+        ->controller(SiswaController::class)
+        ->group(function () {
 
-        Route::get('/', 'index')
-            ->name('index');
+            Route::get('/', 'index')
+                ->name('index');
 
-        Route::get('/data', 'data')
-            ->name('data');
+            Route::get('/data', 'data')
+                ->name('data');
 
-        Route::get('/create', 'create')
-            ->name('create');
+            Route::get('/create', 'create')
+                ->name('create');
 
-        Route::post('/store', 'store')
-            ->name('store');
+            Route::post('/store', 'store')
+                ->name('store');
 
-        Route::get('/edit/{id}', 'edit')
-            ->name('edit');
+            Route::get('/edit/{id}', 'edit')
+                ->name('edit');
 
-        Route::post('/update/{id}', 'update')
-            ->name('update');
+            Route::post('/update/{id}', 'update')
+                ->name('update');
 
-        Route::delete('/delete/{id}', 'destroy')
-            ->name('destroy');
-    });
+            Route::delete('/delete/{id}', 'destroy')
+                ->name('destroy');
+        });
+
+            Route::put('/siswa/{id?}/orang-tua', [
+                SiswaController::class,
+                'updateOrangTua'
+            ])->name('siswa.update.orangtua');
+
+            Route::post('/siswa/akademik/{id?}', [
+                SiswaController::class,
+                'updateAkademik'
+            ])->name('siswa.update-akademik');
+
+            Route::put('/siswa/{id?}/upload', [
+                SiswaController::class,
+                'updateUpload'
+            ])->name('siswa.update.upload');
+
+
+            Route::get('/siswaBaru', [
+                SiswaController::class,
+                'siswaBaru'
+            ])->name('siswaBaru');
+
+              Route::get('/dataSiswaBaru', [
+                SiswaController::class,
+                'dataSiswaBaru'
+            ])->name('dataSiswaBaru');
+
+
+             Route::post('/setNipd', [
+                SiswaController::class,
+                'setNipd'
+            ])->name('setNipd');
 
     // role admin
 });
@@ -575,6 +607,10 @@ Route::middleware(['auth', 'role:admin|Akademik'])->group(function () {
     Route::delete('/gelombang/delete/{id}', [GelombangController::class, 'destroy'])->name('gelombang.delete');
     Route::get('/calon-siswa', [CalonSiswaController::class, 'index'])
         ->name('calon-siswa.index');
+
+    Route::get('/daftarSiswa', [CalonSiswaController::class, 'daftarSiswa'])
+        ->name('daftarSiswa');
+
     Route::get('/calon-siswa/data', [CalonSiswaController::class, 'data'])
         ->name('calon-siswa.data');
     Route::post('/calon-siswa/store', [CalonSiswaController::class, 'store'])->name('calon-siswa.store');
@@ -584,6 +620,19 @@ Route::middleware(['auth', 'role:admin|Akademik'])->group(function () {
     Route::get('/calon-siswa/create', [CalonSiswaController::class, 'create'])
         ->name('calon-siswa.create');
     Route::delete('/calon-siswa/delete/{id}', [CalonSiswaController::class, 'destroy'])->name('calon-siswa.delete');
+
+     Route::get('/daftarCalonSiswa', [CalonSiswaController::class, 'daftarCalonSiswa'])
+        ->name('daftarCalonSiswa');
+
+    Route::post(
+    '/calon-siswa/save-daftar-siswa',
+    [CalonSiswaController::class, 'saveDaftarSiswa']
+    )->name('calon-siswa.save-daftar-siswa');
+
+    Route::get(
+        '/calon-siswa/generate-nipd',
+        [CalonSiswaController::class, 'generateNipd']
+    )->name('calon-siswa.generate-nipd');
 
 
 

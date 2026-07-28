@@ -13,6 +13,14 @@ use App\Models\Pekerjaan;
 use App\Models\StatusDaftar;
 use App\Models\IpaymuBayar;
 use App\Models\User;
+use App\Models\DetTempBayar;
+use App\Models\Siswa;
+use App\Models\Bayar;
+use App\Models\DetBayar;
+
+
+
+
 
 use App\Models\IpaymuDetBayar;
 
@@ -47,6 +55,22 @@ class CalonSiswaController extends Controller
     }
 
 
+    public function daftarCalonSiswa()
+    {
+        $side = 'daftar-ulang';
+
+        $gelombang = Gelombang::all();
+
+        $jurusan = Jurusan::all();
+
+        return view('pendaftaran.calon_siswa.index', compact(
+            'side',
+            'gelombang',
+            'jurusan'
+        ), ['side'  => 'daftar-ulang']);
+    }
+
+
 
     public function create()
     {
@@ -64,7 +88,7 @@ class CalonSiswaController extends Controller
 
         $gel = Gelombang::orderBy('idx', 'asc')->get();
 
-         $itemBayar = ItemBayar::where('id_kategori', 2)
+        $itemBayar = ItemBayar::where('id_kategori', 2)
             ->get();
 
         $thn = TahunAjaran::orderBy('id', 'desc')->get();
@@ -141,7 +165,7 @@ class CalonSiswaController extends Controller
             ->where('id', $id)
             ->get();
 
-             $itemBayar = ItemBayar::where('id_kategori', 2)
+        $itemBayar = ItemBayar::where('id_kategori', 2)
             ->get();
         /*
         |--------------------------------------------------------------------------
@@ -247,15 +271,12 @@ class CalonSiswaController extends Controller
                     'jk' => $item->jk,
                     'nisn' => $item->nisn,
                     'no_hp' => $item->no_hp,
-
+                    'no_daftar' => $item->no_daftar,
                     'nama_jurusan' =>
                     $item->jurusan->nama_jurusan ?? '-',
-
                     'nama_gelombang' =>
                     $item->gelombang->nama_gelombang ?? '-',
-
                     'id_jurusan' => $item->id_jurusan,
-
                     'id_gelombang' => $item->id_gelombang,
                 ];
             });
@@ -335,11 +356,21 @@ class CalonSiswaController extends Controller
             if (!empty($id)) {
                 // UPDATE
                 $siswa = CalonSiswa::findOrFail($id);
+// status sudah ujian dan melakukan daftar ulang
+                if ($siswa->status_daftar == 3) {
+
+                    $siswa->update([
+                        'status_daftar' => 4,
+                    ]);
+
+                 }
             } else {
 
                 // TAMBAH
                 $siswa = new CalonSiswa();
             }
+
+           
 
             /*
         |--------------------------------------------------------------------------
@@ -438,6 +469,14 @@ class CalonSiswaController extends Controller
             ]);
 
             $rows = CalonSiswa::where('id', $id)->first();
+// jika sudah ikut ujian
+             if ($rows->status_daftar == 3) {
+
+                    $rows->update([
+                        'status_daftar' => 4,
+                    ]);
+
+                 }
 
             if (!$rows) {
 
@@ -642,73 +681,72 @@ class CalonSiswaController extends Controller
         }
     }
 
-    public function pembayaran(Request $request, $id){
+    public function pembayaran(Request $request, $id)
+    {
 
-           try {
+        try {
 
-                DB::beginTransaction();
+            DB::beginTransaction();
 
-                $data = [];
+            $data = [];
 
-                if ($request->hasFile('bukti_transfer')) {
+            if ($request->hasFile('bukti_transfer')) {
 
-                    $file = $request->file('bukti_transfer');
+                $file = $request->file('bukti_transfer');
 
-                    $namaFile = time() . '_bukti_transfer.' .
-                        $file->getClientOriginalExtension();
+                $namaFile = time() . '_bukti_transfer.' .
+                    $file->getClientOriginalExtension();
 
-                    $file->storeAs(
-                        'uploads/pembayaran',
-                        $namaFile,
-                        'public'
-                    );
+                $file->storeAs(
+                    'uploads/pembayaran',
+                    $namaFile,
+                    'public'
+                );
 
-                    $data['bukti_transfer'] = 'uploads/pembayaran/' . $namaFile;
-                }
-
-                $data['updated_at'] = now();
-
-                DB::table('tb_bukti_bayar_calon')->insert([
-                    'id_calon_siswa' => $id,
-                    'bukti_transfer' => $data['bukti_transfer'] ?? null,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-
-                LogModel::create([
-                    'tanggal' => now(),
-                    'tabel' => 'tb_bukti_bayar_calon',
-                    'aksi' => 'insert',
-                    'user' => auth()->user()->id,
-                    'ip' => $request->ip(),
-                    'keterangan' => json_encode($data),
-                    'serial' => url('pembayaran/' . $id),
-                ]);
-
-                DB::commit();
-
-                return redirect()
-                    ->back()
-                    ->with('success', 'Upload dokumen berhasil');
-
-            } catch (\Exception $e) {
-
-                DB::rollBack();
-
-                // Simpan log error
-                Log::error('Upload bukti transfer gagal', [
-                    'message' => $e->getMessage(),
-                    'file'    => $e->getFile(),
-                    'line'    => $e->getLine(),
-                ]);
-
-                return redirect()
-                    ->back()
-                    ->withInput()
-                    ->with('error', 'Upload dokumen gagal. ' . $e->getMessage());
+                $data['bukti_transfer'] = 'uploads/pembayaran/' . $namaFile;
             }
 
-     }
+            $data['updated_at'] = now();
+
+            DB::table('tb_bukti_bayar_calon')->insert([
+                'id_calon_siswa' => $id,
+                'bukti_transfer' => $data['bukti_transfer'] ?? null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            LogModel::create([
+                'tanggal' => now(),
+                'tabel' => 'tb_bukti_bayar_calon',
+                'aksi' => 'insert',
+                'user' => auth()->user()->id,
+                'ip' => $request->ip(),
+                'keterangan' => json_encode($data),
+                'serial' => url('pembayaran/' . $id),
+            ]);
+
+            DB::commit();
+
+            return redirect()
+                ->back()
+                ->with('success', 'Upload dokumen berhasil');
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            // Simpan log error
+            Log::error('Upload bukti transfer gagal', [
+                'message' => $e->getMessage(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine(),
+            ]);
+
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Upload dokumen gagal. ' . $e->getMessage());
+        }
+    }
 
 
     public function updateOrangTua(Request $request, $id)
@@ -724,6 +762,18 @@ class CalonSiswaController extends Controller
             ]);
 
             $siswa = CalonSiswa::findOrFail($id);
+
+
+
+            // jika sudah ikut ujian
+             if ($siswa->status_daftar == 3) {
+
+                    $siswa->update([
+                        'status_daftar' => 4,
+                    ]);
+
+                 }
+
 
             $siswa->update([
                 'nama_ayah'             => $request->nama_ayah,
@@ -762,6 +812,16 @@ class CalonSiswaController extends Controller
             ]);
 
             $siswa = CalonSiswa::findOrFail($id);
+
+               // jika sudah ikut ujian
+             if ($siswa->status_daftar == 3) {
+
+                    $siswa->update([
+                        'status_daftar' => 4,
+                    ]);
+
+                 }
+
 
             $siswa->update([
                 'nama_sekolah_asal'     => $request->sekolah_asal,
@@ -860,7 +920,6 @@ class CalonSiswaController extends Controller
             return response()->json([
                 'success' => true
             ]);
-
         } catch (\Throwable $e) {
 
             DB::rollBack();
@@ -872,5 +931,277 @@ class CalonSiswaController extends Controller
         }
     }
 
-   
+
+    public function saveDaftarSiswa(Request $request)
+    {
+        $validated = $request->validate([
+            'id_cawa'       => ['required', 'integer', 'exists:tb_tmp_siswa,id'],
+            'status_daftar' => ['nullable', 'integer'],
+        ]);
+
+        try {
+            DB::transaction(function () use ($validated) {
+
+                /*
+                * 1. Ambil calon siswa.
+                */
+                $calonSiswa = CalonSiswa::query()
+                    ->whereKey($validated['id_cawa'])
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
+                /*
+                * 2. Cegah pemindahan siswa dua kali.
+                */
+                $siswaSudahAda = Siswa::query()
+                    ->where('id_cawa', $calonSiswa->id)
+                    ->exists();
+
+                if ($siswaSudahAda) {
+                    throw new \Exception(
+                        'Data calon siswa sudah pernah dipindahkan ke data siswa.'
+                    );
+                }
+
+                /*
+                * 3. Salin tb_tmp_siswa ke tb_siswa.
+                */
+                $siswa = Siswa::create([
+                    'id_cawa'             => $calonSiswa->id,
+                    'no_daftar'           => $calonSiswa->no_daftar,
+                    'nipd'                => $calonSiswa->nipd,
+                    'no_registrasi_ulang' => $calonSiswa->no_registrasi_ulang,
+                    'no_kwitansi'         => $calonSiswa->no_kwitansi,
+                    'tmp_daftar'          => $calonSiswa->tmp_daftar,
+                    'id_petugas'          => $calonSiswa->id_petugas,
+
+                    'nama_lengkap'        => $calonSiswa->nama_lengkap,
+                    'nama_panggilan'      => $calonSiswa->nama_panggilan,
+                    'jk'                  => $calonSiswa->jk,
+                    'nisn'                => $calonSiswa->nisn,
+                    'nik'                 => $calonSiswa->nik,
+                    'tmp_lahir'           => $calonSiswa->tmp_lahir,
+                    'tgl_lahir'           => $calonSiswa->tgl_lahir,
+                    'id_agama'            => $calonSiswa->id_agama,
+
+                    'alamat'              => $calonSiswa->alamat,
+                    'desa'                => $calonSiswa->desa,
+                    'kecamatan'           => $calonSiswa->kecamatan,
+                    'kota'                => $calonSiswa->kota,
+                    'provinsi'            => $calonSiswa->provinsi,
+
+                    'no_hp'               => $calonSiswa->no_hp,
+                    'email'               => $calonSiswa->email,
+
+                    'nama_ayah'           => $calonSiswa->nama_ayah,
+                    'id_kerja_ayah'       => $calonSiswa->id_kerja_ayah,
+                    'alamat_ayah'         => $calonSiswa->alamat_ayah,
+                    'hp_ayah'             => $calonSiswa->hp_ayah,
+
+                    'nama_ibu'            => $calonSiswa->nama_ibu,
+                    'id_kerja_ibu'        => $calonSiswa->id_kerja_ibu,
+                    'hp_ibu'              => $calonSiswa->hp_ibu,
+
+                    'nama_wali'           => $calonSiswa->nama_wali,
+                    'id_kerja_wali'       => $calonSiswa->id_kerja_wali,
+                    'hp_wali'             => $calonSiswa->hp_wali,
+
+                    'tgl_masuk'           => $calonSiswa->tgl_masuk,
+                    'id_jurusan'          => $calonSiswa->id_jurusan,
+                    'nama_sekolah_asal'   => $calonSiswa->nama_sekolah_asal,
+                    'tgl_registrasi'      => $calonSiswa->tgl_registrasi,
+
+                    'id_template_bayar'   => $calonSiswa->id_template_bayar,
+                    'id_kelas'            => $calonSiswa->id_kelas,
+                    'kelas_id'            => $calonSiswa->kelas_id,
+                    'id_gelombang'        => $calonSiswa->id_gelombang,
+                    'jns_kelas'           => $calonSiswa->jns_kelas,
+                    'id_thn_ajaran'       => $calonSiswa->id_thn_ajaran,
+
+                    'password'            => $calonSiswa->password,
+                    'id_user'             => $calonSiswa->id_user,
+
+                    'sts_siswa'           => 1,
+                    'is_aktif'            => 1,
+
+                    'foto_siswa'          => $calonSiswa->foto_siswa,
+                    'image'               => $calonSiswa->foto_siswa,
+                    'kk'                  => $calonSiswa->kk,
+                    'akta_kelahiran'      => $calonSiswa->akta_kelahiran,
+                    'ijazah'              => $calonSiswa->ijazah,
+                    'raport'              => $calonSiswa->raport,
+                    'ktp_ayah'            => $calonSiswa->ktp_ayah,
+                    'ktp_ibu'             => $calonSiswa->ktp_ibu,
+                ]);
+
+                /*
+                * 4. Ambil seluruh pembayaran calon siswa.
+                */
+                $pembayaranRegis = BayarCalonSiswa::query()
+                    ->where('id_calon_siswa', $calonSiswa->id)
+                    ->orderBy('id')
+                    ->get();
+
+                /*
+                * 5. Salin setiap tb_bayar_regis ke tb_bayar.
+                */
+                foreach ($pembayaranRegis as $bayarRegis) {
+
+                    /*
+                    * Sesuaikan foreign key siswa pada model Bayar.
+                    * Contoh ini menggunakan id_siswa.
+                    */
+                    $bayar = Bayar::create([
+                        'id_siswa'     => $siswa->nipd,
+                        'id_tahun'     => $bayarRegis->id_tahun,
+                        'id_bulan'     => $bayarRegis->id_bulan,
+                        'tgl_bayar'    => $bayarRegis->tgl_bayar,
+                        'jam_bayar'    => $bayarRegis->jam_bayar,
+                        'id_kasir'     => $bayarRegis->id_kasir,
+                        'no_kwitansi'  => $bayarRegis->no_kwitansi,
+                        'keterangan'   => $bayarRegis->keterangan,
+                        'tot_bayar'    => $bayarRegis->tot_bayar,
+                        'tot_kwajiban' => $bayarRegis->total_kwajiban
+                    ]);
+
+                    /*
+                    * 6. Ambil detail pembayaran registrasi.
+                    */
+                    $detailRegis = DetBayarCalonSiswa::query()
+                        ->where('id_bayar', $bayarRegis->id)
+                        ->get();
+
+                    /*
+                    * 7. Salin tb_det_bayar_regis ke tb_det_bayar.
+                    */
+                    foreach ($detailRegis as $detail) {
+                        DetBayar::create([
+                            'id_bayar'   => $bayar->id,
+                            'id_item'    => $detail->id_item,
+                            'jml_bayar'  => $detail->jml_bayar,
+                            'id_cicilan' => $detail->id_cicilan ?? null,
+                        ]);
+                    }
+                }
+
+                /*
+                * 8. Ubah status calon siswa.
+                */
+                $calonSiswa->update([
+                    'status_daftar' => $validated['status_daftar'] ?? 1,
+                ]);
+            });
+
+            return response()->json([
+                'success' => true,
+                'title'   => 'Berhasil',
+                'message' => 'Data calon siswa dan pembayaran berhasil dipindahkan.',
+            ]);
+
+        } catch (\Throwable $e) {
+
+            Log::error('Gagal memindahkan calon siswa', [
+                'id_cawa' => $request->id_cawa,
+                'message' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'title'   => 'Gagal',
+                'message' => $e->getMessage(),
+            ], 422);
+        }
+    }
+
+    private function setBulanan(
+        int $idBayar,
+        int $idSiswa,
+        ?int $idTemplateBayar
+    ): void {
+        if (!$idTemplateBayar) {
+            throw new \Exception(
+                'Template pembayaran calon siswa belum ditentukan.'
+            );
+        }
+
+        $dataTemplate = DetTempBayar::with('itemBayar')
+            ->where('id_template', $idTemplateBayar)
+            ->whereHas('itemBayar', function ($query) {
+                $query->whereIn('id_kategori', [2, 5]);
+            })
+            ->get();
+
+        if ($dataTemplate->isEmpty()) {
+            throw new \Exception(
+                'Detail template pembayaran registrasi tidak ditemukan.'
+            );
+        }
+
+        $detailPembayaran = [];
+
+        foreach ($dataTemplate as $item) {
+            $detailPembayaran[] = [
+                'id_bayar'         => $idBayar,
+                'id_item'          => $item->id_item,
+                'kwajiban_bayar'   => $item->jml_bayar,
+            ];
+        }
+
+        DB::table('tb_det_bayar_regis')->insert($detailPembayaran);
+
+        $this->updateTotalBayar($idBayar);
+    }
+
+    private function updateTotalBayar(int $idBayar): void
+    {
+        $total = DB::table('tb_det_bayar_regis')
+            ->where('id_bayar', $idBayar)
+            ->sum('kwajiban_bayar');
+
+        DB::table('tb_bayar_regis')
+            ->where('id', $idBayar)
+            ->update([
+                'total_kwajiban' => $total,
+            ]);
+    }
+
+    public function generateNipd()
+    {
+        $nipdSiswa = Siswa::query()
+            ->whereNotNull('nipd')
+            ->whereRaw("nipd NOT LIKE '%[^0-9]%'")
+            ->selectRaw('MAX(CAST(nipd AS UNSIGNED)) as nomor')
+            ->value('nomor');
+
+        $nipdCalon = CalonSiswa::query()
+            ->whereNotNull('nipd')
+            ->whereRaw("nipd NOT LIKE '%[^0-9]%'")
+            ->selectRaw('MAX(CAST(nipd AS UNSIGNED)) as nomor')
+            ->value('nomor');
+
+        $nomorTerakhir = max(
+            (int) $nipdSiswa,
+            (int) $nipdCalon
+        );
+
+        $nomorBaru = $nipdSiswa + 1;
+
+        if ($nomorBaru > 9999) {
+            return response()->json([
+                'nipd' => $nipdSiswa,
+                'success' => false,
+                'message' => 'NIPD 4 digit sudah mencapai batas maksimum.',
+            ], 422);
+        }
+
+        return response()->json([
+            'success' => true,
+            'nipd'    => str_pad(
+                $nomorBaru,
+                4,
+                '0',
+                STR_PAD_LEFT
+            ),
+        ]);
+    }
 }
