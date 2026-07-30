@@ -472,6 +472,11 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::resource('ujianCalonAdmin', UjianCalonAdminController::class);
 
+    Route::delete(
+    '/ujian-calon-admin/{id}/hapus',
+    [UjianCalonAdminController::class, 'hapus']
+)->name('ujianCalonAdmin.hapus');
+
     Route::get(
         'ujianCalonAdmin/{ujianCalonAdmin}/peserta',
         [UjianCalonAdminController::class, 'peserta']
@@ -737,10 +742,10 @@ Route::middleware(['auth', 'role:calon'])->group(function () {
         '/calon-siswa/update/registrasi/{id}',
         [CalonSiswaController::class, 'updateRegistrasi']
     )->name('calon-siswa.update.registrasi');
-    Route::post(
-        '/calon-siswa/update-status/{id}',
-        [CalonSiswaController::class, 'updateStatus']
-    )->name('calon-siswa.update-status');
+    // Route::post(
+    //     '/calon-siswa/update-status/{id}',
+    //     [CalonSiswaController::class, 'updateStatus']
+    // )->name('calon-siswa.update-status');
 
     Route::post('/calon-siswa/upload/{id}', [CalonSiswaController::class, 'updateUpload'])->name('calon-siswa.update.upload');
 

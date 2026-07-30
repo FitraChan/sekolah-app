@@ -59,24 +59,15 @@ class SetKelasController extends Controller
             )
 
             ->select(
-
-        DB::raw('MAX(tb_kelas.id) as id'),
-
-        DB::raw('MAX(tb_kelas.idx) as idx'),
-
-        DB::raw('MAX(tb_kelas.nama_kelas) as nama_kelas'),
-
-        DB::raw('MAX(tb_jurusan.nama_jurusan) as nama_jurusan'),
-
-        DB::raw('COUNT(tb_tmp_siswa.id) as jml_siswa')
-
+                DB::raw('MAX(tb_kelas.id) as id'),
+                DB::raw('MAX(tb_kelas.idx) as idx'),
+                DB::raw('MAX(tb_kelas.nama_kelas) as nama_kelas'),
+                DB::raw('MAX(tb_jurusan.nama_jurusan) as nama_jurusan'),
+                DB::raw('COUNT(tb_tmp_siswa.id) as jml_siswa')
             )
-
             ->where('tb_kelas.kelas', 'X')
             ->orWhere('tb_kelas.kelas', 'x')
-
             ->where('tb_thn_ajaran.isaktiv', 1)
-
             ->groupBy(
 
                 'tb_tmp_siswa.id_kelas',               

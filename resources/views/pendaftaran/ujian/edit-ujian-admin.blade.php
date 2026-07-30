@@ -58,6 +58,40 @@ Edit Ujian
         </div>
 
         <div class="mb-4">
+    <label class="form-label">
+        Gelombang
+    </label>
+
+    <select
+        name="id_gelombang"
+        class="form-select @error('id_gelombang') border-danger @enderror"
+        required
+    >
+        <option value="">
+            -- Pilih Gelombang --
+        </option>
+
+        @foreach ($gelombang as $item)
+            <option
+                value="{{ $item->id }}"
+                @selected(
+                    old('id_gelombang', $ujian->id_gelombang)
+                    == $item->id
+                )
+            >
+                {{ $item->nama_gelombang }}
+            </option>
+        @endforeach
+    </select>
+
+    @error('id_gelombang')
+        <div class="text-danger mt-1">
+            {{ $message }}
+        </div>
+    @enderror
+</div>
+
+        <div class="mb-4">
             <label class="form-label">
                 Deskripsi
             </label>

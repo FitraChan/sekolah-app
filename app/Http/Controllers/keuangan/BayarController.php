@@ -250,7 +250,7 @@ class BayarController extends Controller
             ->map(function ($row) {
 
                 return [
-                    'id'            => $row->id,
+                    'id'        => $row->id,
                     'id_bayar'  => $row->id_bayar ?? '',
                     'nama_item' => $row->itemBayar->nama_item ?? '',
                     'id_item' => $row->id_item ?? '',
@@ -262,86 +262,220 @@ class BayarController extends Controller
             });
     }
 
-    public function setDefBulan(Request $request)
-    {
-        $idTahunAjaran = $request->id_thn_ajaran;
-        $idJurusan     = $request->id_jurusan;
-        $idTahun       = $request->id_tahun;
-        $idBulan       = $request->id_bulan;
+   public function setDefBulan(Request $request)
+{
+    $request->validate([
+        'id_thn_ajaran' => ['required'],
+        'id_jurusan'    => ['required'],
+        'id_tahun'      => ['required', 'digits:4'],
+        'id_bulan'      => ['required'],
+    ]);
 
-        $berhasil = 0;
-        $gagal = 0;
+    $idTahunAjaran = $request->id_thn_ajaran;
+    $idJurusan     = $request->id_jurusan;
+    $idTahun       = $request->id_tahun;
+    $idBulan       = $request->id_bulan;
 
-        $siswa = Siswa::where('id_thn_ajaran', $idTahunAjaran)
-            ->where('id_jurusan', $idJurusan)
-            ->get();
+    $berhasil       = 0;
+    $gagal          = 0;
+    $duplikat       = 0;
+    $jumlahTagihan  = 0;
+    $siswaDiproses  = 0;
 
-        DB::beginTransaction();
+    /*
+    |--------------------------------------------------------------------------
+    | Tentukan bulan yang diproses
+    |--------------------------------------------------------------------------
+    */
 
-        try {
+    $daftarBulan = $idBulan === 'all_bulan'
+        ? range(1, 12)
+        : [(int) $idBulan];
 
-            foreach ($siswa as $row) {
+    /*
+    |--------------------------------------------------------------------------
+    | Ambil siswa
+    |--------------------------------------------------------------------------
+    */
+
+    $querySiswa = Siswa::query()
+        ->where('id_thn_ajaran', $idTahunAjaran);
+
+    // Filter jurusan hanya jika bukan semua jurusan
+    if ($idJurusan !== 'all_jurusan') {
+        $querySiswa->where('id_jurusan', $idJurusan);
+    }
+
+    $siswa = $querySiswa->get();
+
+    if ($siswa->isEmpty()) {
+        return response()->json([
+            'success' => false,
+            'title'   => 'Peringatan',
+            'msg'     => 'Tidak ada siswa yang ditemukan berdasarkan pilihan tersebut.',
+        ], 422);
+    }
+
+    DB::beginTransaction();
+
+    try {
+
+        foreach ($siswa as $row) {
+
+            /*
+            |--------------------------------------------------------------------------
+            | Ambil detail template pembayaran bulanan
+            |--------------------------------------------------------------------------
+            */
+
+            $detailTemplate = DetTempBayar::query()
+                ->where('id_template', $row->id_template_bayar)
+                ->whereHas('itemBayar', function ($query) {
+                    $query->where('id_kategori', 5);
+                })
+                ->get();
+
+            /*
+             * Jika siswa belum memiliki template pembayaran
+             * atau tidak ada item kategori bulanan, lewati.
+             */
+            if ($detailTemplate->isEmpty()) {
+                $gagal++;
+                continue;
+            }
+
+            foreach ($daftarBulan as $bulan) {
+
+                /*
+                |--------------------------------------------------------------------------
+                | Cek apakah tagihan siswa pada tahun dan bulan sudah ada
+                |--------------------------------------------------------------------------
+                */
+
+                $sudahAda = Bayar::query()
+                    ->where('id_tahun', $idTahun)
+                    ->where('id_bulan', $bulan)
+                    ->where('id_siswa', $row->nipd)
+                    ->exists();
+
+                if ($sudahAda) {
+                    $duplikat++;
+                    continue;
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | Buat header tagihan
+                |--------------------------------------------------------------------------
+                */
 
                 $bayar = Bayar::create([
                     'id_tahun' => $idTahun,
-                    'id_bulan' => $idBulan,
+                    'id_bulan' => $bulan,
                     'id_siswa' => $row->nipd,
                 ]);
 
-                $detailTemplate = DetTempBayar::where('id_template', $row->id_template_bayar)
-                    ->whereHas('itemBayar', function ($q) {
-                        $q->where('id_kategori', 5);
-                    })
-                    ->get();
+                /*
+                |--------------------------------------------------------------------------
+                | Buat detail tagihan
+                |--------------------------------------------------------------------------
+                */
 
                 foreach ($detailTemplate as $item) {
 
-                    $detail = DetBayar::create([
-                        'id_bayar'        => $bayar->id,
-                        'id_item'         => $item->id_item,
-                        'kwajiban_bayar'  => $item->jml_bayar,
-                        'potongan'        => 0,
-                        'jml_bayar'       => 0,
+                    DetBayar::create([
+                        'id_bayar'       => $bayar->id,
+                        'id_item'        => $item->id_item,
+                        'kwajiban_bayar' => $item->jml_bayar,
+                        'potongan'       => 0,
+                        'jml_bayar'      => 0,
                     ]);
 
-                    if ($detail) {
-                        $berhasil++;
-                    } else {
-                        $gagal++;
-                    }
+                    $berhasil++;
                 }
 
                 $this->updateTotalBayar($bayar->id);
+
+                $jumlahTagihan++;
             }
 
-            LogModel::create([
-                'tanggal' => now(),
-                'tabel' => 'tb_bayar',
-                'aksi' => 'create',
-                'user' => auth()->user()->id,
-                'ip' => $request->ip(),
-                'keterangan' => json_encode($bayar),
-                'serial' => url('simpan')
-            ]);
-
-            DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'title'   => 'Success',
-                'msg'     => "Proses berhasil dilakukan pada Bulan {$idBulan}, Tahun {$idTahun}, Jurusan {$idJurusan}. Berhasil {$berhasil}, Gagal {$gagal}"
-            ]);
-        } catch (\Exception $e) {
-
-            DB::rollBack();
-
-            return response()->json([
-                'success' => false,
-                'title'   => 'Error',
-                'msg'     => $e->getMessage()
-            ], 500);
+            $siswaDiproses++;
         }
+
+        LogModel::create([
+            'tanggal' => now(),
+            'tabel'   => 'tb_bayar',
+            'aksi'    => 'create',
+            'user'    => auth()->id(),
+            'ip'      => $request->ip(),
+
+            'keterangan' => json_encode([
+                'id_thn_ajaran' => $idTahunAjaran,
+                'id_tahun'       => $idTahun,
+                'id_bulan'       => $idBulan,
+                'id_jurusan'     => $idJurusan,
+                'siswa_diproses' => $siswaDiproses,
+                'jumlah_tagihan' => $jumlahTagihan,
+                'detail_berhasil'=> $berhasil,
+                'gagal'          => $gagal,
+                'duplikat'       => $duplikat,
+            ]),
+
+            'serial' => url('simpan'),
+        ]);
+
+        DB::commit();
+
+        $keteranganBulan = $idBulan === 'all_bulan'
+            ? 'Januari sampai Desember'
+            : $this->namaBulan((int) $idBulan);
+
+        $keteranganJurusan = $idJurusan === 'all_jurusan'
+            ? 'semua jurusan'
+            : "jurusan ID {$idJurusan}";
+
+        return response()->json([
+            'success' => true,
+            'title'   => $duplikat > 0 ? 'Warning' : 'Success',
+            'msg'     => "Proses selesai untuk {$keteranganJurusan}, bulan {$keteranganBulan}. "
+                . "Siswa diproses: {$siswaDiproses}, "
+                . "tagihan dibuat: {$jumlahTagihan}, "
+                . "detail dibuat: {$berhasil}, "
+                . "template tidak ditemukan: {$gagal}, "
+                . "tagihan duplikat dilewati: {$duplikat}.",
+        ]);
+
+    } catch (\Throwable $e) {
+
+        DB::rollBack();
+
+        return response()->json([
+            'success' => false,
+            'title'   => 'Error',
+            'msg'     => $e->getMessage(),
+        ], 500);
     }
+}
+
+private function namaBulan(int $bulan): string
+{
+    $daftarBulan = [
+        1  => 'Januari',
+        2  => 'Februari',
+        3  => 'Maret',
+        4  => 'April',
+        5  => 'Mei',
+        6  => 'Juni',
+        7  => 'Juli',
+        8  => 'Agustus',
+        9  => 'September',
+        10 => 'Oktober',
+        11 => 'November',
+        12 => 'Desember',
+    ];
+
+    return $daftarBulan[$bulan] ?? '-';
+}
 
 
 

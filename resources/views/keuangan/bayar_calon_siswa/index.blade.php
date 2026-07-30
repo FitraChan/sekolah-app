@@ -1,7 +1,7 @@
 @extends('layout.main')
 
 @section('tittle')
-Pembayaran
+Pembayaran Calon Siswa
 @endsection
 
 @section('top-nav')

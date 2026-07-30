@@ -11,6 +11,10 @@ use App\Models\Pekerjaan;
 use App\Models\Jurusan;
 use App\Models\Kelas;
 use App\Models\Gelombang;
+use App\Models\Bayar;
+use App\Models\DetBayar;
+
+
 
 use App\Models\TahunAjaran;
 use App\Models\LogModel;
@@ -560,10 +564,31 @@ class SiswaController extends Controller
             $siswa = Siswa::findOrFail($id);
 
             /*
-             * Simpan salinan data sebelum dihapus.
-             */
+            * Simpan data lama untuk log.
+            */
             $dataLama = $siswa->toArray();
 
+            /*
+            * Hapus detail pembayaran dan pembayaran siswa.
+            *
+            * Sesuaikan kolom id_siswa jika pada tabel pembayaran
+            * menggunakan nipd atau nama kolom lainnya.
+            */
+            $pembayaran = Bayar::query()
+                ->where('id_siswa', $siswa->nipd)
+                ->get();
+
+            foreach ($pembayaran as $bayar) {
+                DetBayar::query()
+                    ->where('id_bayar', $bayar->id)
+                    ->delete();
+
+                $bayar->delete();
+            }
+
+            /*
+            * Hapus akun pengguna.
+            */
             if (!empty($siswa->id_user)) {
                 $user = User::find($siswa->id_user);
 
@@ -573,6 +598,9 @@ class SiswaController extends Controller
                 }
             }
 
+            /*
+            * Daftar dokumen siswa.
+            */
             $fieldsDokumen = [
                 'foto_siswa',
                 'kk',
@@ -583,17 +611,25 @@ class SiswaController extends Controller
                 'ktp_ibu',
             ];
 
+            /*
+            * Simpan path file yang akan dihapus setelah transaksi berhasil.
+            */
+            $fileYangDihapus = [];
+
             foreach ($fieldsDokumen as $field) {
-                if (
-                    !empty($siswa->{$field}) &&
-                    Storage::disk('public')->exists($siswa->{$field})
-                ) {
-                    Storage::disk('public')->delete($siswa->{$field});
+                if (!empty($siswa->{$field})) {
+                    $fileYangDihapus[] = $siswa->{$field};
                 }
             }
 
+            /*
+            * Hapus siswa.
+            */
             $siswa->delete();
 
+            /*
+            * Simpan log.
+            */
             LogModel::create([
                 'tanggal'    => now(),
                 'tabel'      => 'tb_siswa',
@@ -606,12 +642,24 @@ class SiswaController extends Controller
 
             DB::commit();
 
+            /*
+            * File dihapus setelah commit karena penghapusan file
+            * tidak dapat dibatalkan oleh database transaction.
+            */
+            foreach ($fileYangDihapus as $file) {
+                if (Storage::disk('public')->exists($file)) {
+                    Storage::disk('public')->delete($file);
+                }
+            }
+
             return response()->json([
                 'success' => true,
-                'message' => 'Data siswa berhasil dihapus.',
+                'message' => 'Data siswa dan pembayaran berhasil dihapus.',
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
+
+            report($e);
 
             return response()->json([
                 'success' => false,

@@ -47,8 +47,8 @@
                 },
 
                 {
-                    title: "Kelas",
-                    field: "kelas.nama_kelas"
+                    title: "Status",
+                    field: "status_daftar"
                 },
 
                 {
@@ -354,7 +354,17 @@
 
     async function saveBayar() {
 
+        const tombol = document.getElementById('btn-save-bayar');
+        const teksAwal = tombol.innerHTML;
+
+
         let id = document.getElementById('id_bayar').value;
+
+        tombol.disabled = true;
+        tombol.innerHTML = `
+            <span class="animate-spin inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2"></span>
+            Mohon tunggu...
+        `;
 
         const url = "{{ route('bayar-calon-siswa.set-lunas', ':id') }}".replace(':id', id);
 
@@ -387,12 +397,23 @@
         modal.hide();
         tableDetail.replaceData();
 
+        tombol.disabled = false;
+        tombol.innerHTML = teksAwal;
+
     }
 
     async function saveCicilan() {
 
         try {
+            const button = document.getElementById('btn-save-cicilan');
+            const buttonText = document.getElementById('text-save-cicilan');
 
+            // Simpan tampilan awal tombol
+            const originalText = buttonText.innerHTML;
+
+            // Ubah tombol menjadi loading
+            button.disabled = true;
+            buttonText.innerHTML = 'Tunggu sebentar...';
             const response = await fetch('{{ route("bayar-calon-siswa.simpanCicilan") }}', {
                 method: 'POST',
                 headers: {
@@ -436,6 +457,9 @@
                 // reload tabel jika ada
                 // if (typeof table !== 'undefined') {
                 tableDetail.replaceData();
+
+                button.disabled = false;
+                buttonText.innerHTML = originalText;
                 // }
 
             } else {
@@ -539,7 +563,7 @@
         });
     }
 
-    
+
     function resetFilter() {
 
         document.getElementById('filter_tahun').value = '';

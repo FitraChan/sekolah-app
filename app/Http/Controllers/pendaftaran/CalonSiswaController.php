@@ -18,13 +18,6 @@ use App\Models\Siswa;
 use App\Models\Bayar;
 use App\Models\DetBayar;
 
-
-
-
-
-use App\Models\IpaymuDetBayar;
-
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\LogModel;
@@ -45,12 +38,16 @@ class CalonSiswaController extends Controller
 
         $gelombang = Gelombang::all();
 
+        $tahunAjaran = TahunAjaran::orderBy('id', 'desc')->get();
+
+
         $jurusan = Jurusan::all();
 
         return view('pendaftaran.calon_siswa.index', compact(
             'side',
             'gelombang',
-            'jurusan'
+            'jurusan',
+            'tahunAjaran'
         ), ['side'  => 'calon-siswa']);
     }
 
@@ -60,12 +57,15 @@ class CalonSiswaController extends Controller
         $side = 'daftar-ulang';
 
         $gelombang = Gelombang::all();
+                $tahunAjaran = TahunAjaran::all();
+
 
         $jurusan = Jurusan::all();
 
         return view('pendaftaran.calon_siswa.index', compact(
             'side',
             'gelombang',
+            'tahunAjaran',
             'jurusan'
         ), ['side'  => 'daftar-ulang']);
     }
@@ -252,32 +252,82 @@ class CalonSiswaController extends Controller
         ]);
     }
 
-    public function data()
+    public function data(Request $request)
     {
-        $data = CalonSiswa::with([
-            'gelombang',
-            'jurusan',
-            'tahunAjaran'
-        ])
-            ->whereHas('tahunAjaran', function ($q) {
-                $q->where('isaktiv', 1);
-            })
+        $query = CalonSiswa::query()
+            ->with([
+                'gelombang',
+                'jurusan',
+                'tahunAjaran',
+                'statusDaftar',
+            ]);
+            // ->whereHas('tahunAjaran', function ($q) {
+            //     $q->where('isaktiv', 1);
+            // });
+
+        /*
+        * Filter nama atau nomor daftar.
+        */
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('nama_lengkap', 'like', "%{$search}%")
+                    ->orWhere('no_daftar', 'like', "%{$search}%");
+            });
+        }
+
+        /*
+        * Filter tahun ajaran.
+        */
+        if ($request->filled('id_thn_ajaran')) {
+            $query->where(
+                'id_thn_ajaran',
+                $request->id_thn_ajaran
+            );
+        }
+
+        /*
+        * Filter jurusan.
+        */
+        if ($request->filled('id_jurusan')) {
+            $query->where(
+                'id_jurusan',
+                $request->id_jurusan
+            );
+        }
+
+        /*
+        * Filter gelombang.
+        */
+        if ($request->filled('id_gelombang')) {
+            $query->where(
+                'id_gelombang',
+                $request->id_gelombang
+            );
+        }
+
+        $data = $query
             ->latest('id')
             ->get()
             ->map(function ($item) {
                 return [
-                    'id' => $item->id,
-                    'nama_lengkap' => $item->nama_lengkap,
-                    'jk' => $item->jk,
-                    'nisn' => $item->nisn,
-                    'no_hp' => $item->no_hp,
-                    'no_daftar' => $item->no_daftar,
-                    'nama_jurusan' =>
-                    $item->jurusan->nama_jurusan ?? '-',
-                    'nama_gelombang' =>
-                    $item->gelombang->nama_gelombang ?? '-',
-                    'id_jurusan' => $item->id_jurusan,
-                    'id_gelombang' => $item->id_gelombang,
+                    'id'              => $item->id,
+                    'nama_lengkap'    => $item->nama_lengkap,
+                    'jk'              => $item->jk,
+                    'nisn'            => $item->nisn,
+                    'no_hp'           => $item->no_hp,
+                    'no_daftar'       => $item->no_daftar,
+
+                    'status_daftar'   => $item->statusDaftar?->keterangan ?? '-',
+
+                    'nama_jurusan'    => $item->jurusan?->nama_jurusan ?? '-',
+                    'nama_gelombang'  => $item->gelombang?->nama_gelombang ?? '-',
+                    'tahun_ajaran'    => $item->tahunAjaran?->thn_ajaran ?? '-',
+
+                    'id_thn_ajaran'   => $item->id_thn_ajaran,
+                    'id_jurusan'      => $item->id_jurusan,
+                    'id_gelombang'    => $item->id_gelombang,
                 ];
             });
 
@@ -378,13 +428,16 @@ class CalonSiswaController extends Controller
         |--------------------------------------------------------------------------
         */
 
-            $siswa->id_gelombang      = $request->id_gelombang;
-            $siswa->id_thn_ajaran     = $request->id_thn_ajaran;
-            $siswa->id_jurusan        = $request->id_jurusan;
+            if (auth()->user()->hasAnyRole(['admin', 'Akademik'])) {
+                $siswa->id_gelombang  = $request->id_gelombang;
+                $siswa->id_thn_ajaran = $request->id_thn_ajaran;
+                $siswa->id_jurusan    = $request->id_jurusan;
+                $siswa->status_daftar     = $request->status_daftar;
+            }
             $siswa->no_daftar         = $request->no_daftar;
             $siswa->tgl_daftar        = $request->tgl_daftar;
             $siswa->tmp_daftar        = $request->tmp_daftar;
-            $siswa->status_daftar     = $request->status_daftar;
+          
 
             $siswa->nama_lengkap      = $request->nama_lengkap;
             $siswa->jk                = $request->jk;
@@ -426,15 +479,16 @@ class CalonSiswaController extends Controller
                 $message = 'Data registrasi & biodata siswa berhasil ditambahkan';
             }
 
+
+            
             if (auth()->user()->hasRole('calon')) {
                 return redirect()
                     ->route('calon-siswa.profil')
                     ->with('success', $message);
             }
 
-            return redirect()
-                ->route('calon-siswa.index')
-                ->with('success', $message);
+            return redirect()->back()->with('success', $message);
+
         } catch (\Exception $e) {
 
             print_r($e->getMessage());
@@ -940,7 +994,7 @@ class CalonSiswaController extends Controller
         ]);
 
         try {
-            DB::transaction(function () use ($validated) {
+            DB::transaction(function () use ($validated,$request) {
 
                 /*
                 * 1. Ambil calon siswa.
@@ -969,7 +1023,7 @@ class CalonSiswaController extends Controller
                 $siswa = Siswa::create([
                     'id_cawa'             => $calonSiswa->id,
                     'no_daftar'           => $calonSiswa->no_daftar,
-                    'nipd'                => $calonSiswa->nipd,
+                    'nipd'                => $request->nipd,
                     'no_registrasi_ulang' => $calonSiswa->no_registrasi_ulang,
                     'no_kwitansi'         => $calonSiswa->no_kwitansi,
                     'tmp_daftar'          => $calonSiswa->tmp_daftar,
@@ -1038,7 +1092,7 @@ class CalonSiswaController extends Controller
                 * 4. Ambil seluruh pembayaran calon siswa.
                 */
                 $pembayaranRegis = BayarCalonSiswa::query()
-                    ->where('id_calon_siswa', $calonSiswa->id)
+                    ->where('id_calon_siswa', $calonSiswa->no_daftar)
                     ->orderBy('id')
                     ->get();
 
@@ -1052,7 +1106,7 @@ class CalonSiswaController extends Controller
                     * Contoh ini menggunakan id_siswa.
                     */
                     $bayar = Bayar::create([
-                        'id_siswa'     => $siswa->nipd,
+                        'id_siswa'     => $request->nipd,
                         'id_tahun'     => $bayarRegis->id_tahun,
                         'id_bulan'     => $bayarRegis->id_bulan,
                         'tgl_bayar'    => $bayarRegis->tgl_bayar,
@@ -1080,6 +1134,9 @@ class CalonSiswaController extends Controller
                             'id_item'    => $detail->id_item,
                             'jml_bayar'  => $detail->jml_bayar,
                             'id_cicilan' => $detail->id_cicilan ?? null,
+                            'sisa_bayar' => $detail->sisa_bayar,
+                            'kwajiban_bayar' =>  $detail->kwajiban_bayar,
+                            'potongan' => $detail->potongan,
                         ]);
                     }
                 }
@@ -1113,83 +1170,33 @@ class CalonSiswaController extends Controller
         }
     }
 
-    private function setBulanan(
-        int $idBayar,
-        int $idSiswa,
-        ?int $idTemplateBayar
-    ): void {
-        if (!$idTemplateBayar) {
-            throw new \Exception(
-                'Template pembayaran calon siswa belum ditentukan.'
-            );
-        }
-
-        $dataTemplate = DetTempBayar::with('itemBayar')
-            ->where('id_template', $idTemplateBayar)
-            ->whereHas('itemBayar', function ($query) {
-                $query->whereIn('id_kategori', [2, 5]);
-            })
-            ->get();
-
-        if ($dataTemplate->isEmpty()) {
-            throw new \Exception(
-                'Detail template pembayaran registrasi tidak ditemukan.'
-            );
-        }
-
-        $detailPembayaran = [];
-
-        foreach ($dataTemplate as $item) {
-            $detailPembayaran[] = [
-                'id_bayar'         => $idBayar,
-                'id_item'          => $item->id_item,
-                'kwajiban_bayar'   => $item->jml_bayar,
-            ];
-        }
-
-        DB::table('tb_det_bayar_regis')->insert($detailPembayaran);
-
-        $this->updateTotalBayar($idBayar);
-    }
-
-    private function updateTotalBayar(int $idBayar): void
-    {
-        $total = DB::table('tb_det_bayar_regis')
-            ->where('id_bayar', $idBayar)
-            ->sum('kwajiban_bayar');
-
-        DB::table('tb_bayar_regis')
-            ->where('id', $idBayar)
-            ->update([
-                'total_kwajiban' => $total,
-            ]);
-    }
-
+   
+   
     public function generateNipd()
     {
         $nipdSiswa = Siswa::query()
             ->whereNotNull('nipd')
-            ->whereRaw("nipd NOT LIKE '%[^0-9]%'")
-            ->selectRaw('MAX(CAST(nipd AS UNSIGNED)) as nomor')
-            ->value('nomor');
+            ->whereRaw("nipd REGEXP '^[0-9]+$'")
+            ->orderByDesc('id')
+            ->value('nipd');
 
         $nipdCalon = CalonSiswa::query()
             ->whereNotNull('nipd')
-            ->whereRaw("nipd NOT LIKE '%[^0-9]%'")
-            ->selectRaw('MAX(CAST(nipd AS UNSIGNED)) as nomor')
-            ->value('nomor');
+            ->whereRaw("nipd REGEXP '^[0-9]+$'")
+            ->orderByDesc('id')
+            ->value('nipd');
 
         $nomorTerakhir = max(
             (int) $nipdSiswa,
             (int) $nipdCalon
         );
 
-        $nomorBaru = $nipdSiswa + 1;
+        $nomorBaru = $nomorTerakhir + 1;
 
         if ($nomorBaru > 9999) {
             return response()->json([
-                'nipd' => $nipdSiswa,
                 'success' => false,
+                'nipd'    => str_pad($nomorTerakhir, 4, '0', STR_PAD_LEFT),
                 'message' => 'NIPD 4 digit sudah mencapai batas maksimum.',
             ], 422);
         }

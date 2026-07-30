@@ -33,7 +33,7 @@ class Home extends Controller
               'tb_tmp_siswa.id_jurusan',
               'tb_det_tahun.id_jurusan'
             )
-            ->where('status_daftar', 1);
+            ->whereIn('status_daftar', [1,3,4]);
         },
 
         'calonSiswa as jml_batal' => function ($query) {

@@ -143,7 +143,7 @@ License: You must have a valid license purchased only from themeforest(the above
                         </div>
                     </a>
                     <!-- Sub-Menu Wrapper -->
-                    <ul class="{{ in_array($side, ['gelombang', 'calon-siswa','target','set-kelas','rekap_kelas','daftar-siswa','ujian-calon-siswa']) ? 'menu__sub-open' : '' }}">
+                    <ul class="{{ in_array($side, ['gelombang','tahun-ajaran', 'calon-siswa','target','set-kelas','rekap_kelas','daftar-siswa','ujian-calon-siswa']) ? 'menu__sub-open' : '' }}">
                         <li>
                             <!-- Sub-Menu Gelombang -->
                             <a href="{{ route('gelombang.index') }}" class="menu {{ $side == 'gelombang' ? 'menu--active' : '' }}">
@@ -151,6 +151,16 @@ License: You must have a valid license purchased only from themeforest(the above
                                 <div class="menu__title"> Gelombang </div>
                             </a>
                         </li>
+
+                        <li>
+                            <!-- Sub-Menu Gelombang -->
+                            <a href="{{ route('tahunAjaran.index') }}" class="menu {{ $side == 'tahun-ajaran' ? 'menu--active' : '' }}">
+                                <div class="menu__icon"> <i data-lucide="aperture"></i> </div>
+                                <div class="menu__title"> Tahun Ajaran </div>
+                            </a>
+                        </li>
+
+                        
 
                         <li>
                             <a href="{{ route('calon-siswa.index') }}"
@@ -350,13 +360,7 @@ License: You must have a valid license purchased only from themeforest(the above
                         </li>
 
 
-                        <li>
-                            <!-- Sub-Menu Gelombang -->
-                            <a href="{{ route('siswaBaru') }}" class="menu {{ $side == 'siswa-baru' ? 'menu--active' : '' }}">
-                                <div class="menu__icon"> <i data-lucide="coffee"></i> </div>
-                                <div class="menu__title"> Siswa Baru </div>
-                            </a>
-                        </li>
+                      
                     </ul>
                 <li>        
 
@@ -693,18 +697,26 @@ License: You must have a valid license purchased only from themeforest(the above
                         <div class="side-menu__icon"> <i data-lucide="box"></i> </div>
                         <div class="side-menu__title">
                             Pendaftaran
-                            <div class="side-menu__sub-icon {{ in_array($side, ['gelombang', 'calon-siswa','set-kelas','rekap_kelas','daftar-siswa','target','ujian-calon-siswa']) ? 'transform rotate-180' : '' }}">
+                            <div class="side-menu__sub-icon {{ in_array($side, ['gelombang', 'tahun-ajaran','calon-siswa','set-kelas','rekap_kelas','daftar-siswa','target','ujian-calon-siswa']) ? 'transform rotate-180' : '' }}">
                                 <i data-lucide="chevron-down"></i>
                             </div>
                         </div>
                     </a>
                     <!-- Sub-Menu Wrapper -->
-                    <ul class="{{ in_array($side, ['gelombang', 'calon-siswa','set-kelas','rekap_kelas','daftar-siswa','target','ujian-calon-siswa']) ? 'side-menu__sub-open' : '' }}">
+                    <ul class="{{ in_array($side, ['gelombang','tahun-ajaran', 'calon-siswa','set-kelas','rekap_kelas','daftar-siswa','target','ujian-calon-siswa']) ? 'side-menu__sub-open' : '' }}">
                         <li>
                             <!-- Sub-Menu Gelombang -->
                             <a href="{{ route('gelombang.index') }}" class="side-menu {{ $side == 'gelombang' ? 'side-menu--active' : '' }}">
                                 <div class="side-menu__icon"> <i data-lucide="activity"></i> </div>
                                 <div class="side-menu__title"> Gelombang </div>
+                            </a>
+                        </li>
+
+                        <li>
+                            <!-- Sub-Menu Gelombang -->
+                            <a href="{{ route('tahunAjaran.index') }}" class="side-menu {{ $side == 'tahun-ajaran' ? 'side-menu--active' : '' }}">
+                                <div class="side-menu__icon"> <i data-lucide="aperture"></i> </div>
+                                <div class="side-menu__title"> Tahun Ajaran </div>
                             </a>
                         </li>
 
@@ -860,20 +872,7 @@ License: You must have a valid license purchased only from themeforest(the above
                                 </a>
                         </li>
 
-                        <li>
-                                <a href="{{ route('siswaBaru') }}"
-                                    class="side-menu {{ $side == 'siswa-baru' ? 'side-menu--active' : '' }}">
-
-                                    <div class="side-menu__icon">
-                                        <i data-lucide="users"></i>
-                                    </div>
-
-                                    <div class="side-menu__title">
-                                        Siswa Baru
-                                    </div>
-
-                                </a>
-                        </li>
+                        
 
 
                 

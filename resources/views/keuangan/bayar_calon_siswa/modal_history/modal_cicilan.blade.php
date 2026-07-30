@@ -100,14 +100,14 @@
 
                 </button>
 
-                <button
+               <button
                     type="button"
+                    id="btn-save-cicilan"
                     class="btn btn-success"
-                    onclick="saveCicilan()">
-
+                    onclick="saveCicilan()"
+                >
                     <i data-lucide="credit-card" class="w-4 h-4 mr-1"></i>
-                    Simpan Pembayaran
-
+                    <span id="text-save-cicilan">Simpan Pembayaran</span>
                 </button>
 
             </div>

@@ -56,8 +56,9 @@
 
                 </button>
 
-                <button
+             <button
                     type="button"
+                    id="btn-save-bayar"
                     class="btn btn-success"
                     onclick="saveBayar()">
 
@@ -65,7 +66,6 @@
                     Simpan Pembayaran
 
                 </button>
-
             </div>
 
         </div>

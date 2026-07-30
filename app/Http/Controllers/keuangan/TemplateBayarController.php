@@ -27,14 +27,9 @@ class TemplateBayarController extends Controller
     public function index()
     {
         $side = 'template-bayar';
-
         $tahun = TahunAjaran::orderBy('id', 'desc')->get();
-
         $jurusan = Jurusan::orderBy('nama_jurusan')->get();
-
         $gelombang = Gelombang::orderBy('idx')->get();
-
-
         $itemBayar = ItemBayar::orderBy('id', 'desc')->get();
 
 
@@ -49,14 +44,42 @@ class TemplateBayarController extends Controller
             )
         );
     }
-    public function data()
-    {
-        return TemplateBayar::with([
-            'tahunAjaran:id,thn_ajaran',
-            'jurusan:id,nama_jurusan',
-            'gelombang:id,nama_gelombang'
-        ])->orderBy('id_tahun', 'desc')->get();
+    public function data(Request $request)
+{
+    $query = TemplateBayar::query()
+        ->with([
+            'tahunAjaran',
+            'gelombang',
+            'jurusan',
+        ]);
+
+    if ($request->filled('id_thn_ajaran')) {
+        $query->where(
+            'id_tahun',
+            $request->id_thn_ajaran
+        );
     }
+
+    if ($request->filled('id_gelombang')) {
+        $query->where(
+            'id_gelombang',
+            $request->id_gelombang
+        );
+    }
+
+    if ($request->filled('id_jurusan')) {
+        $query->where(
+            'id_jurusan',
+            $request->id_jurusan
+        );
+    }
+
+    $data = $query
+        ->latest()
+        ->get();
+
+    return response()->json($data);
+}
 
     public function detail($idTemplate)
     {

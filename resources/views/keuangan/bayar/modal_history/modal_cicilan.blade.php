@@ -123,10 +123,12 @@
                 <button
                     type="button"
                     class="btn btn-success"
+                    id="btn-save-cicilan"
+
                     onclick="saveCicilan()">
 
-                    <i data-lucide="credit-card" class="w-4 h-4 mr-1"></i>
-                    Simpan Pembayaran
+                   <i data-lucide="credit-card" class="w-4 h-4 mr-1"></i>
+                    <span id="text-save-cicilan">Simpan Pembayaran</span>
 
                 </button>
 

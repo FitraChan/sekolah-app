@@ -21,9 +21,9 @@
                         id="id_tahun"
                         class="form-select"
                     >
-                        @foreach($tahun as $row)
-                            <option value="{{ $row->id }}">
-                                {{ $row->thn_ajaran }}
+                        @foreach($tahun as $itemTahun)
+                            <option value="{{ $itemTahun->id ?? 0 }}">
+                                {{ $itemTahun->thn_ajaran  ?? '' }}
                             </option>
                         @endforeach
                     </select>

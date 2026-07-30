@@ -201,6 +201,8 @@ class BayarCalonSiswaController extends Controller
                     'no_daftar' => $item->no_daftar,
                     'nama_lengkap' => $item->nama_lengkap,
                     'jk' => $item->jk,
+                    'status_daftar' => $item->statusDaftar?->keterangan,
+
                     'no_hp' => $item->no_hp,
 
                     'tahun_ajaran' => [
@@ -264,46 +266,72 @@ class BayarCalonSiswaController extends Controller
             });
     }
 
-    public function setDefBulan(Request $request)
+   public function setDefBulan(Request $request)
     {
+        $request->validate([
+            'id_thn_ajaran' => ['required'],
+            'id_jurusan'    => ['required'],
+            'id_tahun'      => ['required'],
+            'id_bulan'      => ['required'],
+        ]);
+
         $idTahunAjaran = $request->id_thn_ajaran;
         $idJurusan     = $request->id_jurusan;
         $idTahun       = $request->id_tahun;
         $idBulan       = $request->id_bulan;
 
         $berhasil = 0;
-        $gagal = 0;
-
-        $siswa = CalonSiswa::where('id_thn_ajaran', $idTahunAjaran)
-            ->where('id_jurusan', $idJurusan)
-            ->get();
+        $gagal    = 0;
 
         DB::beginTransaction();
 
         try {
+            $siswa = CalonSiswa::query()
+                ->where('id_thn_ajaran', $idTahunAjaran)
+                ->where('id_jurusan', $idJurusan)
+                ->get();
+
+            $nomorDaftar = $siswa->pluck('no_daftar');
+
+            /*
+            * Cari pembayaran lama pada bulan dan tahun yang sama,
+            * khusus calon siswa pada tahun ajaran dan jurusan tersebut.
+            */
+            $bayarLama = BayarCalonSiswa::query()
+                ->where('id_tahun', $idTahun)
+                ->where('id_bulan', $idBulan)
+                ->whereIn('id_calon_siswa', $nomorDaftar)
+                ->get();
+            
+                if ($bayarLama->isNotEmpty()) {
+                    return response()->json([
+                    'success' => false,
+                    'title'   => 'Error',
+                    'msg'     => 'Sudah Ada Tagihan Di Bulan Ini',
+                ], 500);
+            }
 
             foreach ($siswa as $row) {
-
                 $bayar = BayarCalonSiswa::create([
-                    'id_tahun' => $idTahun,
-                    'id_bulan' => $idBulan,
-                    'id_calon_siswa' => $row->no_daftar,
+                    'id_tahun'        => $idTahun,
+                    'id_bulan'        => $idBulan,
+                    'id_calon_siswa'  => $row->no_daftar,
                 ]);
 
-                $detailTemplate = DetTempBayar::where('id_template', $row->id_template_bayar)
-                    ->whereHas('itemBayar', function ($q) {
-                        $q->whereIn('id_kategori', [1, 2]);
+                $detailTemplate = DetTempBayar::query()
+                    ->where('id_template', $row->id_template_bayar)
+                    ->whereHas('itemBayar', function ($query) {
+                        $query->whereIn('id_kategori', [1, 2]);
                     })
                     ->get();
 
                 foreach ($detailTemplate as $item) {
-
                     $detail = DetBayarCalonSiswa::create([
-                        'id_bayar'        => $bayar->id,
-                        'id_item'         => $item->id_item,
-                        'kwajiban_bayar'  => $item->jml_bayar,
-                        'potongan'        => 0,
-                        'jml_bayar'       => 0,
+                        'id_bayar'       => $bayar->id,
+                        'id_item'        => $item->id_item,
+                        'kwajiban_bayar' => $item->jml_bayar,
+                        'potongan'       => 0,
+                        'jml_bayar'      => 0,
                     ]);
 
                     if ($detail) {
@@ -317,13 +345,21 @@ class BayarCalonSiswaController extends Controller
             }
 
             LogModel::create([
-                'tanggal' => now(),
-                'tabel' => 'tb_bayar_regis',
-                'aksi' => 'create',
-                'user' => auth()->user()->id,
-                'ip' => $request->ip(),
-                'keterangan' => json_encode($bayar ?? ""),
-                'serial' => url('simpan')
+                'tanggal'    => now(),
+                'tabel'      => 'tb_bayar_regis',
+                'aksi'       => 'create',
+                'user'       => auth()->id(),
+                'ip'         => $request->ip(),
+                'keterangan' => json_encode([
+                    'id_tahun'        => $idTahun,
+                    'id_bulan'        => $idBulan,
+                    'id_thn_ajaran'   => $idTahunAjaran,
+                    'id_jurusan'      => $idJurusan,
+                  
+                    'jumlah_berhasil' => $berhasil,
+                    'jumlah_gagal'    => $gagal,
+                ]),
+                'serial' => url('simpan'),
             ]);
 
             DB::commit();
@@ -331,16 +367,17 @@ class BayarCalonSiswaController extends Controller
             return response()->json([
                 'success' => true,
                 'title'   => 'Success',
-                'msg'     => "Proses berhasil dilakukan pada Bulan {$idBulan}, Tahun {$idTahun}, Jurusan {$idJurusan}. Berhasil {$berhasil}, Gagal {$gagal}"
+                'msg'     => "Proses berhasil. {$bayarLama->count()} pembayaran lama dihapus. Detail berhasil dibuat: {$berhasil}, gagal: {$gagal}.",
             ]);
-        } catch (\Exception $e) {
-
+        } catch (\Throwable $e) {
             DB::rollBack();
+
+            report($e);
 
             return response()->json([
                 'success' => false,
                 'title'   => 'Error',
-                'msg'     => $e->getMessage()
+                'msg'     => $e->getMessage(),
             ], 500);
         }
     }
@@ -543,10 +580,10 @@ class BayarCalonSiswaController extends Controller
                     }
 
 
-                     if($item['id_item'] == 2){
+                    //  if($item['id_item'] == 2){
 
-                        CalonSiswa::where('no_daftar', $request->id_csiswa)->update(['status_daftar' => 1]);  
-                    }
+                    //     CalonSiswa::where('no_daftar', $request->id_csiswa)->update(['status_daftar' => 1]);  
+                    // }
       
                 }
             }

@@ -47,6 +47,10 @@
                             Pilih Jurusan
                         </option>
 
+                         <option value="all_jurusan">
+                            Semua Jurusan
+                        </option>
+
                         @foreach($jurusan as $row)
                             <option value="{{ $row->id }}">
                                 {{ $row->nama_jurusan }}
@@ -82,6 +86,10 @@
                         id="id_bulan"
                         class="form-select">
 
+                           <option value="all_bulan">
+                            Semua Bulan
+                        </option>
+
                         <option value="1">Januari</option>
                         <option value="2">Februari</option>
                         <option value="3">Maret</option>
@@ -114,6 +122,7 @@
                 <button
                     type="button"
                     onclick="saveDefBulan()"
+                    id="btn-save-def-bulan"
                     class="btn btn-primary">
 
                     Simpan

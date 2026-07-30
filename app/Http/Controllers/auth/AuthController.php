@@ -14,9 +14,7 @@ use App\Models\CalonSiswa;
 use App\Models\DetBayarCalonSiswa;
 use App\Models\DetTempBayar;
 use App\Models\Konfig;
-
-
-
+use App\Models\TemplateBayar;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
@@ -30,7 +28,7 @@ class AuthController extends Controller
     public function __construct()
     {
         $konfig = Konfig::first();
-        $this->tahun = $konfig->id_tahun;
+        $this->tahun = $konfig->id_thn_ppdb;
         $this->smt = $konfig->smt;
 
       
@@ -147,20 +145,29 @@ class AuthController extends Controller
                 ->first();
 
             $leMineral = DB::table('tb_tmp_siswa')
-                ->where('id_thn_ajaran', $thn)
-                ->where('tmp_daftar', 'online')
-                ->max('no_daftar');
+            ->orderBy('id','desc')->first();
 
             $hasil = 1;
 
-            if (!empty($leMineral)) {
-
-                $bilangan = substr($leMineral, 1, 3);
-
-                $hasil = ((int)$bilangan) + 1;
+            if ($leMineral) {
+                $hasil = ((int) $leMineral->id) + 1;
             }
 
             $nodaftar = sprintf("E%03d", $hasil);
+
+             $template = TemplateBayar::query()
+            //->where('id_template', $siswa->id_template_bayar)
+            ->where('id_jurusan', $jurusan)
+            ->where('id_gelombang', $gelombang->id)
+            ->where('id_tahun', $this->tahun)            
+            ->first();
+
+        if (empty($template->id)) {
+            throw new \Exception(
+                'Detail template pembayaran belum tersedia.'
+            );
+        }
+
 
             $userId = DB::table('users')->insertGetId([
                 'name'              => $nama,
@@ -190,7 +197,7 @@ class AuthController extends Controller
                 'id_gelombang'       => $gelombang->id,
                 'tmp_daftar'         => 'online',
                 'tgl_daftar'         => now()->format('Y-m-d'),
-                'id_thn_ajaran'      => $thn_ajaran->id,
+                'id_thn_ajaran'      => $this->tahun,
                 'id_petugas'         => 6,
                 'status_daftar'      => '-1',
                 'id_template_bayar'  => $tb->id ?? 0,

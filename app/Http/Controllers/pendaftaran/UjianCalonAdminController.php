@@ -7,7 +7,7 @@ use App\Models\UjianCalon;
 use App\Models\UjianPesertaCalon;
 
 use App\Models\Gelombang;
-
+use App\Models\TahunAjaran;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -35,6 +35,8 @@ class UjianCalonAdminController extends Controller
             'nama_ujian' => ['required', 'string', 'max:150'],
             'deskripsi' => ['nullable', 'string'],
             'tanggal_mulai' => ['nullable', 'date'],
+           // 'id_gelombang' => ['nullable', 'integer'],
+
             'tanggal_selesai' => [
                 'nullable',
                 'date',
@@ -62,8 +64,12 @@ class UjianCalonAdminController extends Controller
 
     public function edit(UjianCalon $ujianCalonAdmin): View
     {
-        return view('pendaftaran.ujian.edit-ujian-admin', [
+
+    $gelombang = Gelombang::select('id', 'nama_gelombang')
+        ->orderByDesc('id')
+        ->get();        return view('pendaftaran.ujian.edit-ujian-admin', [
             'ujian' => $ujianCalonAdmin,
+            'gelombang' => $gelombang
         ]);
     }
 
@@ -74,6 +80,7 @@ class UjianCalonAdminController extends Controller
         $validated = $request->validate([
             'nama_ujian' => ['required', 'string', 'max:150'],
             'deskripsi' => ['nullable', 'string'],
+            'id_gelombang' => ['nullable', 'integer'],
             'tanggal_mulai' => ['nullable', 'date'],
             'tanggal_selesai' => [
                 'nullable',
@@ -95,14 +102,16 @@ class UjianCalonAdminController extends Controller
             ->with('success', 'Ujian berhasil diperbarui.');
     }
 
-    public function destroy(UjianCalon $ujian): RedirectResponse
-    {
-        $ujian->delete();
+    public function hapus($id): RedirectResponse
+{
+    $ujian = UjianCalon::findOrFail($id);
 
-        return redirect()
-            ->route('admin.ujian.index')
-            ->with('success', 'Ujian berhasil dihapus.');
-    }
+    $ujian->delete();
+
+    return redirect()
+        ->route('ujianCalonAdmin.index')
+        ->with('success', 'Ujian berhasil dihapus.');
+}
 
     public function jawabanPeserta(
     UjianCalon $ujianCalonAdmin,

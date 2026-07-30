@@ -101,7 +101,7 @@ Target Pendaftaran
                                 </a>
 
                             <form
-                                action="{{ route('ujianCalonAdmin.destroy', $item) }}"
+                                action="{{ route('ujianCalonAdmin.hapus', $item->id) }}"
                                 method="POST"
                                 onsubmit="return confirm('Hapus ujian ini?')"
                             >

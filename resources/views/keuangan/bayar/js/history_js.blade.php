@@ -1,4 +1,3 @@
-
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
@@ -13,7 +12,7 @@
         initTableSiswa();
         initTableHistory();
 
-       // initFilter();
+        // initFilter();
 
     });
 
@@ -30,7 +29,7 @@
             paginationSize: 10,
 
             layout: "fitDataStretch",
-           // height: "500px",
+            // height: "500px",
 
             columns: [
 
@@ -55,7 +54,7 @@
                     field: "kelas.nama_kelas"
                 },
 
-                 {
+                {
                     title: "Jurusan",
                     field: "jurusan.nama_jurusan"
                 },
@@ -67,12 +66,12 @@
             ]
         });
 
-        
+
 
 
         tableSiswa.on("rowClick", function(e, row) {
 
-             const data = row.getData();
+            const data = row.getData();
 
 
             document.getElementById('nipd_detail').value =
@@ -97,7 +96,7 @@
 
         });
     }
-    
+
 
     function initTableHistory() {
 
@@ -272,11 +271,11 @@
 
         tableDetail.on("rowClick", function(e, row) {
 
-        let data = row.getData();
+            let data = row.getData();
 
-        console.log(data.id);
+            console.log(data.id);
 
-        document.getElementById('id_bayar').value = data.id;
+            document.getElementById('id_bayar').value = data.id;
         });
     }
 
@@ -287,12 +286,12 @@
         tableDetail.setData(
             "{{ url('bayar/detail') }}/" + id
         );
-        
-         if (window.tableHistoryDetail) {
-             window.tableHistoryDetail.setData(
-            "{{ url('bayar/detail') }}/" + id
-        );
-    }
+
+        if (window.tableHistoryDetail) {
+            window.tableHistoryDetail.setData(
+                "{{ url('bayar/detail') }}/" + id
+            );
+        }
     }
 
     function openModalBayar() {
@@ -347,11 +346,20 @@
         modal.show();
     }
 
-    
+
 
     async function saveBayar() {
 
+        const tombol = document.getElementById('btn-save-bayar');
+        const teksAwal = tombol.innerHTML;
+
         let id = document.getElementById('id_bayar').value;
+
+        tombol.disabled = true;
+        tombol.innerHTML = `
+            <span class="animate-spin inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2"></span>
+            Mohon tunggu...
+        `;
 
         const url = "{{ route('bayar.set-lunas', ':id') }}".replace(':id', id);
 
@@ -372,23 +380,36 @@
 
         const result = await response.json();
 
-                Swal.fire({
-                    icon: "success",
-                    title: result.title,
-                    text: result.msg
-                });
- const modal = tailwind.Modal.getOrCreateInstance(
-                    document.querySelector("#modal-bayar-form")
-                );
+        Swal.fire({
+            icon: "success",
+            title: result.title,
+            text: result.msg
+        });
+        const modal = tailwind.Modal.getOrCreateInstance(
+            document.querySelector("#modal-bayar-form")
+        );
 
-                modal.hide();
+        modal.hide();
         tableDetail.replaceData();
+
+         tombol.disabled = false;
+        tombol.innerHTML = teksAwal;
 
     }
 
     async function saveCicilan() {
 
         try {
+
+            const button = document.getElementById('btn-save-cicilan');
+            const buttonText = document.getElementById('text-save-cicilan');
+
+            // Simpan tampilan awal tombol
+            const originalText = buttonText.innerHTML;
+
+            // Ubah tombol menjadi loading
+            button.disabled = true;
+            buttonText.innerHTML = 'Tunggu sebentar...';
 
             const response = await fetch('{{ route("bayar.simpanCicilan") }}', {
                 method: 'POST',
@@ -419,7 +440,7 @@
 
             if (result.success) {
 
-                 Swal.fire({
+                Swal.fire({
                     icon: "success",
                     title: result.title,
                     text: result.msg
@@ -432,9 +453,12 @@
                 modal.hide();
 
                 // reload tabel jika ada
-               // if (typeof table !== 'undefined') {
-                    tableDetail.replaceData();
-               // }
+                // if (typeof table !== 'undefined') {
+
+                button.disabled = false;
+                buttonText.innerHTML = originalText;
+                tableDetail.replaceData();
+                // }
 
             } else {
 
@@ -449,56 +473,58 @@
 
             console.error(error);
 
-             Swal.fire({
-                    icon: "error",
-                    title: "Error",
-                    text: "Terjadi kesalahan saat menyimpan data"
-                });
-              
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "Terjadi kesalahan saat menyimpan data"
+            });
+
         }
     }
 
-     async function saveDefBulan() {
+    async function saveDefBulan() {
 
         try {
+     const tombol = document.getElementById('btn-save-def-bulan');
+    const teksAwal = tombol.innerHTML;
 
+            const idThnAjaran = document
+                .getElementById('id_thn_ajaran')
+                .value
+                .trim();
 
-   const idThnAjaran = document
-        .getElementById('id_thn_ajaran')
-        .value
-        .trim();
+            const idJurusan = document
+                .getElementById('id_jurusan')
+                .value
+                .trim();
 
-    const idJurusan = document
-        .getElementById('id_jurusan')
-        .value
-        .trim();
+            const idTahun = document
+                .getElementById('id_tahun')
+                .value
+                .trim();
 
-    const idTahun = document
-        .getElementById('id_tahun')
-        .value
-        .trim();
+            const idBulan = document
+                .getElementById('id_bulan')
+                .value
+                .trim();
 
-    const idBulan = document
-        .getElementById('id_bulan')
-        .value
-        .trim();
+            if (
+                idThnAjaran === '' ||
+                idJurusan === '' ||
+                idTahun === '' ||
+                idBulan === ''
+            ) {
+                alert('Semua data wajib diisi.');
+                return;
+            }
 
-    if (
-        idThnAjaran === '' ||
-        idJurusan === '' ||
-        idTahun === '' ||
-        idBulan === ''
-    ) {
-        alert('Semua data wajib diisi.');
-        return;
-    }
-
-    if (idTahun.length !== 4) {
-        alert('Tahun harus terdiri dari 4 digit.');
-        document.getElementById('id_tahun').focus();
-        return;
-    }
-
+            if (idTahun.length !== 4) {
+                alert('Tahun harus terdiri dari 4 digit.');
+                document.getElementById('id_tahun').focus();
+                return;
+            }
+ tombol.disabled = true;
+        tombol.innerHTML = 'Mohon tunggu...';
 
             const response = await fetch(
                 "{{ route('bayar.setDefBulan') }}", {
@@ -543,6 +569,11 @@
                     table.replaceData();
                 }
 
+                        // Kembalikan tombol setelah proses selesai atau gagal
+                tombol.disabled = false;
+                tombol.innerHTML = teksAwal;
+
+
             } else {
 
                 Swal.fire({
@@ -565,9 +596,9 @@
         }
     }
 
-     function applyFilter() {
+    function applyFilter() {
 
-       tableSiswa.setData("{{ route('bayar.data') }}", {
+        tableSiswa.setData("{{ route('bayar.data') }}", {
             tahun: document.getElementById('filter_tahun').value,
             jurusan: document.getElementById('filter_jurusan').value,
             kelas: document.getElementById('filter_kelas').value,
@@ -591,7 +622,7 @@
     //     .getElementById('filter_keyword')
     //     .addEventListener('keyup', applyFilter);
 
-     function resetFilter() {
+    function resetFilter() {
 
         document.getElementById('filter_tahun').value = '';
         document.getElementById('filter_jurusan').value = '';
@@ -610,6 +641,4 @@
         const cetakUrl = "{{ url('/bayar/createReportPdf') }}";
         window.open(`${cetakUrl}/${selectedSiswaId}`, '_blank');
     }
-
-    
 </script>

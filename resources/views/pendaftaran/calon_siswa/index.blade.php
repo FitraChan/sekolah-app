@@ -13,42 +13,115 @@ Calon Siswa
 @section('body')
 
 <div class="max-w-7xl mx-auto p-6">
-    <!-- Bagian Tombol Aksi -->
+
     <div class="flex gap-2 mb-3">
         <a href="{{ route('calon-siswa.create') }}"
             class="btn btn-primary">
-
             + Tambah Calon Siswa
-
         </a>
-
-        
     </div>
 
-    <!-- Sistem Grid untuk membagi tabel menjadi sebelah-menyebelah -->
-    <!-- md:grid-cols-3 artinya membagi halaman menjadi 3 kolom saat layar komputer/tablet -->
     <div class="grid grid-cols-12 gap-6 mt-5">
-        <!-- Kolom Kiri: Tempat Table User (Kita beri porsi lebih besar, mengambil 2 kolom) -->
-        <div class="intro-y col-span-12 lg:col-span-12">
+        <div class="intro-y col-span-12">
             <div class="intro-y box">
+
                 <div class="flex flex-col sm:flex-row items-center p-5 border-b border-slate-200/60">
-
-                    <h2 class="font-medium text-base mr-auto"> Daftar Calon Siswa</h2>
-
+                    <h2 class="font-medium text-base mr-auto">
+                        Daftar Calon Siswa
+                    </h2>
                 </div>
 
-                <div class="p-5" id="basic-table">
+                <div class="p-5">
+
+                    {{-- Filter --}}
+                    <div class="grid grid-cols-12 gap-4 mb-5">
+
+                        {{-- Nama / No Daftar --}}
+                        <div class="col-span-12 md:col-span-3">
+                            <label class="form-label">
+                                Nama / No. Daftar
+                            </label>
+
+                            <input
+                                type="text"
+                                id="filter-nama"
+                                class="form-control"
+                                placeholder="Cari nama atau no. daftar...">
+                        </div>
+
+                        {{-- Tahun Ajaran --}}
+                        <div class="col-span-12 md:col-span-3">
+                            <label class="form-label">
+                                Tahun Ajaran
+                            </label>
+
+                            <select id="filter-tahun-ajaran" class="form-control">
+                                <option value="">Semua Tahun Ajaran</option>
+
+                                @foreach ($tahunAjaran as $tahun)
+                                    <option value="{{ $tahun->id }}">
+                                        {{ $tahun->thn_ajaran }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        {{-- Jurusan --}}
+                        <div class="col-span-12 md:col-span-2">
+                            <label class="form-label">
+                                Jurusan
+                            </label>
+
+                            <select id="filter-jurusan" class="form-control">
+                                <option value="">Semua Jurusan</option>
+
+                                @foreach ($jurusan as $item)
+                                    <option value="{{ $item->id }}">
+                                        {{ $item->nama_jurusan }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        {{-- Gelombang --}}
+                        <div class="col-span-12 md:col-span-2">
+                            <label class="form-label">
+                                Gelombang
+                            </label>
+
+                            <select id="filter-gelombang" class="form-control">
+                                <option value="">Semua Gelombang</option>
+
+                                @foreach ($gelombang as $item)
+                                    <option value="{{ $item->id }}">
+                                        {{ $item->nama_gelombang }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        {{-- Tombol Reset --}}
+                        <div class="col-span-12 md:col-span-2 flex items-end">
+                            <button
+                                type="button"
+                                id="btn-cari"
+                                class="btn btn-secondary w-full">
+
+                                Cari
+                            </button>
+                        </div>
+
+                    </div>
+
                     <div class="preview">
                         <div class="overflow-x-auto">
                             <div id="table-calon-siswa"></div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
-
-
-
     </div>
 </div>
 
@@ -65,6 +138,7 @@ Calon Siswa
 
         layout: "fitDataStretch",
         height: "500px",
+        //width: "700px",
         pagination: true,
 
         paginationSize: 10,
@@ -90,7 +164,7 @@ Calon Siswa
             {
                 title: "Nama Lengkap",
                 field: "nama_lengkap",
-                width: 250
+                width: 200
             },
 
             {
@@ -99,12 +173,16 @@ Calon Siswa
                 width: 150
             },
 
-           
+            {
+                title: "Status",
+                field: "status_daftar",
+                width: 100
+            },
 
             {
                 title: "No HP",
                 field: "no_hp",
-                width: 180
+                width: 150
             },
 
             {
@@ -122,7 +200,7 @@ Calon Siswa
             {
                 title: "Action",
                 hozAlign: "center",
-                width: 150,
+                width: 200,
 
 
                 formatter: function(cell) {
@@ -381,6 +459,22 @@ Calon Siswa
         }
 
     }
+
+
+document.getElementById("btn-cari").addEventListener("click", function () {
+    const params = {
+        search: document.getElementById("filter-nama").value,
+        id_thn_ajaran: document.getElementById("filter-tahun-ajaran").value,
+        id_jurusan: document.getElementById("filter-jurusan").value,
+        id_gelombang: document.getElementById("filter-gelombang").value,
+    };
+
+    table.setData(
+        "{{ route('calon-siswa.data') }}",
+        params,
+        "GET"
+    );
+});
 </script>
 
 @endsection

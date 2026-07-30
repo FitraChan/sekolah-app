@@ -53,6 +53,10 @@ class UjianCalonController extends Controller
         $data = UjianCalon::query()
             ->where('status', 1)
              ->where('id_gelombang', $calonSiswa->id_gelombang)
+
+              ->whereDate('tanggal_mulai', '<=', now()->toDateString())
+        ->whereDate('tanggal_selesai', '>=', now()->toDateString())
+
             ->withCount([
                 'soal' => fn ($query) => $query->where('status', true),
             ])
@@ -189,7 +193,7 @@ class UjianCalonController extends Controller
 
         $jawaban = $request->input('jawaban', []);
 
-        CalonSiswa::where('id_user',$peserta->id_calon_siswa)->update('status_daftar',3);
+        CalonSiswa::where('id_user',$peserta->id_calon_siswa)->update(['status_daftar' => 3]);
 
         return $this->prosesPenilaian($peserta, $jawaban);
     }

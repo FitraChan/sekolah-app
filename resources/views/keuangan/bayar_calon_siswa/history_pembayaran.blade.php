@@ -54,7 +54,7 @@
                                         <option value="">Semua Jurusan</option>
 
                                         @foreach($jurusan as $row)
-                                        <option value="{{ $row->nama_jurusan }}">
+                                        <option value="{{ $row->id }}">
                                             {{ $row->nama_jurusan }}
                                         </option>
                                         @endforeach
@@ -67,7 +67,7 @@
                                         <option value="">Semua Kelas</option>
 
                                         @foreach($kelas as $row)
-                                        <option value="{{ $row->nama_kelas }}">
+                                        <option value="{{ $row->idx }}">
                                             {{ $row->nama_kelas }}
                                         </option>
                                         @endforeach
